@@ -1,6 +1,6 @@
 # Flex Server
 
-The project is an API for manage places of users in a building. The project is a docker that makes himeasy to deploy.
+The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
 
 ## Getting Started
 
@@ -21,7 +21,7 @@ You have to pass variables as environment variables or on the `/config/mlab` fil
 
 ### Installing
 
-There is 2 was to install the server:
+There is 2 ways to install the server:
 
 #### 1. Using npm
 
@@ -73,17 +73,19 @@ You have to send the API token on the headers as `x-access-token` to access API 
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+TODO
 
 ## Built With
 
+TODO
 
 ## Contributing
 
+TODO
 
 
 ## Versioning
-
+Semantic Versioning Specification (SemVer)
 
 ## Authors
 
