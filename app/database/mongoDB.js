@@ -1,28 +1,18 @@
 var DATABASE_NAME = 'appdb';
 var COLLECTION = 'users';
-var config = require('../../config/mlab');
+var config = require('../../config/mongo');
 
 
 module.exports = {
   getMongoUri : function(type, host, port, user, pass)
   {
-    if(type == "local")//local mongo database URI
+
+    if(config.type == "local")//local mongo database URI
     {
-      //default local database URI
-      var localHost = "localhost";
-      var localPort = "27017";
-
-      //custom local database URI
-      if(arguments.length == 3)
-      {
-        localHost = host;
-        localPort = port;
-      }
-
-      return "mongodb://" + localHost + ":" + localPort + "/" + DATABASE_NAME;
+      return "mongodb://" + config.host + ":" + config.post + "/" + config.db;
     }
 
-    if(type == "mlab")//mlab mongo database URI
+    if(type == "remote")//mlab mongo database URI
     {
       //default mlab database
       var mongodbHost = config.host;

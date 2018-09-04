@@ -13,7 +13,7 @@ require('./app/routes/auth')(router);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var DEFAULT_URI = dbconfig.getMongoUri("mlab"); //get the URI from config file
+var DEFAULT_URI = dbconfig.getMongoUri(); //get the URI from config file
 var DEFAULT_PORT = 3000;
 
 mongoose.connect(DEFAULT_URI, {useNewUrlParser: true});
@@ -24,12 +24,12 @@ router.use(function(req, res, next) {
 });
 
 router.get('/', function(req, res) {
-  res.json({ message: 'API' });
+  res.json({ message: 'pong' });
 });
 
-app.use('/api', router);             //define the default route
+app.use('/ping', router);             //define the default route
 
 var server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
   var port = server.address().port;
-  console.log("App now running on port", port);
+  console.log("App now running on port : ", port);
 });

@@ -15,13 +15,30 @@ You can check that everything is ok by typing: `nodejs -v` and `npm -v`
 ### Configure
 
 To use the server you will have to configure the database you use.
-The easiest way is to use [mlab](https://docs.mlab.com/).
+Local DB :
+Install MongoDB
+Create 'flex' database
+
+Check the mongo configuration file :
+Use 'local' mode for local deployment or 'remote' for cloud deployment.
+```
+module.exports = {
+  'host': 'host.docker.internal', // Must use this specific hostname for mac users only
+  'port':'27017',
+  'username': '',
+  'password': '',
+  'db':'flex',
+  'mode':'local' // 'local' || 'remote'
+};
+```
+
+An other and easy way is to use [mlab](https://docs.mlab.com/).
 
 You have to pass variables as environment variables or on the `/config/mlab` file.
 
 ### Installing
 
-There is 2 ways to install the server:
+There is two ways to install the server:
 
 #### 1. Using npm
 
@@ -51,8 +68,8 @@ docker run -p 3000:3000 -it <your username>/flex-server
 ### Create an API token for use
 
 Now you can access the API using localhost.
-On the Url type `localhost:3000/api`.
-If you got the message "API", everything goes well.
+Open your browser and type url `localhost:3000/ping`.
+If you got the message "pong", everything goes well.
 
 By typing the following command on your terminal or sending same informations on Postman or similar tool you will get an API token that can be used to access to other services of the API.
 
