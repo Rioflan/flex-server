@@ -15,11 +15,15 @@ You can check that everything is ok by typing: `nodejs -v` and `npm -v`
 ### Configure
 
 To use the server you will have to configure the database you use.
-Local DB :
+
+In case of local deployment :
+
 Install MongoDB
+
 Create 'flex' database
 
 Check the mongo configuration file :
+
 Use 'local' mode for local deployment or 'remote' for cloud deployment.
 ```
 module.exports = {
