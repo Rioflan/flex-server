@@ -26,24 +26,26 @@ module.exports = function(router){
 
   function updateUser(id_user, params)
   {
+    console.log("updateUser2", id_user, params)
     User.findOne({id : id_user}, null , {sort: {_id:-1}},
     function (err, user)
     {
+      console.log("updateUser", err, user)
       if (err)
         RES.status(500).send(err);
 
       var actual_user = user;
 
-      if(params.end != null)
+      if(params.end !== null)
         actual_user.end = params.end;
 
-      if(params.begin != null)
+      if(params.begin !== null)
         actual_user.begin = params.begin;
 
-      if(params.name != null)
+      if(params.name !== null)
         actual_user.name = params.name;
 
-      if(params.fname != null)
+      if(params.fname !== null)
         actual_user.fname = params.fname;
 
       actual_user.save(function(err)
@@ -62,7 +64,7 @@ module.exports = function(router){
     var actual_place = new Place();
     actual_place.id = id_place;
 
-    if(id_user == null || id_user == "")
+    if(id_user === null || id_user === "")
     {
       actual_place.using = false;
       actual_place.id_user = "";
@@ -87,11 +89,11 @@ module.exports = function(router){
     {
       if (err)
         RES.status(500).send(err);
-
-      if(params.using != null)
+      console.log("params.using", params.using)
+      if(params.using !== null)
         place.using = params.using;
 
-      if(params.id_user != null)
+      if(params.id_user !== null)
         place.id_user = params.id_user;
 
       place.save(function(err)
@@ -109,7 +111,7 @@ module.exports = function(router){
     return await new Promise((resolve, reject) => {
       Place.findOne({id : id_place}, function (err, place)
       {
-        if (!err && place != null)
+        if (!err && place !== null)
           resolve(place.id_user);//"" => not used, "NAME" => used by NAME
         else
           resolve("#");//place not exists
@@ -122,9 +124,9 @@ module.exports = function(router){
     return await new Promise((resolve, reject) => {
       User.findOne({id : id_user}, null , {sort: {_id:-1}},
         function (err, user) {
-          if (!err && user != null)
+          if (!err && user !== null)
           {
-            if(user.end == null)
+            if(user.end === null)
               resolve(user.id_place);
             else
               resolve("");
@@ -139,19 +141,20 @@ module.exports = function(router){
   {
     const userSit = await whereSit(body.id_user);
     const user = await whoUses(body.id_place);
-
-    if(userSit == "#" || userSit == "")//not exists or not sit
+    console.log("body", body)
+    console.log(userSit,user )
+    if(userSit === "#" || userSit === "")//not exists or not sit
     {
 
       addUser(body.id_user, body.name, body.fname, body.id_place);
       console.log("NOT EXISTS");
 
-      if(user == "#")//not exists
+      if(user === "#")//not exists
       {
         console.log("PLACE EXISTE PAS");
         addPlace(body.id_place, body.id_user);
       }
-      else if(user == "")//place empty
+      else if(user === "")//place empty
       {
         console.log("PLACE VIDE");
         updatePlace(body.id_place, { "using":true, "id_user":body.id_user });
@@ -159,22 +162,24 @@ module.exports = function(router){
       else//used by the "user" user
       {
         console.log("PLACE UTILISEE: " + user);
-        var endDate = Date.now();
+        let endDate = Date.now();
+        console.log("user", user)
         updateUser(user, { "end": endDate });//if one user sit at this place the old user leaves
       }
     }
     else
     {
       console.log("ASSIS");
-      if(userSit == body.id_place)//user already sit here and leaves
+      if(userSit === body.id_place)// user already sit here and leaves
       {
-        var endDate = Date.now();
+        let endDate = Date.now();
+        console.log("body.id_use", body.id_user)
         updateUser(body.id_user, { "end": endDate });
         updatePlace(body.id_place, { "using":false, "id_user":"" });
       }
       else//user is sit somewhere and move to another place
       {
-        var endDate = Date.now();
+        let endDate = Date.now();
         updateUser(user, { "end": endDate });//the other user leaves
         updatePlace(userSit, { "using":false, "id_user":"" });//updates the old user place
         updatePlace(body.id_place, { "using":true, "id_user":body.id_user });//the user is now here
@@ -189,7 +194,7 @@ module.exports = function(router){
       RES = res;
       var body = req.body;
 
-      if(body.id_place == null || body.name == null || body.fname == null || body.id_user == null)
+      if(body.id_place === null || body.name === null || body.fname === null || body.id_user === null)
         res.status(400).json({ error: 'Invialid arguments' });
 
       body.id_user = encrypt(body.id_user, req.userId);
@@ -198,4 +203,5 @@ module.exports = function(router){
       post(body);
       res.status(200).json({ result: 'User Updated' });
     });
+
 }
