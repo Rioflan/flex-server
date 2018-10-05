@@ -76,6 +76,19 @@ module.exports = function(router){
           });
       });
 
+    router.route("/places/:place_id").get(VerifyToken, function(req, res) {
+      let query = {};
+      query["id"] = req.params.place_id;
+      Place.find(query, null, function(err, user) {
+        if (err) res.status(500).send(err);
+
+        User.find({ _id: user[0].id_user }, null, function(err, user) {
+          if (err) res.status(500).send(err);
+          res.status(200).json(user);
+        });
+      });
+    });
+
     router.route('/places/free')
       .get(VerifyToken, function(req, res)
       {

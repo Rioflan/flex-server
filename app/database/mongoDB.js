@@ -4,15 +4,15 @@ var config = require('../../config/mongo');
 
 
 module.exports = {
-  getMongoUri : function(type, host, port, user, pass)
+  getMongoUri : function(mode, host, port, user, pass)
   {
 
-    if(config.type == "local")//local mongo database URI
+    if(config.mode == "local")//local mongo database URI
     {
       return "mongodb://" + config.host + ":" + config.post + "/" + config.db;
     }
 
-    if(type == "remote")//mlab mongo database URI
+    if(mode == "remote")//mlab mongo database URI
     {
       //default mlab database
       var mongodbHost = config.host;
