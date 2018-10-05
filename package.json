@@ -13,13 +13,10 @@
   "author": "rioflan",
   "license": "ISC",
   "dependencies": {
-    "apidoc-markdown": "^0.2.0",
     "bcryptjs": "latest",
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
-    "esdoc": "^1.1.0",
-    "esdoc-standard-plugin": "^1.0.0",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
