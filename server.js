@@ -48,15 +48,15 @@ router.get('/', function(req, res) {
 
 app.use('/ping', router);             //define the default route
 
-// var server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
-//   var port = server.address().port;
-//   console.log("App now running on port : ", port);
-// });
+var server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
+  var port = server.address().port;
+  console.log("App now running on port : ", port);
+});
 
 // http.createServer(httpApp).listen(httpApp.get('port'), function() {
 //     console.log('Express HTTP server listening on port ' + httpApp.get('port'));
 // });
 
-https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, function() {
-    console.log('Express HTTPS server listening on port ' + DEFAULT_PORT);
-});
+// https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, function() {
+//     console.log('Express HTTPS server listening on port ' + DEFAULT_PORT);
+// });
