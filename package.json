@@ -4,7 +4,8 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "jest app/test"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,10 @@
     "mongoose": "latest",
     "nodemon": "^1.18.3"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "eslint-plugin-jest": "^21.24.1",
+    "jest": "^23.6.0",
+    "supertest": "^3.3.0"
+  }
 }

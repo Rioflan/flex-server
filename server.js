@@ -12,10 +12,10 @@ const certPath = "cert";
 const https = require('https');
 const http = require('http');
 
-const httpsOptions = {
-    key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
-    cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
-};
+// const httpsOptions = {
+//     key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
+//     cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
+// };
 
 var app = express();                            //use express on our app
 
