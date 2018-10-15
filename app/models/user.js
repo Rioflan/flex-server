@@ -6,8 +6,7 @@ var UserSchema   = new Schema({
   name:     String,
   fname:    String,
   id_place: String,
-  begin:    Date,
-  end:      Date
+  historical: Array,
 });
 
 module.exports = mongoose.model('User', UserSchema);

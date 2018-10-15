@@ -3,6 +3,7 @@ module.exports = function(router){
   var User = require('../models/user');
   var Place = require('../models/place');
   var VerifyToken = require('./VerifyToken');
+  const { encrypt } = require("./test");
 
 
   function getQuery(req)
@@ -43,7 +44,7 @@ module.exports = function(router){
   router.route('/users/:user_id')
     .get(VerifyToken, function(req, res) {
       var query = {};
-      query["id"] = req.params.user_id;
+      query["id"] = encrypt(req.params.user_id, req.userId);
       User.find(query, function(err, user) {
         if (err)
           res.status(400).send(err);

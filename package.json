@@ -22,7 +22,10 @@
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
     "mongoose": "latest",
-    "nodemon": "^1.18.3"
+    "nodemon": "^1.18.3",
+    "ramda": "^0.25.0",
+    "randombytes": "^2.0.6",
+    "redis": "^2.8.0"
   },
   "description": "",
   "devDependencies": {

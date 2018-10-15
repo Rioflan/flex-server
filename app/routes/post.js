@@ -3,7 +3,10 @@ module.exports = function(router) {
   const Place = require("../models/place");
   var RES;
   const VerifyToken = require("./VerifyToken");
+  const { compose, pick, last, append, update, findLastIndex, propEq } = require("ramda");
   const { encrypt, decrypt } = require("./test");
+  const redis = require("redis"),
+    client = redis.createClient();
 
   /**
    * This function adds a new user.
@@ -18,8 +21,7 @@ module.exports = function(router) {
     actual_user.name = name;
     actual_user.fname = fname;
     actual_user.id_place = id_place;
-    actual_user.begin = null;
-    actual_user.end = null;
+    actual_user.historical = [];
 
     actual_user.save(function(err) {
       if (err) RES.status(500).send(err);
@@ -40,10 +42,8 @@ module.exports = function(router) {
       if (err) RES.status(500).send(err);
 
       let actual_user = user;
-
-      if (params.end !== null) actual_user.end = params.end;
-
-      if (params.begin !== null) actual_user.begin = params.begin;
+      console.log(actual_user, params )
+      if (params.historical !== []) actual_user.historical = params.historical;
 
       if (params.name !== null) actual_user.name = params.name;
 
@@ -53,7 +53,7 @@ module.exports = function(router) {
 
       actual_user.save(function(err) {
         if (err) RES.status(500).send(err);
-        console.log("User Updated");
+        console.log("User Updated First");
       });
     });
   }
@@ -126,8 +126,14 @@ module.exports = function(router) {
         err,
         user
       ) {
+        console.log("USER", user);
+        const userEnd =
+          user.historical.length > 0
+            ? pick(["end"], last(user.historical))
+            : '';
+            console.log("userEnd", userEnd.end)
         if (!err && user !== null) {
-          if (user.end === null) resolve(user.id_place);
+          if (userEnd.end === '') resolve(user.id_place);
           else resolve("");
         } else resolve("#");
       });
@@ -141,64 +147,102 @@ module.exports = function(router) {
   async function post(body) {
     const userSit = await whereSit(body.id_user);
     const user = await whoUses(body.id_place);
+    console.log("userSit", userSit, "user", user)
+
+    const { historical } = body;
+
+    console.log("BODY", body);
     if (userSit === "#" || userSit === "") {
-      //not exists or not sit
+      let beginDate = new Date(Date.now()).toLocaleString();
+      //  not exists or not sit
       console.log("NOT EXISTS");
       updateUser(body.id_user, {
-        begin: Date.now(),
         id_place: body.id_place,
-        end: "",
+        historical: append(
+          { place_id: body.id_place, begin: beginDate, end: "" },
+          historical
+        ),
         name: body.name,
         fname: body.fname
       });
       if (user === "#") {
-        //not exists
+        //  not exists
         console.log("PLACE EXISTE PAS");
         addPlace(body.id_place, body.id_user);
       } else if (user === "") {
-        //place empty
+        //  place empty
         console.log("PLACE VIDE");
-        updatePlace(body.id_place, { using: true, id_user: body.id_user });
-      } //used by the "user" user
+        updatePlace(body.id_place, {
+          using: true,
+          id_user: body.id_user
+        });
+      } //  used by the "user" user
       else {
         console.log("PLACE UTILISEE: " + user);
-        let endDate = Date.now();
+        let endDate = new Date(Date.now()).toLocaleString();
+        let indexUser = findLastIndex(propEq("place_id", body.id_place))(
+          body.historical
+        );
         updateUser(user, {
-          end: endDate, // endDate // nedd fix
-          begin: "",
-          id_place: "",
+          historical: update(
+            indexUser,
+            {
+              place_id: body.id_place,
+              begin: body.historical[indexUser].begin,
+              end: endDate
+            },
+            body.historical
+          ),
           name: body.name,
           fname: body.fname
-        }); //if one user sit at this place the old user leaves
+        }); //  if one user sit at this place the old user leaves
       }
     } else {
       console.log("ASSIS");
       if (userSit === body.id_place) {
+        let indexUser = findLastIndex(propEq("place_id", body.id_place))(
+          body.historical
+        );
         // user already sit here and leaves
-        let endDate = Date.now();
+        let endDate = new Date(Date.now()).toLocaleString();
         updateUser(body.id_user, {
-          end: endDate, // => endDate // need fix
-          begin: "",
-          id_place: "",
+          historical: update(
+            indexUser,
+            {
+              place_id: body.id_place,
+              begin: body.historical[indexUser].begin,
+              end: endDate
+            },
+            body.historical
+          ),
           name: body.name,
           fname: body.fname
         });
         updatePlace(body.id_place, { using: false, id_user: "" });
-      } //user is sit somewhere and move to another place
+      } //  user is sit somewhere and move to another place
       else {
-        let endDate = Date.now();
+        let endDate = new Date(Date.now()).toLocaleString();
+        let indexUser = findLastIndex(propEq("place_id", body.id_place))(
+          body.historical
+        );
         updateUser(body.id_user, {
-          end: endDate, // endDate // nedd fix => condition in whereSit
-          begin: "",
-          id_place: "",
+          historical: update(
+            indexUser,
+            {
+              place_id: body.id_place,
+              begin: body.historical[indexUser].begin,
+              end: endDate
+            },
+            body.historical
+          ),
           name: body.name,
           fname: body.fname
-        }); //the other user leaves
+        }); //  the other user leaves
         updatePlace(userSit, { using: false, id_user: "" }); //updates the old user place
         updatePlace(body.id_place, {
           using: true,
           id_user: body.id_user
-        }); //the user is now here
+        }); //  the user is now here
         // addUser(body.id_user, body.name, body.fname, body.id_place);
       }
     }
@@ -220,17 +264,17 @@ module.exports = function(router) {
         body.fname === null ||
         body.id_user === null
       )
-        res.status(400).json({ error: "Invialid arguments" });
+        return res.status(400).json({ error: "Invialid arguments" });
 
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
       post(body);
-      res.status(200).json({ result: "User Updated" });
+      res.status(200).json({ result: "User Updated Middle" });
     });
 
   /**
-   * This route is used to handle new users.
+   * This route is used to handle users login.
    */
   router
     .route("/login_user")
@@ -239,10 +283,14 @@ module.exports = function(router) {
       var body = req.body;
 
       if (body.name === null || body.fname === null || body.id_user === null)
-        res.status(400).json({ error: "Invialid arguments" });
+        return res.status(400).json({ error: "Invialid arguments" });
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
+
+      client.on("connect", function() {
+        console.log("Redis client connected");
+      });
 
       // Check if the user exists
 
@@ -252,14 +300,21 @@ module.exports = function(router) {
       ) {
         if (err) return res.status(500).send("Error on the server.");
         if (!user) {
-          addUser(body.id_user, body.name, body.fname, "");
+          const { id_user, name, fname } = body;
+          addUser(id_user, name, fname, "");
+
+          /** Add user to redis */
+
+          // client.set(
+          //   `UserId:${body.id_user}`,
+          //   JSON.stringify({ name, fname }),
+          //   redis.print
+          // );
           console.log("NOT EXISTS");
         }
 
         // if (user) return res.status(200).send(user);
-        
       });
-
-      res.status(200).json({ result: "User Updated" });
+      res.status(200).json({ result: "User Updated Last" });
     });
 };

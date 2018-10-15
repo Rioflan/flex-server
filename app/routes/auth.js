@@ -1,16 +1,16 @@
 module.exports = function(router){
 
-  var apiUser = require('../models/apikey');
-  var jwt = require('jsonwebtoken');
-  var bcrypt = require('bcryptjs');
-  var config = require('../../config/api');
-  var VerifyToken = require('./VerifyToken');
+  let apiUser = require('../models/apikey');
+  let jwt = require('jsonwebtoken');
+  let bcrypt = require('bcryptjs');
+  let config = require('../../config/api');
+  let VerifyToken = require('./VerifyToken');
 
   router.post('/register', function(req, res) {
     if(req.body.name == null || req.body.email == null || req.body.password == null)
       res.status(400).send("invalid mail or name");
 
-    var query = {};
+    let query = {};
     query["email"] = req.body.email;
     apiUser.find(query,
     function (err, user) {
@@ -21,7 +21,7 @@ module.exports = function(router){
         return res.status(400).send("Email already used");
     });
 
-    var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+    let hashedPassword = bcrypt.hashSync(req.body.password, 8);
 
     apiUser.create({
       name: req.body.name,
@@ -56,10 +56,10 @@ module.exports = function(router){
       if (err) return res.status(500).send('Error on the server.');
       if (!user) return res.status(404).send('No user found.');
 
-      var passwordIsValid = bcrypt.compareSync(req.body.password, user.api_key);
+      let passwordIsValid = bcrypt.compareSync(req.body.password, user.api_key);
       if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
 
-      var token = jwt.sign({ id: user._id }, config.secret);
+      let token = jwt.sign({ id: user._id }, config.secret);
 
       res.status(200).send({ auth: true, token: token });
     });
