@@ -27,7 +27,6 @@ let router = express.Router(); // get an instance of the express Router
 Post(router);
 Get(router);
 Auth(router);
-console.log(router.stack.map(e => console.log(e)));
 
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -48,10 +47,10 @@ router.use(function(req, res, next) {
 });
 
 router.get("/", function(req, res) {
-  res.json({ message: "pong" });
+  res.json({ message: "It works !" });
 });
 
-app.use("/ping", router); //define the default route
+app.use("/api", router); //define the default route
 
 let server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
   let port = server.address().port;

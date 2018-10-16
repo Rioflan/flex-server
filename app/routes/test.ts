@@ -16,16 +16,16 @@ export const decrypt = (text, password) => {
   return dec;
 };
 
-// var crypto = require('crypto'),
+// let crypto = require('crypto'),
 //     algorithm = 'aes-256-ctr';
 
-// var randomBytes = require('randombytes');
+// let randomBytes = require('randombytes');
 
 // exports.encrypt = function(text, password){
 //   const iv = new Buffer(randomBytes(16));
 //   let key = crypto.createHash('sha256').update(String(iv)).digest('base64').substr(0, 32);
-//   var cipher = crypto.createCipheriv(algorithm, key, iv)
-//   var crypted = cipher.update(text,'utf8','hex')
+//   let cipher = crypto.createCipheriv(algorithm, key, iv)
+//   let crypted = cipher.update(text,'utf8','hex')
 //   crypted += cipher.final('hex');
 //   return crypted;
 // }
@@ -33,8 +33,8 @@ export const decrypt = (text, password) => {
 // exports.decrypt = function(text, password){
 //   const iv = new Buffer(randomBytes(16));
 //   let key = crypto.createHash('sha256').update(String(iv)).digest('base64').substr(0, 32);
-//   var decipher = crypto.createDecipheriv(algorithm, key, iv)
-//   var dec = decipher.update(text,'hex','utf8')
+//   let decipher = crypto.createDecipheriv(algorithm, key, iv)
+//   let dec = decipher.update(text,'hex','utf8')
 //   dec += decipher.final('utf8');
 //   return dec;
 // }

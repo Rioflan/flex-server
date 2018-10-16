@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../../config/api';
+import config from '../../config/api.json';
 import apiUser from '../models/apikey';
 
 const verifyToken = (req, res, next) => {

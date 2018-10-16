@@ -1,12 +1,11 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import apiUser from '../models/apikey';
-import config from '../../config/api';
+import config from '../../config/api.json';
 import VerifyToken from './VerifyToken';
 
 const Auth = (router) => {
   router.post('/register', (req, res) => {
-    console.log('req.body', req);
     if (
       req.body.name == null
       || req.body.email == null

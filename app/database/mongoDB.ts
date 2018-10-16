@@ -1,14 +1,14 @@
 
 
-import config from '../../config/mongo';
+import config from '../../config/mongo.json';
 
 const DATABASE_NAME = 'appdb';
 
 const wrapper = {
-  getMongoUri(mode, host, port, user, pass) {
-    if (config.mode === 'local') {
+  getMongoUri(mode = config.mode, host = config.host, port = config.port, user = config.username, pass = config.password) {
+    if (mode === 'local') {
     // local mongo database URI
-      return `mongodb://${config.host}:${config.post}/${config.db}`;
+      return `mongodb://${host}:${port}/${config.db}`;
     }
 
     if (mode === 'remote') {

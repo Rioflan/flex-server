@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import { Mockgoose } from 'mockgoose';
 import dbconfig from '../database/mongoDB';
-import post from '../routes/post';
 
 const mockgoose = new Mockgoose(mongoose);
 
@@ -14,8 +13,6 @@ const router = express.Router();
 require('../routes/auth')(router);
 
 const DEFAULT_URI = dbconfig.getMongoUri(); // get the URI from config file
-
-const DEFAULT_PORT = 3000;
 
 mongoose.connect(
   DEFAULT_URI,
