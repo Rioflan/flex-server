@@ -3,16 +3,24 @@ import bcrypt from 'bcryptjs';
 import apiUser from '../models/apikey';
 import config from '../../config/api.json';
 import VerifyToken from './VerifyToken';
+import { Router, Request, Response } from "express"; 
 
-const Auth = (router) => {
-  router.post('/register', (req, res) => {
+interface QueryUser {
+  name?: string,
+  fname?: string,
+  id_place?: string
+  email?: string
+}
+
+const Auth = (router: Router) => {
+  router.post('/register', (req: Request, res: Response) => {
     if (
       req.body.name == null
       || req.body.email == null
       || req.body.password == null
     ) res.status(400).send('invalid mail or name');
 
-    const query = <any>{};
+    const query = <QueryUser>{};
     query.email = req.body.email;
     apiUser.find(query, (err, user) => {
       if (err) return res.status(500).send('There was a problem finding the user.');
@@ -43,7 +51,7 @@ const Auth = (router) => {
     );
   });
 
-  router.get('/me', VerifyToken, (req, res, next) => {
+  router.get('/me', VerifyToken, (req: Request, res: Response, next) => {
     apiUser.findById(req.userId, { api_key: 0 }, (err, user) => {
       if (err) return res.status(500).send('There was a problem finding the user.');
       if (!user) return res.status(404).send('No user found.');
@@ -52,7 +60,7 @@ const Auth = (router) => {
     });
   });
 
-  router.post('/login', (req, res) => {
+  router.post('/login', (req: Request, res: Response) => {
     apiUser.findOne({ email: req.body.email }, (err, user) => {
       if (err) return res.status(500).send('Error on the server.');
       if (!user) return res.status(404).send('No user found.');
@@ -69,7 +77,7 @@ const Auth = (router) => {
     });
   });
 
-  router.get('/logout', (req, res) => {
+  router.get('/logout', (req: Request, res: Response) => {
     res.status(200).send({ auth: false, token: null });
   });
 };

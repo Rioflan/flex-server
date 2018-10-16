@@ -12,6 +12,11 @@ import Place from '../models/place';
 import VerifyToken from './VerifyToken';
 import { encrypt } from './test';
 
+interface Request {
+  userId?: string,
+  body: any,
+}
+
 let RES;
 
 const post = (router) => {
@@ -257,7 +262,7 @@ const post = (router) => {
   router
     .route('/')
 
-    .post(VerifyToken, (req, res) => {
+    .post(VerifyToken, (req: Request, res: Response) => {
       RES = res;
       const body = req.body;
 
@@ -266,13 +271,13 @@ const post = (router) => {
         || body.name === null
         || body.fname === null
         || body.id_user === null
-      ) return res.status(400).json({ error: 'Invialid arguments' });
+      ) return RES.status(400).json({ error: 'Invialid arguments' });
 
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
       post(body);
-      res.status(200).json({ result: 'User Updated Middle' });
+      RES.status(200).json({ result: 'User Updated Middle' });
     });
 
   /**
@@ -281,10 +286,10 @@ const post = (router) => {
   router
     .route('/login_user')
 
-    .post(VerifyToken, (req, res) => {
+    .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
-
-      if (body.name === null || body.fname === null || body.id_user === null) return res.status(400).json({ error: 'Invialid arguments' });
+      RES = res;
+      if (body.name === null || body.fname === null || body.id_user === null) return RES.status(400).json({ error: 'Invialid arguments' });
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
@@ -300,7 +305,7 @@ const post = (router) => {
         null,
         { sort: { _id: -1 } },
         (err, user) => {
-          if (err) return res.status(500).send('Error on the server.');
+          if (err) return RES.status(500).send('Error on the server.');
           if (!user) {
             const { id_user, name, fname } = body;
             addUser(id_user, name, fname, '');
@@ -318,7 +323,7 @@ const post = (router) => {
           // if (user) return res.status(200).send(user);
         },
       );
-      res.status(200).json({ result: 'User Updated Last' });
+      RES.status(200).json({ result: 'User Updated Last' });
     });
 };
 

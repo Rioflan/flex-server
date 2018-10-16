@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import config from '../../config/api.json';
 import apiUser from '../models/apikey';
+import { Request, Response } from 'express';
 
-const verifyToken = (req, res, next) => {
+const verifyToken = (req: Request, res: Response, next) => {
   const token = req.headers['x-access-token'];
   if (!token) return res.status(403).send({ auth: false, message: 'No token provided.' });
 
