@@ -1,36 +1,42 @@
-var DATABASE_NAME = 'appdb';
-var COLLECTION = 'users';
-var config = require('../../config/mongo');
-
+let DATABASE_NAME = "appdb";
+let COLLECTION = "users";
+let config = require("../../config/mongo");
 
 module.exports = {
-  getMongoUri : function(mode, host, port, user, pass)
-  {
-
-    if(config.mode == "local")//local mongo database URI
-    {
+  getMongoUri: (mode, host, port, user, pass) => {
+    if (config.mode == "local") {
+      //local mongo database URI
       return "mongodb://" + config.host + ":" + config.post + "/" + config.db;
     }
 
-    if(mode == "remote")//mlab mongo database URI
-    {
+    if (mode == "remote") {
+      //mlab mongo database URI
       //default mlab database
-      var mongodbHost = config.host;
-      var mongodbPort = config.port;
-      var mongodbUser = config.username;
-      var mongodbPass = config.password;
+      let mongodbHost = config.host;
+      let mongodbPort = config.port;
+      let mongodbUser = config.username;
+      let mongodbPass = config.password;
 
       //custom mlab database URI
-      if(arguments.length == 5)
-      {
+      if (arguments.length == 5) {
         mongodbHost = host;
         mongodbPort = port;
         mongodbUser = user;
         mongodbPass = pass;
       }
 
-      return 'mongodb://' + mongodbUser + ':' + mongodbPass + '@' +mongodbHost +
-      ':' + mongodbPort + '/' + DATABASE_NAME;
+      return (
+        "mongodb://" +
+        mongodbUser +
+        ":" +
+        mongodbPass +
+        "@" +
+        mongodbHost +
+        ":" +
+        mongodbPort +
+        "/" +
+        DATABASE_NAME
+      );
     }
   }
-}
+};

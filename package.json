@@ -21,6 +21,7 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
+    "mockgoose": "^7.3.5",
     "mongoose": "latest",
     "nodemon": "^1.18.3",
     "ramda": "^0.25.0",

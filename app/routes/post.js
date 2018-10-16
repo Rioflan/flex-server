@@ -1,7 +1,7 @@
-module.exports = function(router) {
+module.exports = router => {
   const User = require("../models/user");
   const Place = require("../models/place");
-  var RES;
+  let RES;
   const VerifyToken = require("./VerifyToken");
   const { compose, pick, last, append, update, findLastIndex, propEq } = require("ramda");
   const { encrypt, decrypt } = require("./test");
@@ -16,7 +16,7 @@ module.exports = function(router) {
    * @param {string} id_place place of the new user
    */
   function addUser(id_user, name, fname, id_place) {
-    var actual_user = new User();
+    let actual_user = new User();
     actual_user.id = id_user;
     actual_user.name = name;
     actual_user.fname = fname;
@@ -42,7 +42,7 @@ module.exports = function(router) {
       if (err) RES.status(500).send(err);
 
       let actual_user = user;
-      console.log(actual_user, params )
+
       if (params.historical !== []) actual_user.historical = params.historical;
 
       if (params.name !== null) actual_user.name = params.name;
@@ -66,7 +66,7 @@ module.exports = function(router) {
   function addPlace(id_place, id_user) {
     console.log("Create place:");
 
-    var actual_place = new Place();
+    let actual_place = new Place();
     actual_place.id = id_place;
 
     if (id_user === null || id_user === "") {
@@ -126,12 +126,10 @@ module.exports = function(router) {
         err,
         user
       ) {
-        console.log("USER", user);
         const userEnd =
           user.historical.length > 0
             ? pick(["end"], last(user.historical))
             : '';
-            console.log("userEnd", userEnd.end)
         if (!err && user !== null) {
           if (userEnd.end === '') resolve(user.id_place);
           else resolve("");
@@ -147,11 +145,9 @@ module.exports = function(router) {
   async function post(body) {
     const userSit = await whereSit(body.id_user);
     const user = await whoUses(body.id_place);
-    console.log("userSit", userSit, "user", user)
 
     const { historical } = body;
 
-    console.log("BODY", body);
     if (userSit === "#" || userSit === "") {
       let beginDate = new Date(Date.now()).toLocaleString();
       //  not exists or not sit
@@ -256,7 +252,7 @@ module.exports = function(router) {
 
     .post(VerifyToken, function(req, res) {
       RES = res;
-      var body = req.body;
+      let body = req.body;
 
       if (
         body.id_place === null ||
@@ -280,7 +276,7 @@ module.exports = function(router) {
     .route("/login_user")
 
     .post(VerifyToken, function(req, res) {
-      var body = req.body;
+      let body = req.body;
 
       if (body.name === null || body.fname === null || body.id_user === null)
         return res.status(400).json({ error: "Invialid arguments" });

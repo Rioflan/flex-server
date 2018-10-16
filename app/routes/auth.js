@@ -1,4 +1,4 @@
-module.exports = function(router){
+module.exports = router => {
 
   let apiUser = require('../models/apikey');
   let jwt = require('jsonwebtoken');
@@ -6,7 +6,8 @@ module.exports = function(router){
   let config = require('../../config/api');
   let VerifyToken = require('./VerifyToken');
 
-  router.post('/register', function(req, res) {
+  router.post('/register', (req, res) => {
+    console.log("req.body", req)
     if(req.body.name == null || req.body.email == null || req.body.password == null)
       res.status(400).send("invalid mail or name");
 
@@ -33,13 +34,13 @@ module.exports = function(router){
       if (err) return res.status(500).send("There was a problem registering the user.")
 
       // create a token
-      var token = jwt.sign({ id: user._id }, config.secret);
+      let token = jwt.sign({ id: user._id }, config.secret);
 
       res.status(200).send({ auth: true, token: token });
     });
   });
 
-  router.get('/me', VerifyToken, function(req, res, next) {
+  router.get('/me', VerifyToken, (req, res, next) => {
 
     apiUser.findById(req.userId, { api_key: 0 }, function (err, user) {
       if (err) return res.status(500).send("There was a problem finding the user.");
@@ -50,7 +51,7 @@ module.exports = function(router){
 
   });
 
-  router.post('/login', function(req, res) {
+  router.post('/login', (req, res) => {
 
     apiUser.findOne({ email: req.body.email }, function (err, user) {
       if (err) return res.status(500).send('Error on the server.');
@@ -65,7 +66,7 @@ module.exports = function(router){
     });
   });
 
-  router.get('/logout', function(req, res) {
+  router.get('/logout', (req, res) => {
     res.status(200).send({ auth: false, token: null });
   });
 }

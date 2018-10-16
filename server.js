@@ -17,11 +17,11 @@ const http = require('http');
 //     cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
 // };
 
-var app = express();                            //use express on our app
+let app = express();                            //use express on our app
 
 
 
-var router = express.Router();                  // get an instance of the express Router
+let router = express.Router();                  // get an instance of the express Router
 require('./app/routes/post')(router);
 require('./app/routes/get')(router);
 require('./app/routes/auth')(router);
@@ -31,9 +31,9 @@ console.log(router.stack.map(e => console.log(e)))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var DEFAULT_URI = dbconfig.getMongoUri(); //get the URI from config file
+let DEFAULT_URI = dbconfig.getMongoUri(); //get the URI from config file
 
-var DEFAULT_PORT = 3000;
+let DEFAULT_PORT = 3000;
 
 mongoose.connect(DEFAULT_URI, {useNewUrlParser: true});
 
@@ -48,8 +48,8 @@ router.get('/', function(req, res) {
 
 app.use('/ping', router);             //define the default route
 
-var server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
-  var port = server.address().port;
+let server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
+  let port = server.address().port;
   console.log("App now running on port : ", port);
 });
 

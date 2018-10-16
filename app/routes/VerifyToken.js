@@ -1,10 +1,10 @@
-var jwt = require('jsonwebtoken');
-var config = require('../../config/api');
-var apiUser = require('../models/apikey');
+let jwt = require('jsonwebtoken');
+let config = require('../../config/api');
+let apiUser = require('../models/apikey');
 
 
 function verifyToken(req, res, next) {
-  var token = req.headers['x-access-token'];
+  let token = req.headers['x-access-token'];
   if (!token)
     return res.status(403).send({ auth: false, message: 'No token provided.' });
 

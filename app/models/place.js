@@ -1,7 +1,7 @@
-var mongoose     = require('mongoose');
-var Schema       = mongoose.Schema;
+let mongoose     = require('mongoose');
+let Schema       = mongoose.Schema;
 
-var PlaceSchema   = new Schema({
+let PlaceSchema   = new Schema({
   id:           String,
   using:        Boolean,
   id_user:      String

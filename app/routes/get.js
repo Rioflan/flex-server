@@ -1,14 +1,14 @@
-module.exports = function(router){
+module.exports = router => {
 
-  var User = require('../models/user');
-  var Place = require('../models/place');
-  var VerifyToken = require('./VerifyToken');
+  let User = require('../models/user');
+  let Place = require('../models/place');
+  let VerifyToken = require('./VerifyToken');
   const { encrypt } = require("./test");
 
 
   function getQuery(req)
   {
-    var query_user = {};
+    let query_user = {};
     if(req.query.name != null)
       query_user["name"] = req.query.name;
     if(req.query.fname != null)
@@ -43,7 +43,7 @@ module.exports = function(router){
 
   router.route('/users/:user_id')
     .get(VerifyToken, function(req, res) {
-      var query = {};
+      let query = {};
       query["id"] = encrypt(req.params.user_id, req.userId);
       User.find(query, function(err, user) {
         if (err)
@@ -54,7 +54,7 @@ module.exports = function(router){
 
   router.route('/users/:user_id/last')
     .get(VerifyToken, function(req, res) {
-      var query = {};
+      let query = {};
       query["id"] = req.params.user_id;
 
       User.find(query, null, {limit: 1, sort: {_id:-1}},
@@ -93,7 +93,7 @@ module.exports = function(router){
     router.route('/places/free')
       .get(VerifyToken, function(req, res)
       {
-        var query = {};
+        let query = {};
         query["using"] = false;
         Place.find(query, null, function(err, places)
           {

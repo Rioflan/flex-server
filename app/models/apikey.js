@@ -1,7 +1,7 @@
-var mongoose     = require('mongoose');
-var Schema       = mongoose.Schema;
+let mongoose     = require('mongoose');
+let Schema       = mongoose.Schema;
 
-var ApiSchema   = new Schema({
+let ApiSchema   = new Schema({
   name:           String,
   email:          String,
   api_key:        String,//password != token
