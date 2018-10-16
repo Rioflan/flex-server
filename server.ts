@@ -1,31 +1,33 @@
-const express = require('express');             //call express
-const bodyParser = require("body-parser");      //call body-parser
-const mongoose = require("mongoose");           //call mongoose
-const dbconfig = require('./app/database/mongoDB');
+import express from "express"; //call express
+import bodyParser from "body-parser"; //call body-parser
+import mongoose from "mongoose"; //call mongoose
+import dbconfig from "./app/database/mongoDB";
 
-const fs = require('fs');
+import Post from "./app/routes/post";
+import Get from "./app/routes/get";
+import Auth from "./app/routes/auth";
 
-const path = require('path');
+import fs from "fs";
+
+import path from "path";
 
 const certPath = "cert";
 
-const https = require('https');
-const http = require('http');
+import https from "https";
+import http from "http";
 
 // const httpsOptions = {
 //     key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
 //     cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
 // };
 
-let app = express();                            //use express on our app
+let app = express(); //use express on our app
 
-
-
-let router = express.Router();                  // get an instance of the express Router
-require('./app/routes/post')(router);
-require('./app/routes/get')(router);
-require('./app/routes/auth')(router);
-console.log(router.stack.map(e => console.log(e)))
+let router = express.Router(); // get an instance of the express Router
+Post(router);
+Get(router);
+Auth(router);
+console.log(router.stack.map(e => console.log(e)));
 
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,20 +37,23 @@ let DEFAULT_URI = dbconfig.getMongoUri(); //get the URI from config file
 
 let DEFAULT_PORT = 3000;
 
-mongoose.connect(DEFAULT_URI, {useNewUrlParser: true});
+mongoose.connect(
+  DEFAULT_URI,
+  { useNewUrlParser: true }
+);
 
 router.use(function(req, res, next) {
   console.log(req.connection.remoteAddress);
   next();
 });
 
-router.get('/', function(req, res) {
-  res.json({ message: 'pong' });
+router.get("/", function(req, res) {
+  res.json({ message: "pong" });
 });
 
-app.use('/ping', router);             //define the default route
+app.use("/ping", router); //define the default route
 
-let server = app.listen(process.env.PORT || DEFAULT_PORT, function () {
+let server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
   let port = server.address().port;
   console.log("App now running on port : ", port);
 });
