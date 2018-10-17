@@ -1,8 +1,8 @@
-import User from '../models/user';
-import Place from '../models/place';
+import { Request, Response, Error } from 'express';
+import User, { UserSchema } from '../models/user';
+import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
 import { encrypt } from './test';
-import { Request, Response } from 'express';
 
 interface QueryUser {
   name?: string,
@@ -27,7 +27,7 @@ const Get = (router) => {
   }
 
   router.route('/users').get(VerifyToken, (req: Request, res: Response) => {
-    User.find(getQuery(req), null, (err, users) => {
+    User.find(getQuery(req), null, (err, users: Array<UserSchema>) => {
       if (err) res.status(400).send(err);
       res.status(200).json(users);
     });
@@ -38,7 +38,7 @@ const Get = (router) => {
       getQuery(req),
       null,
       { limit: 1, sort: { _id: -1 } },
-      (err, user) => {
+      (err, user: UserSchema) => {
         if (err) res.status(400).send(err);
         res.status(200).json(user);
       },
@@ -48,7 +48,7 @@ const Get = (router) => {
   router.route('/users/:user_id').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
     query.id = encrypt(req.params.user_id, req.userId);
-    User.find(query, (err, user) => {
+    User.find(query, (err, user: UserSchema) => {
       if (err) res.status(400).send(err);
       res.status(200).json(user);
     });
@@ -58,14 +58,14 @@ const Get = (router) => {
     const query = <Query>{};
     query.id = req.params.user_id;
 
-    User.find(query, null, { limit: 1, sort: { _id: -1 } }, (err, user) => {
+    User.find(query, null, { limit: 1, sort: { _id: -1 } }, (err, user: UserSchema) => {
       if (err) res.status(400).send(err);
       res.status(200).json(user);
     });
   });
 
   router.route('/places').get(VerifyToken, (req: Request, res: Response) => {
-    Place.find({}, null, (err, places) => {
+    Place.find({}, null, (err, places: Array<PlaceSchema>) => {
       if (err) res.status(500).send(err);
       res.status(200).json(places);
     });
@@ -87,7 +87,7 @@ const Get = (router) => {
   router.route('/places/free').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
     query.using = false;
-    Place.find(query, null, (err, places) => {
+    Place.find(query, null, (err, places: Array<PlaceSchema>) => {
       if (err) res.status(500).send(err);
       res.status(200).json(places);
     });

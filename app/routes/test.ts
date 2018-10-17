@@ -2,14 +2,14 @@ import crypto from 'crypto';
 
 const algorithm = 'aes-256-ctr';
 
-export const encrypt = (text, password) => {
+export const encrypt = (text: string, password: any) => {
   const cipher = crypto.createCipher(algorithm, password);
   let crypted = cipher.update(text, 'utf8', 'hex');
   crypted += cipher.final('hex');
   return crypted;
 };
 
-export const decrypt = (text, password) => {
+export const decrypt = (text: string, password: any) => {
   const decipher = crypto.createDecipher(algorithm, password);
   let dec = decipher.update(text, 'hex', 'utf8');
   dec += decipher.final('utf8');

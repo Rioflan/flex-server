@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import apiUser from '../models/apikey';
-import config from '../../config/api.json';
+import {
+  Router, Request, Response, Error,
+} from 'express';
+import apiUser, { ApiSchema } from '../models/apikey';
+import config from '../config/api.json';
 import VerifyToken from './VerifyToken';
-import { Router, Request, Response } from "express"; 
 
 interface QueryUser {
   name?: string,
@@ -22,7 +24,7 @@ const Auth = (router: Router) => {
 
     const query = <QueryUser>{};
     query.email = req.body.email;
-    apiUser.find(query, (err, user) => {
+    apiUser.find(query, (err: Error, user) => {
       if (err) return res.status(500).send('There was a problem finding the user.');
       if (user.length) return res.status(400).send('Email already used');
     });
@@ -36,7 +38,7 @@ const Auth = (router: Router) => {
         api_key: hashedPassword,
         creation: Date.now(),
       },
-      (err, user) => {
+      (err: Error, user) => {
         if (err) {
           return res
             .status(500)
@@ -52,7 +54,7 @@ const Auth = (router: Router) => {
   });
 
   router.get('/me', VerifyToken, (req: Request, res: Response, next) => {
-    apiUser.findById(req.userId, { api_key: 0 }, (err, user) => {
+    apiUser.findById(req.userId, { api_key: 0 }, (err: Error, user: ApiSchema) => {
       if (err) return res.status(500).send('There was a problem finding the user.');
       if (!user) return res.status(404).send('No user found.');
 
@@ -61,7 +63,7 @@ const Auth = (router: Router) => {
   });
 
   router.post('/login', (req: Request, res: Response) => {
-    apiUser.findOne({ email: req.body.email }, (err, user) => {
+    apiUser.findOne({ email: req.body.email }, (err: Error, user: ApiSchema) => {
       if (err) return res.status(500).send('Error on the server.');
       if (!user) return res.status(404).send('No user found.');
 

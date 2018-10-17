@@ -1,20 +1,20 @@
-import express, { Router, Request, Response } from "express"; //call express
-import bodyParser from "body-parser"; //call body-parser
-import mongoose from "mongoose"; //call mongoose
-import dbconfig from "./app/database/mongoDB";
+import express, { Router, Request, Response } from "express"; //  call express
+import bodyParser from "body-parser"; //  call body-parser
+import mongoose from "mongoose"; // call mongoose
+import dbconfig from "./database/mongoDB";
 
-import Post from "./app/routes/post";
-import Get from "./app/routes/get";
-import Auth from "./app/routes/auth";
+import Post from "./routes/post";
+import Get from "./routes/get";
+import Auth from "./routes/auth";
 
 import fs from "fs";
 
 import path from "path";
 
-const certPath = "cert";
-
 import https from "https";
 import http from "http";
+
+const certPath = "cert";
 
 // const httpsOptions = {
 //     key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
@@ -31,8 +31,8 @@ Auth(router);
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-console.log(dbconfig.getMongoUri())
-let DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //get the URI from config file
+
+let DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
 
 let DEFAULT_PORT: number = 3000;
 

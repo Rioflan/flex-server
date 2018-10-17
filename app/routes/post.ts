@@ -7,13 +7,14 @@ import {
   propEq,
 } from 'ramda';
 import redis from 'redis';
-import User from '../models/user';
-import Place from '../models/place';
+import { Request, Response, Error } from 'express';
+import User, { UserSchema } from '../models/user';
+import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
 import { encrypt } from './test';
 
 interface Request {
-  userId?: string,
+  userId?: string | Buffer | DataView,
   body: any,
 }
 
@@ -29,7 +30,7 @@ const post = (router) => {
    * @param {string} fname family Name of the new user
    * @param {string} id_place place of the new user
    */
-  function addUser(id_user, name, fname, id_place) {
+  function addUser(id_user: string, name: string, fname: string, id_place: string) {
     const actual_user = new User();
     actual_user.id = id_user;
     actual_user.name = name;
@@ -37,7 +38,7 @@ const post = (router) => {
     actual_user.id_place = id_place;
     actual_user.historical = [];
 
-    actual_user.save((err) => {
+    actual_user.save((err: Error) => {
       if (err) RES.status(500).send(err);
       console.log('User created');
     });
@@ -48,8 +49,8 @@ const post = (router) => {
    * @param {string} id_user id of the user
    * @param {object} params list of parameters
    */
-  function updateUser(id_user, params) {
-    User.findOne({ id: id_user }, null, { sort: { _id: -1 } }, (err, user) => {
+  function updateUser(id_user: string, params) {
+    User.findOne({ id: id_user }, null, { sort: { _id: -1 } }, (err: Error, user) => {
       if (err) RES.status(500).send(err);
 
       const actual_user = user;
@@ -74,7 +75,7 @@ const post = (router) => {
    * @param {string} id_place id of the new place
    * @param {string} id_user id of the user
    */
-  function addPlace(id_place, id_user) {
+  function addPlace(id_place: string, id_user: string) {
     console.log('Create place:');
 
     const actual_place = new Place();
@@ -88,7 +89,7 @@ const post = (router) => {
       actual_place.id_user = id_user;
     }
 
-    actual_place.save((err) => {
+    actual_place.save((err: Error) => {
       if (err) RES.status(500).send(err);
       console.log('Place Created');
     });
@@ -99,14 +100,14 @@ const post = (router) => {
    * @param {string} id_place id of the current place
    * @param {object} params list of parameters
    */
-  function updatePlace(id_place, params) {
-    Place.findOne({ id: id_place }, (err, place) => {
+  function updatePlace(id_place: string | object, params) {
+    Place.findOne({ id: id_place }, (err: Error, place: PlaceSchema) => {
       if (err) RES.status(500).send(err);
       if (params.using !== null) place.using = params.using;
 
       if (params.id_user !== null) place.id_user = params.id_user;
 
-      place.save((err) => {
+      place.save((err: Error) => {
         if (err) RES.status(500).send(err);
         console.log('Place Updated');
       });
@@ -117,9 +118,9 @@ const post = (router) => {
    * This function is used to know if a place exists and who.
    * @param {string} id_place id of the current place
    */
-  async function whoUses(id_place) {
+  async function whoUses(id_place: string) {
     return await new Promise((resolve, reject) => {
-      Place.findOne({ id: id_place }, (err, place) => {
+      Place.findOne({ id: id_place }, (err: Error, place: PlaceSchema) => {
         if (!err && place !== null) resolve(place.id_user);
         // "" => not used, "NAME" => used by NAME
         else resolve('#'); // place not exists
@@ -131,13 +132,13 @@ const post = (router) => {
    * This function is used to know where the provided user is seated.
    * @param {string} id_place id of the current user
    */
-  async function whereSit(id_user) {
+  async function whereSit(id_user: string) {
     return await new Promise((resolve, reject) => {
       User.findOne(
         { id: id_user },
         null,
         { sort: { _id: -1 } },
-        (err, user) => {
+        (err: Error, user: UserSchema) => {
           const userEnd = user.historical.length > 0
             ? pick(['end'], last(user.historical))
             : '';
@@ -161,7 +162,7 @@ const post = (router) => {
     const { historical } = body;
 
     if (userSit === '#' || userSit === '') {
-      const beginDate = new Date(Date.now()).toLocaleString();
+      const beginDate: string = new Date(Date.now()).toLocaleString();
       //  not exists or not sit
       console.log('NOT EXISTS');
       updateUser(body.id_user, {
@@ -191,7 +192,7 @@ const post = (router) => {
         const indexUser = findLastIndex(propEq('place_id', body.id_place))(
           body.historical,
         );
-        updateUser(user, {
+        updateUser(body.id_user, {
           historical: update(
             indexUser,
             {
@@ -304,7 +305,7 @@ const post = (router) => {
         { id: body.id_user },
         null,
         { sort: { _id: -1 } },
-        (err, user) => {
+        (err: Error, user: UserSchema) => {
           if (err) return RES.status(500).send('Error on the server.');
           if (!user) {
             const { id_user, name, fname } = body;

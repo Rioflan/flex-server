@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose, { Types } from 'mongoose';
 
 const { Schema } = mongoose;
 
@@ -10,4 +10,15 @@ const UserSchema = new Schema({
   historical: Array,
 });
 
-export default mongoose.model('User', UserSchema);
+export interface UserSchema {
+  _id?: Types.ObjectId,
+  id: string,
+  name: string,
+  fname: string,
+  id_place: string,
+  historical: Array<object>,
+}
+
+const Model = mongoose.model('User', UserSchema);
+
+export default Model;

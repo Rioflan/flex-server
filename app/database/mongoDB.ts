@@ -1,9 +1,9 @@
-import config from '../../config/mongo.json';
+import config from '../config/mongo.json';
 
 const DATABASE_NAME = 'appdb';
 
 const wrapper = {
-  getMongoUri: function(
+  getMongoUri(
     mode = config.mode,
     host = config.host,
     port = config.port,

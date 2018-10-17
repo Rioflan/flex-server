@@ -8,7 +8,7 @@
     "build": "tsc -p .",
     "lint": "eslint app --ext ts",
     "lint:fix": "eslint app --ext ts --fix",
-    "build:live": "nodemon --watch 'app/**/*.ts' --exec 'ts-node' ./server.ts",
+    "build:live": "nodemon --watch 'app/**/*.ts' --exec 'ts-node' ./app/server.ts",
     "test": "jest",
     "test:typescript": "npx jest"
   },
@@ -19,6 +19,7 @@
   "author": "rioflan",
   "license": "ISC",
   "dependencies": {
+    "@types/crypto-js": "^3.1.43",
     "bcryptjs": "latest",
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
