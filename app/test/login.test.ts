@@ -5,12 +5,14 @@ import mongoose from 'mongoose';
 import { Mockgoose } from 'mockgoose';
 import dbconfig from '../database/mongoDB';
 
+import Auth from '../routes/auth';
+
 const mockgoose = new Mockgoose(mongoose);
 
 const verifyToken = null;
 
 const router = express.Router();
-require('../routes/auth')(router);
+Auth(router);
 
 const DEFAULT_URI = dbconfig.getMongoUri(); // get the URI from config file
 

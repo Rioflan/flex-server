@@ -7,7 +7,9 @@ import {
   propEq,
 } from 'ramda';
 import redis from 'redis';
-import { Request, Response, Error } from 'express';
+import {
+  Request, Response, Error, Router,
+} from 'express';
 import User, { UserSchema } from '../models/user';
 import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
@@ -20,7 +22,7 @@ interface Request {
 
 let RES;
 
-const post = (router) => {
+const post = (router: Router) => {
   const client = redis.createClient();
 
   /**

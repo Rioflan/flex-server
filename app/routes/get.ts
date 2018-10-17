@@ -1,4 +1,6 @@
-import { Request, Response, Error } from 'express';
+import {
+  Request, Response, Error, Router,
+} from 'express';
 import User, { UserSchema } from '../models/user';
 import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
@@ -16,7 +18,7 @@ interface Query {
   using?: boolean,
 }
 
-const Get = (router) => {
+const Get = (router: Router) => {
   function getQuery(req: Request) {
     const query_user = <QueryUser>{};
     if (req.query.name !== null) query_user.name = req.query.name;
