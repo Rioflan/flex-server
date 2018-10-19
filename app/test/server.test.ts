@@ -1,18 +1,25 @@
-import request from 'supertest';
-import express from 'express';
+import request from "supertest";
+import express from "express";
+import app from "../app";
+import { Mockgoose } from "mockgoose";
+import dbconfig from "../database/mongoDB";
+import mongoose from "mongoose";
 
-const app = express();
+const mockgoose = new Mockgoose(mongoose);
 
-app.get('/ping', (req, res) => {
-  res.status(200).json({ message: 'pong' });
-});
+describe("Server launch", () => {
+  afterEach(function() {
+    return mockgoose.helper.reset();
+  });
 
-describe('GET /ping', () => {
-  it('responds with json', () => request(app)
-    .get('/ping')
-    .set('Accept', 'application/json')
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toEqual('pong');
-    }));
+  afterAll(() => mongoose.disconnect());
+
+  it("responds with json", () =>
+    request(app)
+      .get("/api")
+      .set("Accept", "application/json")
+      .expect(200)
+      .then(response => {
+        expect(response.body.message).toEqual("It works !");
+      }));
 });

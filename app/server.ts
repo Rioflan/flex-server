@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'; // call mongoose
+import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
@@ -8,11 +8,6 @@ import dbconfig from './database/mongoDB';
 import app from './app';
 
 const certPath = 'cert';
-
-// const httpsOptions = {
-//     key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
-//     cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
-// };
 
 const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
 
@@ -32,6 +27,4 @@ const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
 //     console.log('Express HTTP server listening on port ' + httpApp.get('port'));
 // });
 
-// https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, function() {
-//     console.log('Express HTTPS server listening on port ' + DEFAULT_PORT);
-// });
+

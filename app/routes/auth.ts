@@ -15,6 +15,9 @@ interface QueryUser {
 }
 
 const Auth = (router: Router) => {
+
+  /** POST /register */
+
   router.post('/register', (req: Request, res: Response) => {
     if (
       req.body.name == null
@@ -53,6 +56,8 @@ const Auth = (router: Router) => {
     );
   });
 
+  /** GET /me */
+
   router.get('/me', VerifyToken, (req: Request, res: Response, next) => {
     apiUser.findById(req.userId, { api_key: 0 }, (err: Error, user: ApiSchema) => {
       if (err) return res.status(500).send('There was a problem finding the user.');
@@ -61,6 +66,8 @@ const Auth = (router: Router) => {
       res.status(200).send(user);
     });
   });
+
+  /** POST /login */
 
   router.post('/login', (req: Request, res: Response) => {
     apiUser.findOne({ email: req.body.email }, (err: Error, user: ApiSchema) => {
@@ -78,6 +85,8 @@ const Auth = (router: Router) => {
       res.status(200).send({ auth: true, token });
     });
   });
+
+  /** GET /logout */
 
   router.get('/logout', (req: Request, res: Response) => {
     res.status(200).send({ auth: false, token: null });

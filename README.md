@@ -1,4 +1,4 @@
-# Flex Server
+# Flex Server [![CircleCI](https://circleci.com/gh/ayshiff/flex-server/tree/master.svg?style=svg)](https://circleci.com/gh/ayshiff/flex-server/tree/master)
 
 The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
 
@@ -89,7 +89,42 @@ curl -H "Content-Type: application/x-www-form-urlencoded" -X POST -d "email=<Use
 
 You have to send the API token on the headers as `x-access-token` to access API content.
 
-### Use the API
+## Configure https
+
+You have to create a self-signed certificate with openSSL :
+
+```openssl req -nodes -new -x509 -keyout server.key -out server.cert```
+
+And put the `cert.pem` and `key.pem` under a folder `cert` in `./app` 
+
+Then enable https in Express by adding this lines in app/server.ts:
+
+``` js 
+const httpsOptions = {
+    key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
+    cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
+};
+```
+
+You can then add those lines in the `server.ts` file: 
+
+``` js
+https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, function() {
+    console.log('Express HTTPS server listening on port ' + DEFAULT_PORT);
+});
+```
+
+## Run tests
+
+You can run the tests under the `app/test` folder by running the command `npm run test`
+
+
+## Crypto operations
+
+Crypto logic is currently written in `js` but we want to implement this logic using `golang` which will lead to performance gains. You can find the crypto-golang module under the `crypto-go` folder.
+The go code is then compiled to C++ and imported into node JS app.
+
+## Use the API
 
 
 ## Deployment
