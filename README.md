@@ -124,6 +124,21 @@ You can run the tests under the `app/test` folder by running the command `npm ru
 Crypto logic is currently written in `js` but we want to implement this logic using `golang` which will lead to performance gains. You can find the crypto-golang module under the `crypto-go` folder.
 The go code is then compiled to C++ and imported into node JS app.
 
+For running the crypto algrithms written in go, you have to create a new file at the root of the project : `binding.gyp` and insert :
+```
+{
+  "targets": [
+    {
+      "target_name": "addon",
+      "sources": [ "crypto-go/crypto.cc" ],
+      "libraries": [ "<!(pwd)/crypto.so" ]
+    }
+  ]
+}
+```
+
+This file should be all the time there but it makes the installation on Circle CI fails.
+
 ## Use the API
 
 
