@@ -6,9 +6,12 @@ import {
   findLastIndex,
   propEq,
 } from 'ramda';
-import redis from 'redis';
+// import redis from 'redis';
 import {
-  Request, Response, Error, Router,
+  Request,
+  Response,
+  Error,
+  Router,
 } from 'express';
 import User, { UserSchema } from '../models/user';
 import Place, { PlaceSchema } from '../models/place';
@@ -23,7 +26,8 @@ interface Request {
 let RES;
 
 const post = (router: Router) => {
-  const client = redis.createClient();
+  /** For future support of Redis */
+  // const client = redis.createClient();
 
   /**
    * This function adds a new user.
@@ -67,7 +71,6 @@ const post = (router: Router) => {
 
       actual_user.save((err) => {
         if (err) RES.status(500).send(err);
-        console.log('User Updated First');
       });
     });
   }
@@ -178,18 +181,18 @@ const post = (router: Router) => {
       });
       if (user === '#') {
         //  not exists
-        console.log('PLACE EXISTE PAS');
+        console.log('PLACE NOT EXISTS');
         addPlace(body.id_place, body.id_user);
       } else if (user === '') {
         //  place empty
-        console.log('PLACE VIDE');
+        console.log('EMPTY PLACE');
         updatePlace(body.id_place, {
           using: true,
           id_user: body.id_user,
         });
       } //  used by the "user" user
       else {
-        console.log(`PLACE UTILISEE: ${user}`);
+        console.log(`PLACE USED BY: ${user}`);
         const endDate = new Date(Date.now()).toLocaleString();
         const indexUser = findLastIndex(propEq('place_id', body.id_place))(
           body.historical,
@@ -209,7 +212,7 @@ const post = (router: Router) => {
         }); //  if one user sit at this place the old user leaves
       }
     } else {
-      console.log('ASSIS');
+      console.log('SIT');
       if (userSit === body.id_place) {
         const indexUser = findLastIndex(propEq('place_id', body.id_place))(
           body.historical,
@@ -297,9 +300,10 @@ const post = (router: Router) => {
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
 
-      client.on('connect', () => {
-        console.log('Redis client connected');
-      });
+      /** For future support of Redis */
+      // client.on('connect', () => {
+      //   console.log('Redis client connected');
+      // });
 
       // Check if the user exists
 

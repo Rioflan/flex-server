@@ -10,7 +10,9 @@
     "lint:fix": "eslint app --ext ts --fix",
     "build:live": "nodemon --watch 'app/**/*.ts' --exec 'ts-node' ./app/server.ts",
     "test": "jest",
-    "test:typescript": "npx jest"
+    "test:typescript": "npx jest",
+    "build:go": "node-gyp configure build",
+    "compile:go": "go build -buildmode=c-shared -o crypto.so crypto-go/golang/crypto.go"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "jsonwebtoken": "latest",
     "mockgoose": "^7.3.5",
     "mongoose": "latest",
+    "node-gyp": "^3.8.0",
     "nodemon": "^1.18.3",
     "ramda": "^0.25.0",
     "randombytes": "^2.0.6",

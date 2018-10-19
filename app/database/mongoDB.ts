@@ -31,7 +31,9 @@ const wrapper = {
         mongodbPass = pass;
       }
 
-      return `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${DATABASE_NAME}`;
+      const mongoURI = `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${DATABASE_NAME}`;
+
+      return mongoURI;
     }
   },
 };

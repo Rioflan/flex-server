@@ -28,12 +28,16 @@ const Get = (router: Router) => {
     return query_user;
   }
 
+  /** GET /users */
+
   router.route('/users').get(VerifyToken, (req: Request, res: Response) => {
     User.find(getQuery(req), null, (err, users: Array<UserSchema>) => {
       if (err) res.status(400).send(err);
       res.status(200).json(users);
     });
   });
+
+  /** GET /users/last */
 
   router.route('/users/last').get(VerifyToken, (req: Request, res: Response) => {
     User.find(
@@ -47,6 +51,8 @@ const Get = (router: Router) => {
     );
   });
 
+  /** GET /users/:user_id */
+
   router.route('/users/:user_id').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
     query.id = encrypt(req.params.user_id, req.userId);
@@ -55,6 +61,8 @@ const Get = (router: Router) => {
       res.status(200).json(user);
     });
   });
+
+  /** GET /users/:user_id/last */
 
   router.route('/users/:user_id/last').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
@@ -66,12 +74,16 @@ const Get = (router: Router) => {
     });
   });
 
+  /** GET /places */
+
   router.route('/places').get(VerifyToken, (req: Request, res: Response) => {
     Place.find({}, null, (err, places: Array<PlaceSchema>) => {
       if (err) res.status(500).send(err);
       res.status(200).json(places);
     });
   });
+
+  /** GET /places/:place_id */
 
   router.route('/places/:place_id').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
@@ -85,6 +97,8 @@ const Get = (router: Router) => {
       });
     });
   });
+
+  /** GET /places/free */
 
   router.route('/places/free').get(VerifyToken, (req: Request, res: Response) => {
     const query = <Query>{};
