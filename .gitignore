@@ -7,7 +7,6 @@ yarn-debug.log*
 yarn-error.log*
 
 build/
-lib/
 
 # Runtime data
 pids
