@@ -4,7 +4,7 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "node lib/index.js",
+    "start": "node lib/server.js",
     "build": "tsc -p .",
     "lint": "eslint app --ext ts",
     "lint:fix": "eslint app --ext ts --fix",
