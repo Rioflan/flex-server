@@ -25,7 +25,9 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
+    "dotenv": "^6.1.0",
     "express": "~4.16.0",
+    "greenlock-express": "^2.4.6",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
     "mockgoose": "^7.3.5",
@@ -35,7 +37,8 @@
     "ramda": "^0.25.0",
     "randombytes": "^2.0.6",
     "redis": "^2.8.0",
-    "supertest": "^3.3.0"
+    "supertest": "^3.3.0",
+    "ts-node": "^7.0.1"
   },
   "description": "",
   "devDependencies": {
