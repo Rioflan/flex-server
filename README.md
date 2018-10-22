@@ -20,25 +20,27 @@ In case of local deployment :
 
 Install MongoDB
 
-Create 'flex' database
-
-Check the mongo configuration file :
-
-Use 'local' mode for local deployment or 'remote' for cloud deployment.
-```
-module.exports = {
-  'host': 'host.docker.internal', // Must use this specific hostname for mac users only
-  'port':'27017',
-  'username': '',
-  'password': '',
-  'db':'flex',
-  'mode':'local' // 'local' || 'remote'
-};
-```
+Create `flex` database
 
 An other and easy way is to use [mlab](https://docs.mlab.com/).
 
-You have to pass variables as environment variables or on the `/config/mlab` file.
+You have to pass variables as environment variables.
+
+Check the mongo configuration variables environnement :
+
+Add a `.env` file at the root of the project.
+Use 'local' mode for local deployment or 'remote' for cloud deployment.
+```
+API_SECRET=   // secret key
+
+DATABASE_URL=   // For mlab
+DATABASE_HOST=host.docker.internal // Must use this specific hostname for mac users only
+DATABASE_PORT=
+DATABASE_USERNAME=  // mlab user
+DATABASE_PASSWORD=  // mlab password
+DATABASE_DB=
+DATABASE_MODE=remote // 'local' || 'remote'
+```
 
 ### Installing
 
@@ -91,6 +93,7 @@ You have to send the API token on the headers as `x-access-token` to access API 
 
 ## Configure https
 
+I recommend you to use [Let's Encrypt](https://letsencrypt.org/).    
 You have to create a self-signed certificate with openSSL :
 
 ```openssl req -nodes -new -x509 -keyout server.key -out server.cert```
@@ -139,20 +142,25 @@ For running the crypto algrithms written in go, you have to create a new file at
 
 This file should be all the time there but it makes the installation on Circle CI fails.
 
+
 ## Use the API
 
 
 ## Deployment
 
-TODO
+For deployment, I recommend using [Heroku](https://dashboard.heroku.com/apps).
 
 ## Built With
 
 TODO
 
 ## Contributing
-
-TODO
+- Check the current opened issues
+- Fork the project
+- Create your feature branch (git checkout -b - my-new-feature)
+- Commit your changes (git commit -m 'Add some feature')
+- Push your branch (git push origin my-new-feature)
+- Create a new Pull Request
 
 
 ## Versioning

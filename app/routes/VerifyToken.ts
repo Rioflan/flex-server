@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, Error } from 'express';
-import config from '../config/api.json';
 import apiUser, { ApiSchema } from '../models/apikey';
 
-  /**
+/**
    * This function verify the token used.
    * @param {Request} req the current request.
    * @param {Response} res the current response.
@@ -14,7 +13,7 @@ const verifyToken = (req: Request, res: Response, next) => {
   const token = req.headers['x-access-token'];
   if (!token) return res.status(403).send({ auth: false, message: 'No token provided.' });
 
-  jwt.verify(token, config.secret, (err: Error, decoded) => {
+  jwt.verify(token, process.env.API_SECRET, (err: Error, decoded) => {
     if (err) {
       return res
         .status(500)

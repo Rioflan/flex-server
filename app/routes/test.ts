@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 const algorithm = 'aes-256-ctr';
 
-  /**
+/**
    * This function encrypt the provided text.
    * @param {string} text the current text to encrypt.
    * @param {string} password the provided password.

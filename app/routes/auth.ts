@@ -4,7 +4,6 @@ import {
   Router, Request, Response, Error,
 } from 'express';
 import apiUser, { ApiSchema } from '../models/apikey';
-import config from '../config/api.json';
 import VerifyToken from './VerifyToken';
 
 interface QueryUser {
@@ -15,7 +14,6 @@ interface QueryUser {
 }
 
 const Auth = (router: Router) => {
-
   /** POST /register */
 
   router.post('/register', (req: Request, res: Response) => {
@@ -49,7 +47,7 @@ const Auth = (router: Router) => {
         }
 
         // create a token
-        const token = jwt.sign({ id: user._id }, config.secret);
+        const token = jwt.sign({ id: user._id }, process.env.API_SECRET);
 
         res.status(200).send({ auth: true, token });
       },
@@ -80,7 +78,7 @@ const Auth = (router: Router) => {
       );
       if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
 
-      const token = jwt.sign({ id: user._id }, config.secret);
+      const token = jwt.sign({ id: user._id }, process.env.API_SECRET);
 
       res.status(200).send({ auth: true, token });
     });

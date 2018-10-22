@@ -14,13 +14,12 @@ const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI
 const DEFAULT_PORT: number = 3000;
 
 try {
-mongoose.connect(
-  DEFAULT_URI,
-  { useNewUrlParser: true },
-).catch(err => console.log(err))
-}
-catch(err) {
-  console.log(err)
+  mongoose.connect(
+    DEFAULT_URI,
+    { useNewUrlParser: true },
+  ).catch(err => console.log(err));
+} catch (err) {
+  console.log(err);
 }
 
 const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
@@ -31,5 +30,3 @@ const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
 // http.createServer(httpApp).listen(httpApp.get('port'), function() {
 //     console.log('Express HTTP server listening on port ' + httpApp.get('port'));
 // });
-
-
