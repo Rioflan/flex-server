@@ -1,4 +1,3 @@
-import config from '../config/mongo.json';
 import dotenv from 'dotenv';
 
 const DATABASE_NAME = 'appdb';
@@ -6,24 +5,24 @@ dotenv.config();
 
 const wrapper = {
   getMongoUri(
-    mode = config.mode,
-    host = config.host,
-    port = config.port,
-    user = config.username,
-    pass = config.password,
+    mode = process.env.DATABASE_MODE,
+    host = process.env.DATABASE_HOST,
+    port = process.env.DATABASE_PORT,
+    user = process.env.DATABASE_USERNAME,
+    pass = process.env.DATABASE_PASSWORD,
   ) {
     if (mode === 'local') {
       // local mongo database URI
-      return `mongodb://${host}:${port}/${config.db}`;
+      return `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
     }
 
     if (mode === 'remote') {
       // mlab mongo database URI
       // default mlab database
-      // let mongodbHost = config.host;
-      // let mongodbPort = config.port;
-      // let mongodbUser = config.username;
-      // let mongodbPass = config.password;
+      // let mongodbHost = process.env.DATABASE_HOST;
+      // let mongodbPort = process.env.DATABASE_PORT;
+      // let mongodbUser = process.env.DATABASE_USERNAME;
+      // let mongodbPass = process.env.DATABASE_PASSWORD;
 
       // custom mlab database URI
       // if (arguments.length === 5) {
