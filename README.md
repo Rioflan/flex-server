@@ -74,8 +74,8 @@ docker run -p 3000:3000 -it <your username>/flex-server
 ### Create an API token for use
 
 Now you can access the API using localhost.
-Open your browser and type url `localhost:3000/ping`.
-If you got the message "pong", everything goes well.
+Open your browser and type url `localhost:3000/api`.
+If you got the message "It works !", everything goes well.
 
 By typing the following command on your terminal or sending same informations on Postman or similar tool you will get an API token that can be used to access to other services of the API.
 
@@ -98,7 +98,7 @@ You have to create a self-signed certificate with openSSL :
 
 ```openssl req -nodes -new -x509 -keyout server.key -out server.cert```
 
-And put the `cert.pem` and `key.pem` under a folder `cert` in `./app` 
+And put the `cert.pem` and `key.pem` under a folder `cert` in `./app`.
 
 Then enable https in Express by adding this lines in app/server.ts:
 
@@ -119,7 +119,7 @@ https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, f
 
 ## Run tests
 
-You can run the tests under the `app/test` folder by running the command `npm run test`
+You can run the tests under the `app/test` folder by running the command `npm run test`.
 
 
 ## Crypto operations
@@ -140,10 +140,12 @@ For running the crypto algrithms written in go, you have to create a new file at
 }
 ```
 
-This file should be all the time there but it makes the installation on Circle CI fails.
+Note: This file should always be there but it makes the installation on Circle CI fails.
 
 
 ## Use the API
+
+You can find the begining of the API documentation [here](https://app.swaggerhub.com/apis-docs/ayshiff/flex-server-bred/0.1).
 
 
 ## Deployment
@@ -154,7 +156,7 @@ For deployment, I recommend using [Heroku](https://dashboard.heroku.com/apps).
 
 TODO
 
-## Contributing
+## Contributing 
 - Check the current opened issues
 - Fork the project
 - Create your feature branch (git checkout -b - my-new-feature)

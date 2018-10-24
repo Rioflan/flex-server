@@ -4,7 +4,7 @@ import {
 import User, { UserSchema } from '../models/user';
 import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
-import { encrypt } from './test';
+import { encrypt, decrypt } from './test';
 
 interface QueryUser {
   name?: string,
@@ -28,12 +28,19 @@ const Get = (router: Router) => {
     return query_user;
   }
 
-  /** GET /users */
+  /** GET /users => {name, fname, id_place} */
 
   router.route('/users').get(VerifyToken, (req: Request, res: Response) => {
-    User.find(getQuery(req), null, (err, users: Array<UserSchema>) => {
+    User.find({}, null, (err, users: Array<UserSchema>) => {
       if (err) res.status(400).send(err);
-      res.status(200).json(users);
+      const usersDecrypted = users.map(e => {
+        return {
+          name: decrypt(e.name, req.userId),
+          fname: decrypt(e.fname, req.userId),
+          id_place: e.id_place || null,
+        }
+      })
+      res.status(200).json(usersDecrypted);
     });
   });
 

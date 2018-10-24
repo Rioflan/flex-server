@@ -18,9 +18,9 @@ const Auth = (router: Router) => {
 
   router.post('/register', (req: Request, res: Response) => {
     if (
-      req.body.name == null
-      || req.body.email == null
-      || req.body.password == null
+      req.body.name === null
+      || req.body.email === null
+      || req.body.password === null
     ) res.status(400).send('invalid mail or name');
 
     const query = <QueryUser>{};
