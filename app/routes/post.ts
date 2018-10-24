@@ -164,8 +164,6 @@ const post = (router: Router) => {
     const userSit = await whereSit(body.id_user);
     const user = await whoUses(body.id_place);
 
-    const { historical } = body;
-
     if (userSit === '#' || userSit === '') {
       const beginDate: string = new Date(Date.now()).toLocaleString();
       //  not exists or not sit
@@ -174,7 +172,7 @@ const post = (router: Router) => {
         id_place: body.id_place,
         historical: append(
           { place_id: body.id_place, begin: beginDate, end: '' },
-          historical,
+          body.historical,
         ),
         name: body.name,
         fname: body.fname,
