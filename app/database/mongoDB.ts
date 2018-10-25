@@ -25,7 +25,7 @@ const wrapper = {
       let mongodbPass = process.env.DATABASE_PASSWORD;
 
       const mongoURI = process.env.DATABASE_URL === "" ?
-      `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${DATABASE_NAME}`
+      `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}`
       : process.env.DATABASE_URL;
       return mongoURI;
     }

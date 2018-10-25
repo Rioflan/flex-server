@@ -189,26 +189,26 @@ const post = (router: Router) => {
           id_user: body.id_user,
         });
       } //  used by the "user" user
-      else {
-        console.log(`PLACE USED BY: ${user}`);
-        const endDate = new Date(Date.now()).toLocaleString();
-        const indexUser = findLastIndex(propEq('place_id', body.id_place))(
-          body.historical,
-        );
-        updateUser(body.id_user, {
-          historical: update(
-            indexUser,
-            {
-              place_id: body.id_place,
-              begin: body.historical[indexUser].begin,
-              end: endDate,
-            },
-            body.historical,
-          ),
-          name: body.name,
-          fname: body.fname,
-        }); //  if one user sit at this place the old user leaves
-      }
+      // else {
+      //   console.log(`PLACE USED BY: ${user}`);
+      //   const endDate = new Date(Date.now()).toLocaleString();
+      //   const indexUser = findLastIndex(propEq('place_id', body.id_place))(
+      //     body.historical,
+      //   );
+      //   updateUser(body.id_user, {
+      //     historical: update(
+      //       indexUser,
+      //       {
+      //         place_id: body.id_place,
+      //         begin: body.historical[indexUser].begin,
+      //         end: endDate,
+      //       },
+      //       body.historical,
+      //     ),
+      //     name: body.name,
+      //     fname: body.fname,
+      //   }); //  if one user sit at this place the old user leaves
+      // }
     } else {
       console.log('SIT');
       if (userSit === body.id_place) {
