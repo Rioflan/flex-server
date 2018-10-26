@@ -16,7 +16,7 @@ import {
 import User, { UserSchema } from '../models/user';
 import Place, { PlaceSchema } from '../models/place';
 import VerifyToken from './VerifyToken';
-import { encrypt } from './test';
+import { encrypt, decrypt } from './test';
 
 interface Request {
   userId?: string | Buffer | DataView,
@@ -164,57 +164,48 @@ const post = (router: Router) => {
     const userSit = await whereSit(body.id_user);
     const user = await whoUses(body.id_place);
 
-    if (userSit === '#' || userSit === '') {
+    if (userSit === "#" || userSit === "") {
       const beginDate: string = new Date(Date.now()).toLocaleString();
-      //  not exists or not sit
-      console.log('NOT EXISTS');
-      updateUser(body.id_user, {
-        id_place: body.id_place,
-        historical: append(
-          { place_id: body.id_place, begin: beginDate, end: '' },
-          body.historical,
-        ),
-        name: body.name,
-        fname: body.fname,
-      });
-      if (user === '#') {
-        //  not exists
-        console.log('PLACE NOT EXISTS');
-        addPlace(body.id_place, body.id_user);
-      } else if (user === '') {
-        //  place empty
-        console.log('EMPTY PLACE');
-        updatePlace(body.id_place, {
-          using: true,
-          id_user: body.id_user,
+      if (user === "#") {
+        //  not exists or not sit
+        console.log("NOT EXISTS");
+        updateUser(body.id_user, {
+          id_place: body.id_place,
+          historical: append(
+            { place_id: body.id_place, begin: beginDate, end: "" },
+            body.historical
+          ),
+          name: body.name,
+          fname: body.fname
         });
+        //  not exists
+        console.log("PLACE NOT EXISTS");
+        addPlace(body.id_place, body.id_user);
+      } else if (user === "") {
+        updateUser(body.id_user, {
+          id_place: body.id_place,
+          historical: append(
+            { place_id: body.id_place, begin: beginDate, end: "" },
+            body.historical
+          ),
+          name: body.name,
+          fname: body.fname
+        });
+        //  place empty
+        console.log("EMPTY PLACE");
+        updatePlace(body.id_place, { using: true, id_user: body.id_user });
       } //  used by the "user" user
-      // else {
-      //   console.log(`PLACE USED BY: ${user}`);
-      //   const endDate = new Date(Date.now()).toLocaleString();
-      //   const indexUser = findLastIndex(propEq('place_id', body.id_place))(
-      //     body.historical,
-      //   );
-      //   updateUser(body.id_user, {
-      //     historical: update(
-      //       indexUser,
-      //       {
-      //         place_id: body.id_place,
-      //         begin: body.historical[indexUser].begin,
-      //         end: endDate,
-      //       },
-      //       body.historical,
-      //     ),
-      //     name: body.name,
-      //     fname: body.fname,
-      //   }); //  if one user sit at this place the old user leaves
-      // }
+      else {
+        console.log(`PLACE USED BY: ${user}`);
+        const userUsedName = await User.findOne({id: user}, (err: Error, placeUser) => {
+            return placeUser;
+          })
+        return await userUsedName.name;
+      }
     } else {
-      console.log('SIT');
+      console.log("SIT");
       if (userSit === body.id_place) {
-        const indexUser = findLastIndex(propEq('place_id', body.id_place))(
-          body.historical,
-        );
+        const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
         // user already sit here and leaves
         const endDate = new Date(Date.now()).toLocaleString();
         updateUser(body.id_user, {
@@ -223,38 +214,33 @@ const post = (router: Router) => {
             {
               place_id: body.id_place,
               begin: body.historical[indexUser].begin,
-              end: endDate,
+              end: endDate
             },
-            body.historical,
+            body.historical
           ),
           name: body.name,
-          fname: body.fname,
+          fname: body.fname
         });
-        updatePlace(body.id_place, { using: false, id_user: '' });
+        updatePlace(body.id_place, { using: false, id_user: "" });
       } //  user is sit somewhere and move to another place
       else {
         const endDate = new Date(Date.now()).toLocaleString();
-        const indexUser = findLastIndex(propEq('place_id', body.id_place))(
-          body.historical,
-        );
+        const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
         updateUser(body.id_user, {
           historical: update(
             indexUser,
             {
               place_id: body.id_place,
               begin: body.historical[indexUser].begin,
-              end: endDate,
+              end: endDate
             },
-            body.historical,
+            body.historical
           ),
           name: body.name,
-          fname: body.fname,
+          fname: body.fname
         }); //  the other user leaves
-        updatePlace(userSit, { using: false, id_user: '' }); // updates the old user place
-        updatePlace(body.id_place, {
-          using: true,
-          id_user: body.id_user,
-        }); //  the user is now here
+        updatePlace(userSit, { using: false, id_user: "" }); // updates the old user place
+        updatePlace(body.id_place, { using: true, id_user: body.id_user }); //  the user is now here
         // addUser(body.id_user, body.name, body.fname, body.id_place);
       }
     }
@@ -264,24 +250,24 @@ const post = (router: Router) => {
    * This route handle all the post requests.
    */
   router
-    .route('/')
+    .route("/")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       RES = res;
       const body = req.body;
 
-      if (
-        body.id_place === null
-        || body.name === null
-        || body.fname === null
-        || body.id_user === null
-      ) return RES.status(400).json({ error: 'Invialid arguments' });
+      if (body.id_place === null || body.name === null || body.fname === null || body.id_user === null) return RES.status(400).json(
+          { error: "Invialid arguments" }
+        );
 
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
-      post(body);
-      RES.status(200).json({ result: 'User Updated Middle' });
+      post(body).then(element => {
+        element && typeof element === 'string' ? RES.status(200).json({
+              body: decrypt(element, req.userId)
+            }) : RES.status(200).json({ result: "User Updated" });
+      });
     });
 
   /**
@@ -314,21 +300,13 @@ const post = (router: Router) => {
           if (!user) {
             const { id_user, name, fname } = body;
             addUser(id_user, name, fname, '');
-
-            /** Add user to redis */
-
-            // client.set(
-            //   `UserId:${body.id_user}`,
-            //   JSON.stringify({ name, fname }),
-            //   redis.print
-            // );
             console.log('NOT EXISTS');
           }
 
           // if (user) return res.status(200).send(user);
         },
       );
-      RES.status(200).json({ result: 'User Updated Last' });
+      RES.status(200).json({ result: 'User Updated' });
     });
 };
 
