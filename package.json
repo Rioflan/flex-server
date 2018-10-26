@@ -4,7 +4,15 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node lib/server.js",
+    "build": "tsc -p .",
+    "lint": "eslint app --ext ts",
+    "lint:fix": "eslint app --ext ts --fix",
+    "build:live": "nodemon --watch 'app/**/*.ts' --exec 'ts-node' ./app/server.ts",
+    "test": "jest",
+    "test:typescript": "npx jest",
+    "build:go": "node-gyp configure build",
+    "compile:go": "go build -buildmode=c-shared -o crypto.so crypto-go/golang/crypto.go"
   },
   "repository": {
     "type": "git",
@@ -17,11 +25,32 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
+    "dotenv": "^6.1.0",
     "express": "~4.16.0",
+    "greenlock-express": "^2.4.6",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
+    "mockgoose": "^7.3.5",
     "mongoose": "latest",
-    "nodemon": "^1.18.3"
+    "node-gyp": "^3.8.0",
+    "nodemon": "^1.18.3",
+    "ramda": "^0.25.0",
+    "randombytes": "^2.0.6",
+    "redis": "^2.8.0",
+    "supertest": "^3.3.0",
+    "ts-node": "^7.0.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/jest": "^23.3.5",
+    "@types/node": "^10.12.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.24.1",
+    "eslint-plugin-typescript": "^0.12.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.3",
+    "typescript-eslint-parser": "^20.0.0"
+  }
 }
