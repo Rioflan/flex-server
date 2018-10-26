@@ -1,4 +1,5 @@
-# Flex Server [![CircleCI](https://circleci.com/gh/ayshiff/flex-server/tree/master.svg?style=svg)](https://circleci.com/gh/ayshiff/flex-server/tree/master)
+# Flex Server [![CircleCI](https://circleci.com/gh/BREDFactory/flex-server.svg?style=svg)](https://circleci.com/gh/BREDFactory/flex-server)
+
 
 The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
 
