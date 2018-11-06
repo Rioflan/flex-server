@@ -4,7 +4,6 @@ import path from 'path';
 import https from 'https';
 import http from 'http';
 import dbconfig from './database/mongoDB';
-import enforce from 'express-sslify';
 
 import app from './app';
 
@@ -14,8 +13,12 @@ const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI
 
 const DEFAULT_PORT: number = 3000;
 
-// Redirect HTTP -> HTTPS
-app.use(enforce.HTTPS({ trustProtoHeader: true }))
+app.use(function(req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https')
+        res.redirect(['https://', req.get('Host'), req.url].join(''));
+    else
+        next();
+});
 
 try {
   mongoose.connect(
