@@ -12,6 +12,13 @@ Post(router);
 Get(router);
 Auth(router);
 
+app.get('*',function(req,res,next){
+  if(req.headers['x-forwarded-proto']!='https')
+    res.redirect('https://whispering-lowlands-83497.herokuapp.com'+req.url)
+  else
+    next() /* Continue to other routes if we're not redirecting */
+})
+
 router.use((req: Request, res: Response, next) => {
   console.log(req.connection.remoteAddress);
   next();
@@ -20,15 +27,6 @@ router.use((req: Request, res: Response, next) => {
 router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'It works !' });
 });
-
-app.configure('production', => {
-  app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https')
-      res.redirect(`https://${req.header('host')}${req.url}`)
-    else
-      next()
-  })
-})
 
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ extended: true }));
