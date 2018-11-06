@@ -22,11 +22,7 @@ try {
   console.log(err);
 }
 
-const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
+http.createServer(app).listen(process.env.PORT || DEFAULT_PORT, () => {
   const port = server.address().port;
   console.log('App now running on port : ', port);
 });
-
-// http.createServer(httpApp).listen(httpApp.get('port'), function() {
-//     console.log('Express HTTP server listening on port ' + httpApp.get('port'));
-// });

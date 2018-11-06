@@ -4,20 +4,17 @@ import bodyParser from 'body-parser';
 import Post from './routes/post';
 import Get from './routes/get';
 import Auth from './routes/auth';
+import enforce from 'express-sslify';
 
 const app: express.Application = express(); // use express on our app
+
+// Redirect HTTP -> HTTPS
+app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 const router: Router = express.Router(); // get an instance of the express Router
 Post(router);
 Get(router);
 Auth(router);
-
-app.get('*',function(req,res,next){
-  if(req.headers['x-forwarded-proto']!='https')
-    res.redirect('https://whispering-lowlands-83497.herokuapp.com'+req.url)
-  else
-    next() /* Continue to other routes if we're not redirecting */
-})
 
 router.use((req: Request, res: Response, next) => {
   console.log(req.connection.remoteAddress);
