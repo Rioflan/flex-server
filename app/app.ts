@@ -4,12 +4,8 @@ import bodyParser from 'body-parser';
 import Post from './routes/post';
 import Get from './routes/get';
 import Auth from './routes/auth';
-import enforce from 'express-sslify';
 
 const app: express.Application = express(); // use express on our app
-
-// Redirect HTTP -> HTTPS
-app.use(enforce.HTTPS({ trustProtoHeader: true }))
 
 const router: Router = express.Router(); // get an instance of the express Router
 Post(router);
