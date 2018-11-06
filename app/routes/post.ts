@@ -279,7 +279,7 @@ const post = (router: Router) => {
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
       RES = res;
-      if (body.name === null || body.fname === null || body.id_user === null || body.id_user.match(process.env.LOGIN_REGEX)) return RES.status(400).json({ error: 'Invialid arguments' });
+      if (body.name === null || body.fname === null || body.id_user === null || !body.id_user.match(process.env.LOGIN_REGEX)) return RES.status(400).json({ error: 'Invialid arguments' });
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
