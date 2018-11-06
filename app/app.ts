@@ -4,18 +4,11 @@ import bodyParser from 'body-parser';
 import Post from './routes/post';
 import Get from './routes/get';
 import Auth from './routes/auth';
+import enforce from 'express-sslify';
 
 const app: express.Application = express(); // use express on our app
 
-// redirect http => https
-app.use(function(req, res, next) {
-    console.log("HEADERS", req.headers, req.headers['x-forwarded-proto'])
-    if (req.headers['x-forwarded-proto'] != 'https')
-        console.log("REDIRECT", ['https://', req.get('Host'), req.url].join(''))
-        res.redirect(['https://', req.get('Host'), req.url].join(''));
-    else
-        next();
-});
+app.use(enforce.HTTPS({ trustProtoHeader: true }))  // Redirect http => https
 
 const router: Router = express.Router(); // get an instance of the express Router
 Post(router);
