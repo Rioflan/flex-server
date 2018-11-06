@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import Post from './routes/post';
 import Get from './routes/get';
 import Auth from './routes/auth';
-import sslRedirect from 'heroku-ssl-redirect';
 
 const app: express.Application = express(); // use express on our app
 
@@ -22,8 +21,14 @@ router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'It works !' });
 });
 
-// enable ssl redirect
-app.use(sslRedirect());
+app.configure('production', => {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https')
+      res.redirect(`https://${req.header('host')}${req.url}`)
+    else
+      next()
+  })
+})
 
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ extended: true }));

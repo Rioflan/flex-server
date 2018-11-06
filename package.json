@@ -28,7 +28,6 @@
     "dotenv": "^6.1.0",
     "express": "~4.16.0",
     "greenlock-express": "^2.4.6",
-    "heroku-ssl-redirect": "0.0.4",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
     "mockgoose": "^7.3.5",
