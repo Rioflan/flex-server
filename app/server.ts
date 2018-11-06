@@ -13,13 +13,6 @@ const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI
 
 const DEFAULT_PORT: number = 3000;
 
-app.use(function(req, res, next) {
-    if (req.headers['x-forwarded-proto'] != 'https')
-        res.redirect(['https://', req.get('Host'), req.url].join(''));
-    else
-        next();
-});
-
 try {
   mongoose.connect(
     DEFAULT_URI,
