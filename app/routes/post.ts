@@ -60,7 +60,7 @@ const post = (router: Router) => {
       if (err) RES.status(500).send(err);
 
       const actual_user = user;
-
+      console.log(actual_user, params)
       if (params.historical !== []) actual_user.historical = params.historical;
 
       if (params.name !== null) actual_user.name = params.name;
@@ -144,10 +144,10 @@ const post = (router: Router) => {
         null,
         { sort: { _id: -1 } },
         (err: Error, user: UserSchema) => {
-          const userEnd = user.historical.length > 0
+          if (!err && user !== null) {
+            const userEnd = user.historical.length > 0
             ? pick(['end'], last(user.historical))
             : '';
-          if (!err && user !== null) {
             if (userEnd.end === '') resolve(user.id_place);
             else resolve('');
           } else resolve('#');
@@ -279,7 +279,7 @@ const post = (router: Router) => {
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
       RES = res;
-      if (body.name === null || body.fname === null || body.id_user === null || !body.id_user.match(process.env.LOGIN_REGEX)) return RES.status(400).json({ error: 'Invialid arguments' });
+      if (body.name === null || body.fname === null || body.id_user === null || body.id_user.match(process.env.LOGIN_REGEX) === null) return RES.status(400).json({ error: 'Invialid arguments' });
       body.id_user = encrypt(body.id_user, req.userId);
       body.name = encrypt(body.name, req.userId);
       body.fname = encrypt(body.fname, req.userId);
