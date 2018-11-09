@@ -8,7 +8,7 @@ import enforce from 'express-sslify';
 
 const app: express.Application = express(); // use express on our app
 
-app.use(enforce.HTTPS({trustProtoHeader: true})); // Redirect http => https
+if (process.env.NODE_ENV === 'production' ) app.use(enforce.HTTPS({trustProtoHeader: true})); // Redirect http => https
 
 const listOfRoutes = (router: Router) => {
     Post(router);
