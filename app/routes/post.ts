@@ -51,6 +51,7 @@ const post = (router: Router) => {
         actual_user.fname = fname;
         actual_user.id_place = id_place;
         actual_user.historical = [];
+        actual_user.isRemote = false;
 
         actual_user.save((err: Error) => {
             if (err) RES.status(500).send(err);
@@ -75,6 +76,8 @@ const post = (router: Router) => {
             if (params.fname !== null) actual_user.fname = params.fname;
 
             if (params.id_place !== null) actual_user.id_place = params.id_place;
+
+            actual_user.isRemote = params.isRemote;
 
             actual_user.save((err) => {
                 if (err) RES.status(500).send(err);
@@ -180,88 +183,109 @@ const post = (router: Router) => {
      * @param {object} body current payload of the request
      */
     async function post(body) {
-        const userSit = await whereSit(body.id_user);
-        const user = await whoUses(body.id_place);
-
+      const userSit = await whereSit(body.id_user);
+      const user = await whoUses(body.id_place);
+      if (body.id_place !== "") {
         if (userSit === "#" || userSit === "") {
-            const beginDate: string = new Date(Date.now()).toLocaleString();
-            if (user === "#") {
-                //  not exists or not sit
-                console.log("NOT EXISTS");
-                updateUser(body.id_user, {
-                    id_place: body.id_place,
-                    historical: append(
-                        {place_id: body.id_place, begin: beginDate, end: ""},
-                        body.historical
-                    ),
-                    name: body.name,
-                    fname: body.fname
-                });
-                //  not exists
-                console.log("PLACE NOT EXISTS");
-                addPlace(body.id_place, body.id_user);
-            } else if (user === "") {
-                updateUser(body.id_user, {
-                    id_place: body.id_place,
-                    historical: append(
-                        {place_id: body.id_place, begin: beginDate, end: ""},
-                        body.historical
-                    ),
-                    name: body.name,
-                    fname: body.fname
-                });
-                //  place empty
-                console.log("EMPTY PLACE");
-                updatePlace(body.id_place, {using: true, id_user: body.id_user});
-            } //  used by the "user" user
-            else {
-                console.log(`PLACE USED BY: ${user}`);
-                const userUsedName = await User.findOne({id: user}, (err: Error, placeUser) => {
-                    return placeUser;
-                });
-                return await userUsedName.name;
-            }
+          const beginDate: string = new Date(Date.now()).toLocaleString();
+          if (user === "#") {
+            //  not exists or not sit
+            console.log("NOT EXISTS");
+            updateUser(body.id_user, {
+              id_place: body.id_place,
+              historical: append(
+                { place_id: body.id_place, begin: beginDate, end: "" },
+                body.historical
+              ),
+              name: body.name,
+              fname: body.fname,
+              isRemote: body.isRemote
+            });
+            //  not exists
+            console.log("PLACE NOT EXISTS");
+            addPlace(body.id_place, body.id_user);
+          } else if (user === "") {
+            updateUser(body.id_user, {
+              id_place: body.id_place,
+              historical: append(
+                { place_id: body.id_place, begin: beginDate, end: "" },
+                body.historical
+              ),
+              name: body.name,
+              fname: body.fname,
+              isRemote: body.isRemote
+            });
+            //  place empty
+            console.log("EMPTY PLACE");
+            updatePlace(body.id_place, {
+              using: true,
+              id_user: body.id_user
+            });
+          } //  used by the "user" user
+          else {
+            console.log(`PLACE USED BY: ${user}`);
+            const userUsedName = await User.findOne(
+              { id: user },
+              (err: Error, placeUser) => {
+                return placeUser;
+              }
+            );
+            return await userUsedName.name;
+          }
         } else {
-            console.log("SIT");
-            if (userSit === body.id_place) {
-                const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
-                // user already sit here and leaves
-                const endDate = new Date(Date.now()).toLocaleString();
-                updateUser(body.id_user, {
-                    historical: update(
-                        indexUser,
-                        {
-                            place_id: body.id_place,
-                            begin: body.historical[indexUser].begin,
-                            end: endDate
-                        },
-                        body.historical
-                    ),
-                    name: body.name,
-                    fname: body.fname
-                });
-                updatePlace(body.id_place, {using: false, id_user: ""});
-            } //  user is sit somewhere and move to another place
-            else {
-                const endDate = new Date(Date.now()).toLocaleString();
-                const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
-                updateUser(body.id_user, {
-                    historical: update(
-                        indexUser,
-                        {
-                            place_id: body.id_place,
-                            begin: body.historical[indexUser].begin,
-                            end: endDate
-                        },
-                        body.historical
-                    ),
-                    name: body.name,
-                    fname: body.fname
-                }); //  the other user leaves
-                updatePlace(userSit, {using: false, id_user: ""}); // updates the old user place
-                updatePlace(body.id_place, {using: true, id_user: body.id_user}); //  the user is now here
-            }
+          console.log("SIT");
+          if (userSit === body.id_place) {
+            const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
+            // user already sit here and leaves
+            const endDate = new Date(Date.now()).toLocaleString();
+            updateUser(body.id_user, {
+              historical: update(
+                indexUser,
+                {
+                  place_id: body.id_place,
+                  begin: body.historical[indexUser].begin,
+                  end: endDate
+                },
+                body.historical
+              ),
+              name: body.name,
+              fname: body.fname,
+              isRemote: body.isRemote
+            });
+            updatePlace(body.id_place, { using: false, id_user: "" });
+          } //  user is sit somewhere and move to another place
+          else {
+            const endDate = new Date(Date.now()).toLocaleString();
+            const indexUser = findLastIndex(propEq("place_id", body.id_place))(body.historical);
+            updateUser(body.id_user, {
+              historical: update(
+                indexUser,
+                {
+                  place_id: body.id_place,
+                  begin: body.historical[indexUser].begin,
+                  end: endDate
+                },
+                body.historical
+              ),
+              name: body.name,
+              fname: body.fname,
+              isRemote: body.isRemote
+            }); //  the other user leaves
+            updatePlace(userSit, { using: false, id_user: "" }); // updates the old user place
+            updatePlace(body.id_place, {
+              using: true,
+              id_user: body.id_user
+            }); //  the user is now here
+          }
         }
+      } else {
+        updateUser(body.id_user, {
+          historical: body.historical,
+          name: body.name,
+          fname: body.fname,
+          isRemote: body.isRemote
+        });
+      }
     }
 
     /**

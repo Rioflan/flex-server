@@ -8,6 +8,7 @@ const UserSchema = new Schema({
   fname: String,
   id_place: String,
   historical: Array,
+  isRemote: Boolean,
 });
 
 export interface UserSchema {
@@ -17,6 +18,7 @@ export interface UserSchema {
   fname: string,
   id_place: string,
   historical: Array<object>,
+  isRemote: boolean,
 }
 
 const Model = mongoose.model('User', UserSchema);
