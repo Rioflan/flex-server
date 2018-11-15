@@ -69,7 +69,11 @@ const post = (router: Router) => {
             if (err) RES.status(500).send(err);
 
             const actual_user = user;
-            console.log("params.historical", params.historical, "actual_user.historical", actual_user.historical, user)
+            console.log(
+            actual_user,
+            params,
+            actual_user.historical,
+            params.historical)
             if (params.historical !== []) actual_user.historical = params.historical;
 
             if (params.name !== null) actual_user.name = params.name;
