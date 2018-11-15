@@ -70,7 +70,7 @@ const post = (router: Router) => {
 
             const actual_user = user;
 
-            if (params.historical !== []) actual_user.historical = params.historical;
+            actual_user.historical = params.historical;
 
             if (params.name !== null) actual_user.name = params.name;
 
