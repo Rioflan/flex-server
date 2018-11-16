@@ -135,10 +135,10 @@ const post = (router: Router) => {
                     const {id_user, name, fname} = body;
                     addUser(id_user, name, fname, '');
                     console.log('NOT EXISTS');
-                    return RES.status(200).json({result: 'User Added', environment: process.env});
+                    return RES.status(200).json({result: 'User Added'});
                 }
                 if (user)
-                    return RES.status(200).send({ user: user , environment: process.env})
+                    return RES.status(200).send({ user: user })
 
                 // if (user) return res.status(200).send(user);
             },
