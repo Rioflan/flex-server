@@ -43,7 +43,7 @@ const post = (router: Router) => {
     actual_user.fname = fname;
     actual_user.id_place = id_place;
     actual_user.historical = [];
-    actual_user.remoteDay = "Lundi";
+    actual_user.remoteDay = "";
 
     actual_user.save((err: Error) => {
       if (err) RES.status(500).send(err);
