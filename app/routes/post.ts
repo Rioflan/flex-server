@@ -76,10 +76,10 @@ const post = (router: Router) => {
 
         if (params.id_place !== null) actual_user.id_place = params.id_place;
 
-        if (params.photo !== "") {
+        if (params.photo !== "" || params.photo !== null) {
           const image = await cloudinary.uploader
             .upload(`data:image/jpeg;base64,${params.photo}`)
-            .then(result => result.url);
+            .then(result => result.secure_url);
           actual_user.photo = image;
         } else {
           actual_user.photo = params.photo;
