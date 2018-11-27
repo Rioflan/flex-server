@@ -77,12 +77,9 @@ const post = (router: Router) => {
         if (params.id_place !== null) actual_user.id_place = params.id_place;
 
         if (params.photo !== "") {
-          const image = cloudinary.uploader.upload(
-            `data:image/jpeg;base64,${params.photo}`,
-            function(result) {
-              return result.url;
-            }
-          );
+          const image = cloudinary.uploader
+            .upload(`data:image/jpeg;base64,${params.photo}`)
+            .then(result => result.url);
           actual_user.photo = image;
         } else {
           actual_user.photo = params.photo;
