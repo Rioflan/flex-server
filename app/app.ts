@@ -31,8 +31,8 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 // configure app to use bodyParser() => get data from http request (POST)
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-app.use(bodyParser.json({ limit: "10mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(bodyParser.json({ limit: "50mb", extended: true }));
 
 app.use("/api", router); // define the default route
 
