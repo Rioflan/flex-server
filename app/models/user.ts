@@ -8,17 +8,19 @@ const UserSchema = new Schema({
   fname: String,
   id_place: String,
   historical: Array,
-  remoteDay: String
+  remoteDay: String,
+  photo: String
 });
 
 export interface UserSchema {
-  _id?: Types.ObjectId;
-  id: string;
-  name: string;
-  fname: string;
-  id_place: string;
-  historical: Array<object>;
-  remoteDay: string;
+  _id?: Types.ObjectId,
+  id: string,
+  name: string,
+  fname: string,
+  id_place: string,
+  historical: Array<object>,
+  remoteDay: string,
+  photo: string,
 }
 
 const Model = mongoose.model("User", UserSchema);

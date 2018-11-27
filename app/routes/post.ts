@@ -5,6 +5,7 @@ import User, { UserSchema } from "../models/user";
 import Place, { PlaceSchema } from "../models/place";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
+import cloudinary from "cloudinary";
 
 interface Request {
   userId?: string | Buffer | DataView;
@@ -44,6 +45,7 @@ const post = (router: Router) => {
     actual_user.id_place = id_place;
     actual_user.historical = [];
     actual_user.remoteDay = "";
+    actual_user.photo = "";
 
     actual_user.save((err: Error) => {
       if (err) RES.status(500).send(err);
@@ -73,6 +75,18 @@ const post = (router: Router) => {
         if (params.fname !== null) actual_user.fname = params.fname;
 
         if (params.id_place !== null) actual_user.id_place = params.id_place;
+
+        if (params.photo !== "") {
+          const image = cloudinary.uploader.upload(
+            `data:image/jpeg;base64,${params.photo}`,
+            function(result) {
+              return result.url;
+            }
+          );
+          actual_user.photo = image;
+        } else {
+          actual_user.photo = params.photo;
+        }
 
         actual_user.remoteDay = params.remoteDay;
 
@@ -200,7 +214,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay
+            remoteDay: body.remoteDay,
+            photo: body.photo
           });
           //  not exists
           console.log("PLACE NOT EXISTS");
@@ -214,7 +229,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay
+            remoteDay: body.remoteDay,
+            photo: body.photo
           });
           //  place empty
           console.log("EMPTY PLACE");
@@ -253,7 +269,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay
+            remoteDay: body.remoteDay,
+            photo: body.photo
           });
           updatePlace(body.id_place, { using: false, id_user: "" });
         } //  user is sit somewhere and move to another place
@@ -274,7 +291,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay
+            remoteDay: body.remoteDay,
+            photo: body.photo
           }); //  the other user leaves
           updatePlace(userSit, { using: false, id_user: "" }); // updates the old user place
           updatePlace(body.id_place, {
@@ -288,7 +306,8 @@ const post = (router: Router) => {
         historical: body.historical,
         name: body.name,
         fname: body.fname,
-        remoteDay: body.remoteDay
+        remoteDay: body.remoteDay,
+        photo: body.photo
       });
     }
   }
