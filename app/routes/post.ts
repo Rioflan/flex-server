@@ -373,7 +373,7 @@ const post = (router: Router) => {
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
-
+      RES = res;
       const id_user = encrypt(body.id_user, req.userId);
 
       User.findOne(
@@ -381,7 +381,7 @@ const post = (router: Router) => {
         null,
         { sort: { _id: -1 } },
         (err: Error, user) => {
-          if (err) res.status(400).json({ err });
+          if (err) RES.status(400).json({ err });
           if (user) {
             user.friend = append(
               {
