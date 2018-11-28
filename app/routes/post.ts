@@ -46,6 +46,7 @@ const post = (router: Router) => {
     actual_user.historical = [];
     actual_user.remoteDay = "";
     actual_user.photo = "";
+    actual_user.friend = [];
 
     actual_user.save((err: Error) => {
       if (err) RES.status(500).send(err);
@@ -362,6 +363,42 @@ const post = (router: Router) => {
       // Check if the user exists
 
       isUserExists(body);
+    });
+
+  /**
+   * This route is used to handle users login.
+   */
+  router
+    .route("/add_friend")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+
+      const id_user = encrypt(body.id_user, req.userId);
+
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err) res.status(400).json({ err });
+          if (user) {
+            user.friend = append(
+              {
+                id: body.id,
+                name: body.name,
+                fname: body.fname,
+                id_place: body.id_place
+              },
+              user.friend
+            );
+            user.save((err: Error) => {
+              if (err) RES.status(500).send(err);
+              console.log("Friend added");
+            });
+          }
+        }
+      );
     });
 };
 

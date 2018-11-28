@@ -9,7 +9,8 @@ const UserSchema = new Schema({
   id_place: String,
   historical: Array,
   remoteDay: String,
-  photo: String
+  photo: String,
+  friend: Array
 });
 
 export interface UserSchema {
@@ -21,6 +22,7 @@ export interface UserSchema {
   historical: Array<object>,
   remoteDay: string,
   photo: string,
+  friend: Array<object>
 }
 
 const Model = mongoose.model("User", UserSchema);
