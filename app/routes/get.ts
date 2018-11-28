@@ -36,7 +36,8 @@ const Get = (router: Router) => {
           name: decrypt(e.name, req.userId),
           fname: decrypt(e.fname, req.userId),
           id_place: e.id_place || null,
-          remoteDay: e.remoteDay
+          remoteDay: e.remoteDay,
+          photo: e.photo
         };
       });
       res.status(200).json(usersDecrypted);
