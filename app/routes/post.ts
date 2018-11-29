@@ -1,4 +1,4 @@
-import { pick, last, append, update, findLastIndex, propEq } from "ramda";
+import { pick, last, append, update, findLastIndex, propEq, filter } from "ramda";
 
 import { Request, Response, Error, Router } from "express";
 import User, { UserSchema } from "../models/user";
@@ -395,7 +395,38 @@ const post = (router: Router) => {
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
-              console.log({ user });
+            });
+          }
+        }
+      );
+    });
+
+      /**
+   * This route is used to handle users login.
+   */
+  router
+    .route("/remove_friend")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      RES = res;
+      const id_user = encrypt(body.id_user, req.userId);
+
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err) RES.status(400).json({ err });
+          const isRemovedUser = userFriend => userFriend.id !== body.id
+          if (user) {
+            user.friend = filter(
+              isRemovedUser,
+              user.friend
+            );
+            user.save((err: Error) => {
+              if (err) RES.status(500).send(err);
+              RES.status(200).send({ user });
             });
           }
         }
