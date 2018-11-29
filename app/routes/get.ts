@@ -52,10 +52,8 @@ const Get = (router: Router) => {
       query.id = encrypt(req.params.user_id, req.userId);
       User.find(query, (err, user: UserSchema) => {
         if (err) res.status(400).send(err);
-        console.log(user);
-        const friends = user.friend.map(e => {
-          console.log(e);
-          User.find({ id: e["id"] }, (err, friend: UserSchema) => {
+        const friends = user[0].friend.map(e => {
+          User.find({ id: e.id }, (err, friend: UserSchema) => {
             return {
               id: friend.id,
               name: decrypt(friend.name, req.userId),
@@ -66,7 +64,6 @@ const Get = (router: Router) => {
             };
           });
         });
-        console.log(friends);
         res.status(200).json(friends);
       });
     });
