@@ -49,22 +49,14 @@ const Get = (router: Router) => {
     .route("/users/:user_id/friends")
     .get(VerifyToken, (req: Request, res: Response) => {
       const query = <Query>{};
-      query.id = encrypt(req.params.user_id, req.userId);
+      query.id = req.params.user_id;
       User.find(query, (err, user: UserSchema) => {
         if (err) res.status(400).send(err);
-        const friends = user[0].friend.map(e => {
-          User.find({ id: e.id }, (err, friend: UserSchema) => {
-            return {
-              id: friend[0].id,
-              name: decrypt(friend[0].name, req.userId),
-              fname: decrypt(friend[0].fname, req.userId),
-              id_place: friend[0].id_place || null,
-              remoteDay: friend[0].remoteDay,
-              photo: friend[0].photo
-            };
-          });
+        const friendsID = user[0].friend.map(e => e.id);
+        User.find({ 'id': { $in: friendsID } }, (err, friendList: UserSchema) => {
+          if (err) res.status(400).send(err);
+          res.status(200).json(friendList);
         });
-        res.status(200).json(friends);
       });
     });
 
