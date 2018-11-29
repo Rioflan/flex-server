@@ -388,7 +388,8 @@ const post = (router: Router) => {
                 id: body.id,
                 name: body.name,
                 fname: body.fname,
-                id_place: body.id_place
+                id_place: body.id_place,
+                photo: body.photo
               },
               user.friend
             );
