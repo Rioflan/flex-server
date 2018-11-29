@@ -64,7 +64,7 @@ const post = (router: Router) => {
       { id: id_user },
       null,
       { sort: { _id: -1 } },
-      (err: Error, user) => {
+      async (err: Error, user) => {
         if (err) RES.status(500).send(err);
 
         user.historical = params.historical;
@@ -76,7 +76,7 @@ const post = (router: Router) => {
         if (params.id_place !== null) user.id_place = params.id_place;
 
         if (params.photo && (params.photo !== "" || params.photo !== null)) {
-          const image = cloudinary.uploader
+          const image = await cloudinary.uploader
             .upload(`data:image/jpeg;base64,${params.photo}`)
             .then(result => result.secure_url)
             .catch(error => console.log(error))
