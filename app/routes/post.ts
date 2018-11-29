@@ -67,29 +67,27 @@ const post = (router: Router) => {
       (err: Error, user) => {
         if (err) RES.status(500).send(err);
 
-        const actual_user = user;
+        user.historical = params.historical;
 
-        actual_user.historical = params.historical;
+        if (params.name !== null) user.name = params.name;
 
-        if (params.name !== null) actual_user.name = params.name;
+        if (params.fname !== null) user.fname = params.fname;
 
-        if (params.fname !== null) actual_user.fname = params.fname;
+        if (params.id_place !== null) user.id_place = params.id_place;
 
-        if (params.id_place !== null) actual_user.id_place = params.id_place;
-
-        if (params.photo !== "" || params.photo !== null) {
+        if (params.photo && (params.photo !== "" || params.photo !== null)) {
           const image = cloudinary.uploader
             .upload(`data:image/jpeg;base64,${params.photo}`)
             .then(result => result.secure_url)
             .catch(error => console.log(error))
-          actual_user.photo = image;
+          user.photo = image;
         } else {
-          actual_user.photo = params.photo;
+          user.photo = params.photo;
         }
 
-        actual_user.remoteDay = params.remoteDay;
+        if (params.remoteDay) user.remoteDay = params.remoteDay;
 
-        actual_user.save(err => {
+        user.save(err => {
           if (err) RES.status(500).send(err);
         });
       }
@@ -213,8 +211,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay,
-            photo: body.photo
+            remoteDay: body.remoteDay ||null,
+            photo: body.photo ||null
           });
           //  not exists
           console.log("PLACE NOT EXISTS");
@@ -228,8 +226,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay,
-            photo: body.photo
+            remoteDay: body.remoteDay ||null,
+            photo: body.photo ||null
           });
           //  place empty
           console.log("EMPTY PLACE");
@@ -268,8 +266,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay,
-            photo: body.photo
+            remoteDay: body.remoteDay ||null,
+            photo: body.photo ||null
           });
           updatePlace(body.id_place, { using: false, id_user: "" });
         } //  user is sit somewhere and move to another place
@@ -290,8 +288,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay,
-            photo: body.photo
+            remoteDay: body.remoteDay ||null,
+            photo: body.photo ||null
           }); //  the other user leaves
           updatePlace(userSit, { using: false, id_user: "" }); // updates the old user place
           updatePlace(body.id_place, {
@@ -394,6 +392,32 @@ const post = (router: Router) => {
               },
               user.friend
             );
+            user.save((err: Error) => {
+              if (err) RES.status(500).send(err);
+              RES.status(200).send({ user });
+              console.log({ user });
+            });
+          }
+        }
+      );
+    });
+
+  router
+    .route("/add_photo")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      RES = res;
+      const id_user = encrypt(body.id_user, req.userId);
+
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err) RES.status(400).json({ err });
+          if (user) {
+            user.friend = body.photo
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
