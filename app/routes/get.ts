@@ -55,12 +55,12 @@ const Get = (router: Router) => {
         const friends = user[0].friend.map(e => {
           User.find({ id: e.id }, (err, friend: UserSchema) => {
             return {
-              id: friend.id,
-              name: decrypt(friend.name, req.userId),
-              fname: decrypt(friend.fname, req.userId),
-              id_place: friend.id_place || null,
-              remoteDay: friend.remoteDay,
-              photo: friend.photo
+              id: friend[0].id,
+              name: decrypt(friend[0].name, req.userId),
+              fname: decrypt(friend[0].fname, req.userId),
+              id_place: friend[0].id_place || null,
+              remoteDay: friend[0].remoteDay,
+              photo: friend[0].photo
             };
           });
         });
