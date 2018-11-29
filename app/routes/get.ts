@@ -54,9 +54,19 @@ const Get = (router: Router) => {
         if (err) res.status(400).send(err);
         console.log(user)
         const friendsID = user[0].friend.map(e => e.id);
-        User.find({ 'id': { $in: friendsID } }, (err, friendList: UserSchema) => {
+        User.find({ 'id': { $in: friendsID } }, (err, friendList: Array<UserSchema>) => {
           if (err) res.status(400).send(err);
-          res.status(200).json(friendList);
+          const usersDecrypted = friendList.map(e => {
+            return {
+              id: e.id,
+              name: decrypt(e.name, req.userId),
+              fname: decrypt(e.fname, req.userId),
+              id_place: e.id_place || null,
+              remoteDay: e.remoteDay,
+              photo: e.photo
+            }
+            });
+            res.status(200).json(usersDecrypted);
         });
       });
     });
