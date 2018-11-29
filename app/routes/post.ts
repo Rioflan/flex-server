@@ -394,7 +394,8 @@ const post = (router: Router) => {
             );
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
-              console.log("Friend added");
+              RES.status(200).send({ user });
+              console.log({ user });
             });
           }
         }

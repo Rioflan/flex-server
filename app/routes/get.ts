@@ -33,6 +33,7 @@ const Get = (router: Router) => {
       if (err) res.status(400).send(err);
       const usersDecrypted = users.map(e => {
         return {
+          id: e.id,
           name: decrypt(e.name, req.userId),
           fname: decrypt(e.fname, req.userId),
           id_place: e.id_place || null,
@@ -43,6 +44,30 @@ const Get = (router: Router) => {
       res.status(200).json(usersDecrypted);
     });
   });
+
+  router
+    .route("/users/:user_id/friends")
+    .get(VerifyToken, (req: Request, res: Response) => {
+      const query = <Query>{};
+      query.id = encrypt(req.params.user_id, req.userId);
+      User.find(query, (err, user: UserSchema) => {
+        if (err) res.status(400).send(err);
+        const friendsList = user["friend"];
+        const friends = friendsList.map(e => {
+          User.find({ id: e["id"] }, (err, friend: UserSchema) => {
+            return {
+              id: friend.id,
+              name: decrypt(friend.name, req.userId),
+              fname: decrypt(friend.fname, req.userId),
+              id_place: friend.id_place || null,
+              remoteDay: friend.remoteDay,
+              photo: friend.photo
+            };
+          });
+        });
+        res.status(200).json(friends);
+      });
+    });
 
   /** GET /users/last */
 
