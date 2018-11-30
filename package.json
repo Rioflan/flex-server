@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "main": "server.js",
+  "engines": {
+    "node": "10.4.0"
+  },
   "scripts": {
     "start": "node lib/server.js",
     "build": "tsc -p .",
