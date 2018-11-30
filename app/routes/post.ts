@@ -7,6 +7,8 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import cloudinary from "cloudinary";
 
+const HTTPS_REGEX = "^https?:\/\/(.*)";
+
 interface Request {
   userId?: string | Buffer | DataView;
   body: any;
@@ -75,7 +77,7 @@ const post = (router: Router) => {
 
         if (params.id_place !== null) user.id_place = params.id_place;
 
-        if (params.photo && (params.photo !== "" || params.photo !== null)) {
+        if (params.photo && params.photo.match(HTTPS_REGEX) === null && (params.photo !== "" || params.photo !== null)) {
           const image = await cloudinary.uploader
             .upload(`data:image/jpeg;base64,${params.photo}`)
             .then(result => result.secure_url)
