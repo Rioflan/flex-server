@@ -1,4 +1,12 @@
-import { pick, last, append, update, findLastIndex, propEq, filter } from "ramda";
+import {
+  pick,
+  last,
+  append,
+  update,
+  findLastIndex,
+  propEq,
+  filter
+} from "ramda";
 
 import { Request, Response, Error, Router } from "express";
 import User, { UserSchema } from "../models/user";
@@ -7,7 +15,7 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import cloudinary from "cloudinary";
 
-const HTTPS_REGEX = "^https?:\/\/(.*)";
+const HTTPS_REGEX = "^https?://(.*)";
 
 interface Request {
   userId?: string | Buffer | DataView;
@@ -77,11 +85,17 @@ const post = (router: Router) => {
 
         if (params.id_place !== null) user.id_place = params.id_place;
 
-        if (params.photo && params.photo.match(HTTPS_REGEX) === null && (params.photo !== "" || params.photo !== null)) {
+        // Here we check if the image if uploaded to cloudinary => params.photo: https://....
+        // If not we upload the image
+        if (
+          params.photo &&
+          params.photo.match(HTTPS_REGEX) === null &&
+          (params.photo !== "" || params.photo !== null)
+        ) {
           const image = await cloudinary.uploader
             .upload(`data:image/jpeg;base64,${params.photo}`)
             .then(result => result.secure_url)
-            .catch(error => console.log(error))
+            .catch(error => console.log(error));
           user.photo = image;
         } else {
           user.photo = params.photo;
@@ -213,8 +227,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay ||null,
-            photo: body.photo ||null
+            remoteDay: body.remoteDay || null,
+            photo: body.photo || null
           });
           //  not exists
           console.log("PLACE NOT EXISTS");
@@ -228,8 +242,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay ||null,
-            photo: body.photo ||null
+            remoteDay: body.remoteDay || null,
+            photo: body.photo || null
           });
           //  place empty
           console.log("EMPTY PLACE");
@@ -268,8 +282,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay ||null,
-            photo: body.photo ||null
+            remoteDay: body.remoteDay || null,
+            photo: body.photo || null
           });
           updatePlace(body.id_place, { using: false, id_user: "" });
         } //  user is sit somewhere and move to another place
@@ -290,8 +304,8 @@ const post = (router: Router) => {
             ),
             name: body.name,
             fname: body.fname,
-            remoteDay: body.remoteDay ||null,
-            photo: body.photo ||null
+            remoteDay: body.remoteDay || null,
+            photo: body.photo || null
           }); //  the other user leaves
           updatePlace(userSit, { using: false, id_user: "" }); // updates the old user place
           updatePlace(body.id_place, {
@@ -302,6 +316,7 @@ const post = (router: Router) => {
       }
     } else {
       updateUser(body.id_user, {
+        id_place: body.id_place,
         historical: body.historical,
         name: body.name,
         fname: body.fname,
@@ -403,7 +418,7 @@ const post = (router: Router) => {
       );
     });
 
-      /**
+  /**
    * This route is used to handle users login.
    */
   router
@@ -420,12 +435,9 @@ const post = (router: Router) => {
         { sort: { _id: -1 } },
         (err: Error, user) => {
           if (err) RES.status(400).json({ err });
-          const isRemovedUser = userFriend => userFriend.id !== body.id
+          const isRemovedUser = userFriend => userFriend.id !== body.id;
           if (user) {
-            user.friend = filter(
-              isRemovedUser,
-              user.friend
-            );
+            user.friend = filter(isRemovedUser, user.friend);
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
@@ -450,7 +462,7 @@ const post = (router: Router) => {
         (err: Error, user) => {
           if (err) RES.status(400).json({ err });
           if (user) {
-            user.friend = body.photo
+            user.friend = body.photo;
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
