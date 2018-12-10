@@ -280,6 +280,7 @@ const post = (router: Router) => {
               },
               body.historical
             ),
+            id_place: body.id_place,
             name: body.name,
             fname: body.fname,
             remoteDay: body.remoteDay || null,
@@ -316,7 +317,6 @@ const post = (router: Router) => {
       }
     } else {
       updateUser(body.id_user, {
-        id_place: body.id_place,
         historical: body.historical,
         name: body.name,
         fname: body.fname,
