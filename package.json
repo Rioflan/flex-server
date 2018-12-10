@@ -1,8 +1,11 @@
 {
   "name": "AppBred",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": true,
   "main": "server.js",
+  "engines": {
+    "node": "10.14.0"
+  },
   "scripts": {
     "start": "node lib/server.js",
     "build": "tsc -p .",
@@ -23,6 +26,7 @@
   "dependencies": {
     "bcryptjs": "latest",
     "body-parser": "^1.18.3",
+    "cloudinary": "^1.13.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^6.1.0",

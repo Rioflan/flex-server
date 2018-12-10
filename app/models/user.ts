@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose, { Types } from "mongoose";
 
 const { Schema } = mongoose;
 
@@ -8,7 +8,9 @@ const UserSchema = new Schema({
   fname: String,
   id_place: String,
   historical: Array,
-  isRemote: Boolean,
+  remoteDay: String,
+  photo: String,
+  friend: Array
 });
 
 export interface UserSchema {
@@ -18,9 +20,11 @@ export interface UserSchema {
   fname: string,
   id_place: string,
   historical: Array<object>,
-  isRemote: boolean,
+  remoteDay: string,
+  photo: string,
+  friend: Array<object>
 }
 
-const Model = mongoose.model('User', UserSchema);
+const Model = mongoose.model("User", UserSchema);
 
 export default Model;
