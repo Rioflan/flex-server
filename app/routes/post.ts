@@ -280,7 +280,7 @@ const post = (router: Router) => {
               },
               body.historical
             ),
-            id_place: body.id_place,
+            id_place: "",
             name: body.name,
             fname: body.fname,
             remoteDay: body.remoteDay || null,
