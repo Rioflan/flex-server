@@ -166,7 +166,6 @@ const Get = (router: Router) => {
       const regexEnvironment = {
         LOGIN_REGEX: process.env.LOGIN_REGEX,
         PLACE_REGEX: process.env.PLACE_REGEX,
-        WIFI_REGEX: process.env.WIFI_REGEX
       };
       res.status(200).json(regexEnvironment);
     });
