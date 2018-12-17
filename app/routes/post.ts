@@ -321,7 +321,8 @@ const post = (router: Router) => {
         name: body.name,
         fname: body.fname,
         remoteDay: body.remoteDay,
-        photo: body.photo
+        photo: body.photo,
+        id_place: body.id_place
       });
     }
   }
