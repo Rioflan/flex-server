@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import {
   pick,
   last,
@@ -150,7 +152,9 @@ const post = (router: Router) => {
 
   const isUserExists = (body: any) => {
     User.findOne(
-      { id: body.id_user },
+      { id: body.id_user,
+        name: body.name,
+        fname: body.fname },
       null,
       { sort: { _id: -1 } },
       (err: Error, user: UserSchema) => {
