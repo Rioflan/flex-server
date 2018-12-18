@@ -230,7 +230,7 @@ const post = (router: Router) => {
             name: body.name,
             fname: body.fname,
             remoteDay: body.remoteDay || null,
-            photo: body.photo || null
+            photo: body.photo || ""
           });
           //  not exists
           console.log("PLACE NOT EXISTS");
@@ -245,7 +245,7 @@ const post = (router: Router) => {
             name: body.name,
             fname: body.fname,
             remoteDay: body.remoteDay || null,
-            photo: body.photo || null
+            photo: body.photo || ""
           });
           //  place empty
           console.log("EMPTY PLACE");
@@ -286,7 +286,7 @@ const post = (router: Router) => {
             name: body.name,
             fname: body.fname,
             remoteDay: body.remoteDay || null,
-            photo: body.photo || null
+            photo: body.photo || ""
           });
           updatePlace(body.id_place, { using: false, id_user: "" });
         } //  user is sit somewhere and move to another place
