@@ -152,9 +152,7 @@ const post = (router: Router) => {
 
   const isUserExists = (body: any) => {
     User.findOne(
-      { id: body.id_user,
-        name: body.name,
-        fname: body.fname },
+      { id: body.id_user },
       null,
       { sort: { _id: -1 } },
       (err: Error, user: UserSchema) => {
@@ -165,8 +163,8 @@ const post = (router: Router) => {
           console.log("NOT EXISTS");
           return RES.status(200).json({ result: "User Added" });
         }
-        if (user) return RES.status(200).send({ user: user });
-
+        if (user && user.name === body.name && user.fname === body.fname) return RES.status(200).send({ user: user });
+        else return RES.status(500).send("Error with authentification.");
         // if (user) return res.status(200).send(user);
       }
     );
