@@ -323,8 +323,7 @@ const post = (router: Router) => {
         name: body.name,
         fname: body.fname,
         remoteDay: body.remoteDay,
-        photo: body.photo,
-        id_place: body.id_place
+        photo: body.photo
       });
     }
   }
@@ -466,6 +465,33 @@ const post = (router: Router) => {
           if (err) RES.status(400).json({ err });
           if (user) {
             user.friend = body.photo;
+            user.save((err: Error) => {
+              if (err) RES.status(500).send(err);
+              RES.status(200).send({ user });
+              console.log({ user });
+            });
+          }
+        }
+      );
+    });
+
+  router
+    .route("/settings_user")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      RES = res;
+      const id_user = encrypt(body.id_user, req.userId);
+
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err) RES.status(400).json({ err });
+          if (user) {
+            if (body.photo !== "" && user.photo !== body.photo) user.photo = body.photo;
+            if (body.remoteDay !== "" && user.remoteDay !== body.remoteDay) user.remoteDay = body.remoteDay;
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
