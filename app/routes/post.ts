@@ -487,11 +487,24 @@ const post = (router: Router) => {
         { id: id_user },
         null,
         { sort: { _id: -1 } },
-        (err: Error, user) => {
+        async (err: Error, user) => {
           if (err) RES.status(400).json({ err });
           if (user) {
-            if (body.photo !== "" && user.photo !== body.photo) user.photo = body.photo;
-            if (body.remoteDay !== "" && user.remoteDay !== body.remoteDay) user.remoteDay = body.remoteDay;
+            if (
+              body.photo &&
+              body.photo.match(HTTPS_REGEX) === null &&
+              (body.photo !== "" || body.photo !== null)
+            ) {
+              const image = await cloudinary.uploader
+                .upload(`data:image/jpeg;base64,${body.photo}`)
+                .then(result => result.secure_url)
+                .catch(error => console.log(error));
+              user.photo = image;
+            } else {
+              user.photo = body.photo;
+            }
+            if (body.remoteDay !== "" && user.remoteDay !== body.remoteDay)
+              user.remoteDay = body.remoteDay;
             user.save((err: Error) => {
               if (err) RES.status(500).send(err);
               RES.status(200).send({ user });
