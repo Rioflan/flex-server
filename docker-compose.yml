@@ -1,0 +1,26 @@
+version: "2"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    environment:
+      DATABASE_HOST: 172.17.0.1
+      DATABASE_PORT: 27017
+      DATABASE_DB: flex
+      DATABASE_MODE: local
+      LOGIN_REGEX: ^[A-Z]{2}[0-9]{5}$$
+      NODE_ENV: remote
+      API_SECRET: supersecret
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: flex
