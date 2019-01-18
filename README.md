@@ -3,17 +3,36 @@
 
 The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
 
-## Getting Started
+## **Getting Started**
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
+### **Prerequisites**
 
 You have to install nodeJs from the [official website](https://nodejs.org/en/download/)
 
 You can check that everything is ok by typing: `nodejs -v` and `npm -v`
 
-### Configure
+## **Docker** 🐳
+
+You have to install docker from the [official website](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose)(If you are on Mac, Docker installation already includes docker-compose).
+
+And then you can run :
+```
+docker-compose build
+```
+Which will buid the containers and then :
+```
+docker-compose run
+```
+Which will run the containers.
+
+By default app will launch on port **3000** and mongoDB on port **27017**
+
+You can list all your running containers by typing the command: 
+``` docker container ls ```
+
+### **Configure** ( without docker ) 
 
 To use the server you will have to configure the database you use.
 
@@ -47,32 +66,32 @@ DATABASE_MODE=remote // 'local' || 'remote'
 
 There is two ways to install the server:
 
-#### 1. Using npm
+#### Using npm
 
 ```
 npm install
 ```
 
-#### 2. Using Docker
+#### 2. Using yarn
 
 ```
-docker build -t <your username>/flex-server .
+yarn install
 ```
 ### Run
 
 #### 1. Using npm
 
 ```
-npm start
+npm run build:live
 ```
 
-#### 2. Using Docker
+#### 2. Using yarn
 
 ```
-docker run -p 3000:3000 -it <your username>/flex-server
+yarn run build:live
 ```
 
-### Create an API token for use
+### **Create an API token for use**
 
 Now you can access the API using localhost.
 Open your browser and type url `localhost:3000/api`.
