@@ -1,0 +1,1 @@
+mongo ds038319.mlab.com:38319/flex-server-db -u printenv DB_NAME -p printenv DB_PASSWORD < remove.sh
