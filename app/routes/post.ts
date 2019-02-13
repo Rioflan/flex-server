@@ -59,25 +59,18 @@ const post = (router: Router) => {
 	 * @param {string} id_user id of the new user
 	 * @param {string} name name of the new user
 	 * @param {string} fname family Name of the new user
-	 * @param {string} id_place place of the new user
 	 */
 	function addUser(
 		id_user: string,
 		name: string,
-		fname: string,
-		id_place: string
+		fname: string
 	) {
-		const actual_user = new User();
-		actual_user.id = id_user;
-		actual_user.name = name;
-		actual_user.fname = fname;
-		actual_user.id_place = id_place;
-		actual_user.historical = [];
-		actual_user.remoteDay = "";
-		actual_user.photo = "";
-		actual_user.friend = [];
-
-		actual_user.save((err: Error) => {
+		const user = new User();
+		user.id = id_user;
+		user.name = name;
+		user.fname = fname;
+	
+		user.save((err: Error) => {
 			if (err) RES.status(resultCodes.serverError).send(errorMessages.userCreation);
 			console.log("User created");
 		});
@@ -174,7 +167,7 @@ const post = (router: Router) => {
 				if (err) return RES.status(resultCodes.serverError).send(errorMessages.userFind);
 				if (!user) {
 					const { id_user, name, fname } = body;
-					addUser(id_user, name, fname, "");
+					addUser(id_user, name, fname);
 					console.log("NOT EXISTS");
 					return RES.status(resultCodes.success).json({ result: "User Added" });
 				}
