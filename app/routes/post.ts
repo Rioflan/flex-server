@@ -389,7 +389,7 @@ const post = (router: Router) => {
 		});
 
 	/**
-	 * This route is used to handle users login.
+	 * This route is used to add a friend.
 	 */
 	router
 		.route("/add_friend")
@@ -426,7 +426,7 @@ const post = (router: Router) => {
 		});
 
 	/**
-	 * This route is used to handle users login.
+	 * This route is used to remove a friend.
 	 */
 	router
 		.route("/remove_friend")
@@ -448,32 +448,6 @@ const post = (router: Router) => {
 						user.save((err: Error) => {
 							if (err) RES.status(resultCodes.serverError).send(errorMessages.userUpdate);
 							RES.status(resultCodes.success).send({ user });
-						});
-					}
-				}
-			);
-		});
-
-	router
-		.route("/add_photo")
-
-		.post(VerifyToken, (req: Request, res: Response) => {
-			const body = req.body;
-			RES = res;
-			const id_user = encrypt(body.id_user, req.userId);
-
-			User.findOne(
-				{ id: id_user },
-				null,
-				{ sort: { _id: -1 } },
-				(err: Error, user) => {
-					if (err) RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
-					else if (user) {
-						user.friend = body.photo;
-						user.save((err: Error) => {
-							if (err) RES.status(resultCodes.serverError).send(errorMessages.userUpdate);
-							RES.status(resultCodes.success).send({ user });
-							console.log({ user });
 						});
 					}
 				}
