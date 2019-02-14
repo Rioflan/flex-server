@@ -120,17 +120,16 @@ const post = (router: Router) => {
 	/**
 	 * This function adds a new place.
 	 * @param {string} id_place id of the new place
-	 * @param {string} id_user id of the user
 	 */
-	function addPlace(id_place: string, id_user: string) {
-		const actual_place = new Place();
-		actual_place.id = id_place;
-
-		addPlaceLogic(id_user, actual_place);
-
-		actual_place.save((err: Error) => {
+	function addPlace(
+		id_place: string
+	) {
+		const place = new Place()
+		place.id = id_place;
+	
+		place.save((err: Error) => {
 			if (err) RES.status(resultCodes.serverError).send(errorMessages.placeCreation);
-			console.log("Place Created");
+			console.log("Place created");
 		});
 	}
 
@@ -239,7 +238,7 @@ const post = (router: Router) => {
 					});
 					//  not exists
 					console.log("PLACE NOT EXISTS");
-					addPlace(body.id_place, body.id_user);
+					addPlace(body.id_place); // here the place is not set as used, will be fixed next commit
 				} else if (user === "") {
 					updateUser(body.id_user, {
 						id_place: body.id_place,
