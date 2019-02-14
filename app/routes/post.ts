@@ -172,6 +172,20 @@ const post = (router: Router) => {
 		return false;
 	}
 
+	/**
+	 * This function checks if the info entered when logging in match
+	 * the info saved in the database.
+	 * @param user the user from the database
+	 * @param info the user entered in login form
+	 */
+	function matchUserInfo(
+		user,
+		info
+	) {
+		if (user.fname !== info.fname) return false;
+		if (user.name !== info.name) return false;
+		return true;
+	}
 
 	/**
 	 * This function is used to know if a place exists and who uses it.
