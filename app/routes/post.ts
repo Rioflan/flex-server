@@ -148,25 +148,30 @@ const post = (router: Router) => {
 		})
 	}
 
-	const userExists = (body: any) => {
-		User.findOne(
-			{ id: body.id_user },
-			null,
-			{ sort: { _id: -1 } },
-			(err: Error, user: UserSchema) => {
-				if (err) return RES.status(resultCodes.serverError).send(errorMessages.userFind);
-				if (!user) {
-					const { id_user, name, fname } = body;
-					addUser(id_user, name, fname);
-					console.log("NOT EXISTS");
-					return RES.status(resultCodes.success).json({ result: "User Added" });
-				}
-				if (user && user.name === body.name && user.fname === body.fname) return RES.status(resultCodes.success).send({ user: user });
-				else return RES.status(resultCodes.serverError).send(errorMessages.userIdMatch);
-				// if (user) return res.status(resultCodes.success).send(user);
-			}
-		);
-	};
+	/**
+	 * This function is used to get a user document from the database.
+	 * @param id_user the id of the user
+	 * @returns an object containing the fields of the user if found, else null
+	 */
+	function getUserById(
+		id_user: string
+	) {
+		return User.findOne({ id: id_user }).then(user => user);
+	}
+
+	/**
+	 * This function states whether a user is already registered in the database,
+	 * based on their id.
+	 * @param id_user the id of the user
+	 */
+	async function userExists(
+		id_user: string
+	) {
+		const user = await getUserById(id_user);
+		if (user) return true;
+		return false;
+	}
+
 
 	/**
 	 * This function is used to know if a place exists and who uses it.
