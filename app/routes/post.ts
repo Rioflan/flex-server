@@ -54,11 +54,12 @@ const addPlaceLogic = (id_user: string, actual_place: any) => {
 };
 
 const post = (router: Router) => {
+	
 	/**
 	 * This function adds a new user.
 	 * @param {string} id_user id of the new user
 	 * @param {string} name name of the new user
-	 * @param {string} fname family Name of the new user
+	 * @param {string} fname first name of the new user
 	 */
 	function addUser(
 		id_user: string,
@@ -79,47 +80,41 @@ const post = (router: Router) => {
 	/**
 	 * This function updates an existing user.
 	 * @param {string} id_user id of the user
-	 * @param {object} params list of parameters
+	 * @param {object} params list of fields to be updated
 	 */
-	function updateUser(id_user: string, params) {
-		User.findOne(
-			{ id: id_user },
-			null,
-			{ sort: { _id: -1 } },
-			async (err: Error, user) => {
-				if (err) RES.status(resultCodes.serverError).send(errorMessages.userFind);
-
-				user.historical = params.historical;
-
-				if (params.name !== null) user.name = params.name;
-
-				if (params.fname !== null) user.fname = params.fname;
-
-				if (params.id_place !== null) user.id_place = params.id_place;
-
-				// Here we check if the image is uploaded to cloudinary => params.photo: https://....
-				// If not we upload the image
-				if (
-					params.photo &&
-					params.photo.match(HTTPS_REGEX) === null &&
-					(params.photo !== "" || params.photo !== null)
-				) {
-					const image = await cloudinary.uploader
-						.upload(`data:image/jpeg;base64,${params.photo}`)
-						.then(result => result.secure_url)
-						.catch(error => console.log(error));
-					user.photo = image;
-				} else {
-					user.photo = params.photo;
-				}
-
-				if (params.remoteDay) user.remoteDay = params.remoteDay;
-
-				user.save(err => {
-					if (err) RES.status(resultCodes.serverError).send(errorMessages.userUpdate);
-				});
-			}
-		);
+	function updateUser(
+		id_user: string,
+		params
+	) {
+		User.updateOne({ id: id_user }, params, (err: Error) => {
+			if (err) console.log(err);
+			console.log("User updated");
+		})
+	}
+	
+	/**
+	 * This function uploads and then updates a user's photo
+	 * @param id_user id of the user
+	 * @param photo base64 image
+	 */
+	async function updatePhoto(
+		id_user: string,
+		photo: string
+	) {
+		const url = await uploadPhoto(photo);
+		updateUser(id_user, { photo: url });
+	}
+	
+	/**
+	 * This function uploads a photo and returns its url
+	 * @param photo base64 image
+	 */
+	function uploadPhoto(photo) {
+		const image = cloudinary.uploader
+			.upload("data:image/jpeg;base64," + photo)
+			.then(result => result.secure_url)
+			.catch(error => console.log(error));
+		return image;
 	}
 
 	/**
@@ -490,40 +485,16 @@ const post = (router: Router) => {
 
 		.post(VerifyToken, (req: Request, res: Response) => {
 			const body = req.body;
-			RES = res;
 			const id_user = encrypt(body.id_user, req.userId);
 
-			User.findOne(
-				{ id: id_user },
-				null,
-				{ sort: { _id: -1 } },
-				async (err: Error, user) => {
-					if (err) RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
-					else if (user) {
-						if (
-							body.photo &&
-							body.photo.match(HTTPS_REGEX) === null &&
-							(body.photo !== "" || body.photo !== null)
-						) {
-							const image = await cloudinary.uploader
-								.upload(`data:image/jpeg;base64,${body.photo}`)
-								.then(result => result.secure_url)
-								.catch(error => console.log(error));
-							user.photo = image;
-						}
-						else {
-							user.photo = body.photo;
-						}
-						if (body.remoteDay !== "" && user.remoteDay !== body.remoteDay)
-							user.remoteDay = body.remoteDay;
-						user.save((err: Error) => {
-							if (err) RES.status(resultCodes.serverError).send(errorMessages.userUpdate);
-							RES.status(resultCodes.success).send({ user });
-							console.log({ user });
-						});
-					}
-				}
-			);
+			if (
+				body.photo &&
+				body.photo.match(HTTPS_REGEX) === null &&
+				(body.photo !== "" || body.photo !== null)
+			) updatePhoto(id_user, body.photo);
+			
+			if (body.remoteDay !== "") updateUser(id_user, { remoteDay: body.remoteDay });
+			res.status(resultCodes.success).send({success: "success"});
 		});
 };
 
