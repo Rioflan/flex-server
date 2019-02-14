@@ -383,23 +383,29 @@ const post = (router: Router) => {
 	router
 		.route("/login_user")
 
-		.post(VerifyToken, (req: Request, res: Response) => {
+		.post(VerifyToken, async (req: Request, res: Response) => {
 			const body = req.body;
-			RES = res;
 			if (
 				body.name === null ||
 				body.fname === null ||
 				body.id_user === null ||
 				body.id_user.match(process.env.LOGIN_REGEX) === null
 			)
-				return RES.status(resultCodes.syntaxError).json(errorMessages.invalidArguments);
+				return res.status(resultCodes.syntaxError).json(errorMessages.invalidArguments);
 			body.id_user = encrypt(body.id_user, req.userId);
 			body.name = encrypt(body.name, req.userId);
 			body.fname = encrypt(body.fname, req.userId);
 
-			// Check if the user exists
+			if (await userExists(body.id_user)) {
+				const user = await getUserById(body.id_user);
+				if (await matchUserInfo(user, body)) res.status(resultCodes.success).send({ user: user });
+				else res.status(resultCodes.serverError).send(errorMessages.userIdMatch);
+			}
 
-			userExists(body);
+			else {
+				addUser(body.id_user, body.name, body.fname);
+				res.status(resultCodes.success).json({ result: "User Added" });
+			}
 		});
 
 	/**
