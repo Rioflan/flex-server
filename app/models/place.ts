@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 
 const PlaceSchema = new Schema({
   id: String,
-  using: Boolean,
-  id_user: String,
+  using: { type: Boolean, default: false },
+  id_user: { type: String, default: "" }
 });
 
 export interface PlaceSchema {
