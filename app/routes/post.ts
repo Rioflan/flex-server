@@ -134,22 +134,18 @@ const post = (router: Router) => {
 	}
 
 	/**
-	 * This function updates a place.
-	 * @param {string} id_place id of the current place
-	 * @param {object} params list of parameters
+	 * This function updates an existing place.
+	 * @param {string} id_place id of the place
+	 * @param {object} params list of fields to be updated
 	 */
-	function updatePlace(id_place: string | object, params) {
-		Place.findOne({ id: id_place }, (err: Error, place: PlaceSchema) => {
-			if (err) RES.status(resultCodes.serverError).send(errorMessages.placeFind);
-			if (params.using !== null) place.using = params.using;
-
-			if (params.id_user !== null) place.id_user = params.id_user;
-
-			place.save((err: Error) => {
-				if (err) RES.status(resultCodes.serverError).send(errorMessages.placeUpdate);
-				console.log("Place Updated");
-			});
-		});
+	function updatePlace(
+		id_place: string | object, // should only be string, will be fixed
+		params
+	) {
+		Place.updateOne({ id: id_place }, params, (err: Error) => {
+			if (err) console.log(err);
+			console.log("Place updated");
+		})
 	}
 
 	const userExists = (body: any) => {
