@@ -108,13 +108,13 @@ const post = (router: Router) => {
 	/**
 	 * This function uploads a photo and returns its url
 	 * @param photo base64 image
+	 * @returns the url of the uploaded image
 	 */
 	function uploadPhoto(photo) {
-		const image = cloudinary.uploader
+		return cloudinary.uploader
 			.upload("data:image/jpeg;base64," + photo)
 			.then(result => result.secure_url)
 			.catch(error => console.log(error));
-		return image;
 	}
 
 	/**
@@ -153,11 +153,7 @@ const post = (router: Router) => {
 	 * @param id_user the id of the user
 	 * @returns an object containing the fields of the user if found, else null
 	 */
-	function getUserById(
-		id_user: string
-	) {
-		return User.findOne({ id: id_user }).then(user => user);
-	}
+	 const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
 
 	/**
 	 * This function states whether a user is already registered in the database,
@@ -182,8 +178,7 @@ const post = (router: Router) => {
 		user,
 		info
 	) {
-		if (user.fname !== info.fname) return false;
-		if (user.name !== info.name) return false;
+		if (user.fname !== info.fname || user.name !== info.name) return false;
 		return true;
 	}
 
