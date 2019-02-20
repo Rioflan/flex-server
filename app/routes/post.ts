@@ -145,6 +145,13 @@ const post = (router: Router) => {
 	 */
 	 const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
 
+	 /**
+	 * This function is used to get a place document from the database.
+	 * @param id_place the id of the place
+	 * @returns an object containing the fields of the place if found, else null
+	 */
+	const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
+
 	/**
 	 * This function states whether a user is already registered in the database,
 	 * based on their id.
