@@ -184,13 +184,9 @@ const post = (router: Router) => {
 	 * @param {string} id_place id of the current place
 	 */
 	async function whoUses(id_place: string) {
-		return await new Promise((resolve, reject) => {
-			Place.findOne({ id: id_place }, (err: Error, place: PlaceSchema) => {
-				if (err) RES.status(resultCodes.serverError).send(errorMessages.placeFind);
-				else if (place !== null) resolve(place.id_user); // "" => not used, "NAME" => used by NAME
-				else resolve("#"); // place not exists
-			});
-		});
+		const place = await getPlaceById(id_place);
+		if (place) return place.id_user; // will return "" if not used, or "name" if used by name
+		return "#";
 	}
 
 	/**
