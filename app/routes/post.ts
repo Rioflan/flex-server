@@ -43,16 +43,6 @@ interface Request {
 
 let RES;
 
-const addPlaceLogic = (id_user: string, actual_place: any) => {
-	if (id_user === null || id_user === "") {
-		actual_place.using = false;
-		actual_place.id_user = "";
-	} else {
-		actual_place.using = true;
-		actual_place.id_user = id_user;
-	}
-};
-
 const post = (router: Router) => {
 	
 	/**
