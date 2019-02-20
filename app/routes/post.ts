@@ -110,12 +110,18 @@ const post = (router: Router) => {
 	/**
 	 * This function adds a new place.
 	 * @param {string} id_place id of the new place
+	 * @param {boolean} using whether the place must be set as used or not
+	 * @param {string} id_user id of the user in case the place is set as used
 	 */
 	function addPlace(
-		id_place: string
+		id_place: string,
+		using = false,
+		id_user = ""
 	) {
 		const place = new Place()
 		place.id = id_place;
+		place.using = using;
+		place.id_user = id_user;
 	
 		place.save((err: Error) => {
 			if (err) RES.status(resultCodes.serverError).send(errorMessages.placeCreation);
@@ -185,7 +191,7 @@ const post = (router: Router) => {
 	 */
 	async function whoUses(id_place: string) {
 		const place = await getPlaceById(id_place);
-		if (place) return place.id_user; // will return "" if not used, or "name" if used by name
+		if (place) return place.id_user; // will return "" if not used, or user's id if used
 		return "#";
 	}
 
@@ -241,7 +247,7 @@ const post = (router: Router) => {
 					});
 					//  not exists
 					console.log("PLACE NOT EXISTS");
-					addPlace(body.id_place); // here the place is not set as used, will be fixed next commit
+					addPlace(body.id_place, true, body.id_user);
 				} else if (user === "") {
 					updateUser(body.id_user, {
 						id_place: body.id_place,
