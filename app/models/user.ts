@@ -6,10 +6,10 @@ const UserSchema = new Schema({
   id: String,
   name: String,
   fname: String,
-  id_place: String,
+  id_place: { type: String, default: "" },
   historical: Array,
-  remoteDay: String,
-  photo: String,
+  remoteDay: { type: String, default: "" },
+  photo: { type: String, default: "" },
   friend: Array
 });
 
