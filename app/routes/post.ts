@@ -284,10 +284,8 @@ const post = (router: Router) => {
 				}
 			} else {
 				console.log("SIT");
+				const indexUser = body.historical.length - 1;
 				if (userSit === body.id_place) {
-					const indexUser = findLastIndex(propEq("place_id", body.id_place))(
-						body.historical
-					);
 					// user already sit here and leaves
 					const endDate = new Date(Date.now()).toLocaleString();
 					updateUser(body.id_user, {
@@ -310,9 +308,6 @@ const post = (router: Router) => {
 				} //  user is sit somewhere and move to another place
 				else {
 					const endDate = new Date(Date.now()).toLocaleString();
-					const indexUser = findLastIndex(propEq("place_id", body.id_place))(
-						body.historical
-					);
 					updateUser(body.id_user, {
 						historical: update(
 							indexUser,
