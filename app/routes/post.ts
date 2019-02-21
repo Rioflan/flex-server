@@ -27,7 +27,12 @@ const errorMessages = {
 	placeCreation: "Error creating the place",
 	placeFind: "Error finding the place",
 	placeUpdate: "Error updating the place",
+	placeAlreadyUsed: "Place already used by : ",
 	invalidArguments: "Invalid arguments"
+}
+
+const successMessages = {
+	takePlace: "Place successfully assigned to user"
 }
 
 const resultCodes = {
