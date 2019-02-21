@@ -401,6 +401,52 @@ const post = (router: Router) => {
 				res.status(resultCodes.success).json({ result: "User Added" });
 			}
 		});
+	
+	/**
+	 * This route is used to assign a place to a user.
+	 */
+	router
+		.route("/take_place")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			if (!body.id_place || !body.id_user) {
+				return res.status(resultCodes.syntaxError).send(errorMessages.invalidArguments);
+			}
+
+			const id_place = body.id_place;
+			const usedById = await whoUses(id_place);
+			
+			if (usedById === "#" || usedById === "") {
+				const id_user = encrypt(body.id_user, req.userId);
+				const historical = await getUserById(id_user).then(user => user.historical);
+				const beginDate = new Date(Date.now()).toLocaleString();
+				if (usedById === "#") {
+					console.log("Place doesn't exist");
+					addPlace(id_place, true, id_user);
+				}
+				else {
+					console.log("Place exists and is free");
+					updatePlace(id_place, { using: true, id_user: id_user });
+				}
+				updateUser(id_user, {
+					id_place: id_place,
+					historical: [...historical, { id_place: id_place, begin: beginDate, end: "" }]
+				});
+				res.status(resultCodes.success).send(successMessages.takePlace);
+			}
+			
+			else {
+				console.log("Place already used");
+				const user = await getUserById(usedById);
+				const name = decrypt(user.name, req.userId);
+				const fname = decrypt(user.fname, req.userId);
+				res.status(resultCodes.serverError).json({
+					name: name,
+					fname: fname
+				});
+			}
+		});
 
 	/**
 	 * This route is used to add a friend.
