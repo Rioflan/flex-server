@@ -27,7 +27,12 @@ const errorMessages = {
 	placeCreation: "Error creating the place",
 	placeFind: "Error finding the place",
 	placeUpdate: "Error updating the place",
+	placeAlreadyUsed: "Place already used by : ",
 	invalidArguments: "Invalid arguments"
+}
+
+const successMessages = {
+	takePlace: "Place successfully assigned to user"
 }
 
 const resultCodes = {
@@ -42,16 +47,6 @@ interface Request {
 }
 
 let RES;
-
-const addPlaceLogic = (id_user: string, actual_place: any) => {
-	if (id_user === null || id_user === "") {
-		actual_place.using = false;
-		actual_place.id_user = "";
-	} else {
-		actual_place.using = true;
-		actual_place.id_user = id_user;
-	}
-};
 
 const post = (router: Router) => {
 	
@@ -120,12 +115,18 @@ const post = (router: Router) => {
 	/**
 	 * This function adds a new place.
 	 * @param {string} id_place id of the new place
+	 * @param {boolean} using whether the place must be set as used or not
+	 * @param {string} id_user id of the user in case the place is set as used
 	 */
 	function addPlace(
-		id_place: string
+		id_place: string,
+		using = false,
+		id_user = ""
 	) {
 		const place = new Place()
 		place.id = id_place;
+		place.using = using;
+		place.id_user = id_user;
 	
 		place.save((err: Error) => {
 			if (err) RES.status(resultCodes.serverError).send(errorMessages.placeCreation);
@@ -154,6 +155,13 @@ const post = (router: Router) => {
 	 * @returns an object containing the fields of the user if found, else null
 	 */
 	 const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
+
+	 /**
+	 * This function is used to get a place document from the database.
+	 * @param id_place the id of the place
+	 * @returns an object containing the fields of the place if found, else null
+	 */
+	const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
 
 	/**
 	 * This function states whether a user is already registered in the database,
@@ -187,13 +195,9 @@ const post = (router: Router) => {
 	 * @param {string} id_place id of the current place
 	 */
 	async function whoUses(id_place: string) {
-		return await new Promise((resolve, reject) => {
-			Place.findOne({ id: id_place }, (err: Error, place: PlaceSchema) => {
-				if (err) RES.status(resultCodes.serverError).send(errorMessages.placeFind);
-				else if (place !== null) resolve(place.id_user); // "" => not used, "NAME" => used by NAME
-				else resolve("#"); // place not exists
-			});
-		});
+		const place = await getPlaceById(id_place);
+		if (place) return place.id_user; // will return "" if not used, or user's id if used
+		return "#";
 	}
 
 	/**
@@ -248,7 +252,7 @@ const post = (router: Router) => {
 					});
 					//  not exists
 					console.log("PLACE NOT EXISTS");
-					addPlace(body.id_place); // here the place is not set as used, will be fixed next commit
+					addPlace(body.id_place, true, body.id_user);
 				} else if (user === "") {
 					updateUser(body.id_user, {
 						id_place: body.id_place,
@@ -280,10 +284,8 @@ const post = (router: Router) => {
 				}
 			} else {
 				console.log("SIT");
+				const indexUser = body.historical.length - 1;
 				if (userSit === body.id_place) {
-					const indexUser = findLastIndex(propEq("place_id", body.id_place))(
-						body.historical
-					);
 					// user already sit here and leaves
 					const endDate = new Date(Date.now()).toLocaleString();
 					updateUser(body.id_user, {
@@ -306,9 +308,6 @@ const post = (router: Router) => {
 				} //  user is sit somewhere and move to another place
 				else {
 					const endDate = new Date(Date.now()).toLocaleString();
-					const indexUser = findLastIndex(propEq("place_id", body.id_place))(
-						body.historical
-					);
 					updateUser(body.id_user, {
 						historical: update(
 							indexUser,
@@ -400,6 +399,52 @@ const post = (router: Router) => {
 			else {
 				addUser(body.id_user, body.name, body.fname);
 				res.status(resultCodes.success).json({ result: "User Added" });
+			}
+		});
+	
+	/**
+	 * This route is used to assign a place to a user.
+	 */
+	router
+		.route("/take_place")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			if (!body.id_place || !body.id_user) {
+				return res.status(resultCodes.syntaxError).send(errorMessages.invalidArguments);
+			}
+
+			const id_place = body.id_place;
+			const usedById = await whoUses(id_place);
+			
+			if (usedById === "#" || usedById === "") {
+				const id_user = encrypt(body.id_user, req.userId);
+				const historical = await getUserById(id_user).then(user => user.historical);
+				const beginDate = new Date(Date.now()).toLocaleString();
+				if (usedById === "#") {
+					console.log("Place doesn't exist");
+					addPlace(id_place, true, id_user);
+				}
+				else {
+					console.log("Place exists and is free");
+					updatePlace(id_place, { using: true, id_user: id_user });
+				}
+				updateUser(id_user, {
+					id_place: id_place,
+					historical: [...historical, { id_place: id_place, begin: beginDate, end: "" }]
+				});
+				res.status(resultCodes.success).send(successMessages.takePlace);
+			}
+			
+			else {
+				console.log("Place already used");
+				const user = await getUserById(usedById);
+				const name = decrypt(user.name, req.userId);
+				const fname = decrypt(user.fname, req.userId);
+				res.status(resultCodes.serverError).json({
+					name: name,
+					fname: fname
+				});
 			}
 		});
 
