@@ -25,6 +25,8 @@ const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
 
 const websocket = socketio(server);
 
+let pool = new Array();
+
 websocket.on('connect', (socket) => {
     socket.on('joinRoom', room => socket.join(room));
     socket.on('leaveRoom', room => socket.leave(room));
@@ -33,6 +35,9 @@ websocket.on('connect', (socket) => {
 placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
     const place = changes.fullDocument;
     if (place && place.using === false) {
-        websocket.in(place.id).emit('leavePlace');
+        if (websocket.sockets.adapter.rooms[place.id])
+            websocket.in(place.id).emit('leavePlace');
+        else
+            pool = [...pool, place.id];
     }
 });
