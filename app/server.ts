@@ -28,17 +28,17 @@ const websocket = socketio(server);
 let pool = new Array();
 
 websocket.on('connect', (socket) => {
-    socket.on('joinRoom', room => {
-        const index = pool.indexOf(room);
+    socket.on('joinRoom', room => socket.join(room));
+    socket.on('leaveRoom', room => socket.leave(room));
+    socket.on('checkPlace', place => {
+        const index = pool.indexOf(place);
         if (index > -1) {
             socket.emit('leavePlace');
             pool.splice(index, 1);
         }
-        else {
-            socket.join(room);
-        }
+        else
+            socket.join(place);
     });
-    socket.on('leaveRoom', room => socket.leave(room));
 });
 
 placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
