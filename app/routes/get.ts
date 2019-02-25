@@ -94,7 +94,7 @@ const Get = (router: Router) => {
     .get(VerifyToken, (req: Request, res: Response) => {
       const query = <Query>{};
       query.id = encrypt(req.params.user_id, req.userId);
-      User.find(query, (err, user: UserSchema) => {
+      User.findOne(query, (err, user: UserSchema) => {
         if (err) res.status(400).send(err);
         res.status(200).json(user);
       });
