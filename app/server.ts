@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
+import socketio from "socket.io";
+import placesCollection from "./models/place"
 
 import app from './app';
 
@@ -19,4 +21,19 @@ try {
 const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
     const port = server.address().port;
     console.log('App now running on port : ', port);
+});
+
+const websocket = socketio(server);
+
+websocket.on('connect', (socket) => {
+    socket.on('joinRoom', room => socket.join(room));
+    socket.on('leaveRoom', room => socket.leave(room));
+    websocket.emit('message', "ça marche");
+});
+
+placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
+    const place = changes.fullDocument;
+    if (place && place.using === false) {
+        websocket.in(place.id).emit('leavePlace');
+    }
 });
