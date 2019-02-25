@@ -28,7 +28,16 @@ const websocket = socketio(server);
 let pool = new Array();
 
 websocket.on('connect', (socket) => {
-    socket.on('joinRoom', room => socket.join(room));
+    socket.on('joinRoom', room => {
+        const index = pool.indexOf(room);
+        if (index > -1) {
+            socket.emit('leavePlace');
+            pool.splice(index, 1);
+        }
+        else {
+            socket.join(room);
+        }
+    });
     socket.on('leaveRoom', room => socket.leave(room));
 });
 
