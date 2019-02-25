@@ -28,7 +28,6 @@ const websocket = socketio(server);
 websocket.on('connect', (socket) => {
     socket.on('joinRoom', room => socket.join(room));
     socket.on('leaveRoom', room => socket.leave(room));
-    websocket.emit('message', "ça marche");
 });
 
 placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
