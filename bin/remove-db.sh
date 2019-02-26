@@ -1,1 +1,1 @@
-mongo "mongodb+srv://cluster0-rjkbw.mongodb.net/flex" --username GarySchwab < ./bin/remove-db.sh
+mongo "mongodb+srv://cluster0-rjkbw.mongodb.net/flex" --username GarySchwab < ./bin/remove.sh
