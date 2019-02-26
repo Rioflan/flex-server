@@ -1,1 +1,1 @@
-mongo ds038319.mlab.com:38319/flex-server-db -u $DB_NAME -p $DB_PASSWORD < ./bin/remove.sh
+mongo "mongodb+srv://cluster0-rjkbw.mongodb.net/flex" --username GarySchwab < ./bin/remove-db.sh
