@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
-import placesCollection from "./models/place"
+import Place from "./models/place"
+import cron from "cron";
 
 import app from './app';
 
@@ -41,16 +42,22 @@ websocket.on('connect', (socket) => {
     });
 });
 
-placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
-    if (changes.fullDocument) { // fullDocument is undefined if the operation is not an update (e.g. insert or remove)
-        const place = changes.fullDocument;
-        if (place.using === false) {
-            // if the user is disconnected, the room doesn't exist
-            const userConnected = websocket.sockets.adapter.rooms[place.id];
-            if (userConnected)
-                websocket.in(place.id).emit('leavePlace');
-            else
-                pool.push(place.id);
-        }
+const freePlaces = async () => {
+    const usedPlaces = await Place.find({using: true});
+    const nbPlaces = usedPlaces.length;
+    let place;
+    for (let i = 0; i < nbPlaces; i++) { // for each place that is used
+        place = usedPlaces[i];
+        Place.updateOne({ id: place.id }, { using: false, id_user: "" }); // free the place
+        
+        // notify the user
+        const userConnected = websocket.sockets.adapter.rooms[place.id];
+        if (userConnected)
+            websocket.in(place.id).emit('leavePlace');
+        else
+            pool.push(place.id);
     }
-});
+}
+
+// this cron task will call freePlaces() every day at midnight (Paris time)
+cron.job("00 00 00 * * *", freePlaces, null, true, "Europe/Paris");
