@@ -32,7 +32,8 @@ const errorMessages = {
 }
 
 const successMessages = {
-	takePlace: "Place successfully assigned to user"
+	takePlace: "Place successfully assigned to user",
+	leavePlace: "User successfully left the place"
 }
 
 const resultCodes = {
@@ -446,6 +447,25 @@ const post = (router: Router) => {
 					fname: fname
 				});
 			}
+		});
+
+	router
+		.route("/leave_place")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			if (!body.id_place || !body.id_user) {
+				return res.status(resultCodes.syntaxError).send(errorMessages.invalidArguments);
+			}
+			const id_user = encrypt(body.id_user, req.userId);
+			const historical = await getUserById(id_user).then(user => user.historical);
+			const endDate = new Date(Date.now()).toLocaleString();
+			historical[historical.length - 1].end = endDate; // set the end date of the last place in array
+			
+			updateUser(id_user, { historical: historical, id_place: "" });
+			updatePlace(body.id_place, { using: false, id_user: "" });
+			
+			res.status(resultCodes.success).send(successMessages.leavePlace);
 		});
 
 	/**
