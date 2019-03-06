@@ -7,10 +7,9 @@ import {
 
 import { Request, Response, Error, Router } from "express";
 import User from "../models/user";
-import Place from "../models/place";
+import * as model from "../models/model"
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
-import cloudinary from "cloudinary";
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -45,156 +44,6 @@ interface Request {
 let RES;
 
 const post = (router: Router) => {
-	
-	/**
-	 * This function adds a new user.
-	 * @param {string} id_user id of the new user
-	 * @param {string} name name of the new user
-	 * @param {string} fname first name of the new user
-	 */
-	function addUser(
-		id_user: string,
-		name: string,
-		fname: string
-	) {
-		const user = new User();
-		user.id = id_user;
-		user.name = name;
-		user.fname = fname;
-	
-		user.save((err: Error) => {
-			if (err) RES.status(resultCodes.serverError).send(errorMessages.userCreation);
-			console.log("User created");
-		});
-	}
-
-	/**
-	 * This function updates an existing user.
-	 * @param {string} id_user id of the user
-	 * @param {object} params list of fields to be updated
-	 */
-	function updateUser(
-		id_user: string,
-		params
-	) {
-		User.updateOne({ id: id_user }, params, (err: Error) => {
-			if (err) console.log(err);
-			console.log("User updated");
-		})
-	}
-	
-	/**
-	 * This function uploads and then updates a user's photo
-	 * @param id_user id of the user
-	 * @param photo base64 image
-	 */
-	async function updatePhoto(
-		id_user: string,
-		photo: string
-	) {
-		const url = await uploadPhoto(photo);
-		updateUser(id_user, { photo: url });
-	}
-	
-	/**
-	 * This function uploads a photo and returns its url
-	 * @param photo base64 image
-	 * @returns the url of the uploaded image
-	 */
-	function uploadPhoto(photo) {
-		return cloudinary.uploader
-			.upload("data:image/jpeg;base64," + photo)
-			.then(result => result.secure_url)
-			.catch(error => console.log(error));
-	}
-
-	/**
-	 * This function adds a new place.
-	 * @param {string} id_place id of the new place
-	 * @param {boolean} using whether the place must be set as used or not
-	 * @param {string} id_user id of the user in case the place is set as used
-	 */
-	function addPlace(
-		id_place: string,
-		using = false,
-		id_user = ""
-	) {
-		const place = new Place()
-		place.id = id_place;
-		place.using = using;
-		place.id_user = id_user;
-	
-		place.save((err: Error) => {
-			if (err) RES.status(resultCodes.serverError).send(errorMessages.placeCreation);
-			console.log("Place created");
-		});
-	}
-
-	/**
-	 * This function updates an existing place.
-	 * @param {string} id_place id of the place
-	 * @param {object} params list of fields to be updated
-	 */
-	function updatePlace(
-		id_place: string | object, // should only be string, will be fixed
-		params
-	) {
-		Place.updateOne({ id: id_place }, params, (err: Error) => {
-			if (err) console.log(err);
-			console.log("Place updated");
-		})
-	}
-
-	/**
-	 * This function is used to get a user document from the database.
-	 * @param id_user the id of the user
-	 * @returns an object containing the fields of the user if found, else null
-	 */
-	 const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
-
-	 /**
-	 * This function is used to get a place document from the database.
-	 * @param id_place the id of the place
-	 * @returns an object containing the fields of the place if found, else null
-	 */
-	const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
-
-	/**
-	 * This function states whether a user is already registered in the database,
-	 * based on their id.
-	 * @param id_user the id of the user
-	 */
-	async function userExists(
-		id_user: string
-	) {
-		const user = await getUserById(id_user);
-		if (user) return true;
-		return false;
-	}
-
-	/**
-	 * This function checks if the info entered when logging in match
-	 * the info saved in the database.
-	 * @param user the user from the database
-	 * @param info the user entered in login form
-	 */
-	function matchUserInfo(
-		user,
-		info
-	) {
-		if (user.fname !== info.fname || user.name !== info.name) return false;
-		return true;
-	}
-
-	/**
-	 * This function is used to know if a place exists and who uses it.
-	 * @param {string} id_place id of the current place
-	 */
-	async function whoUses(id_place: string) {
-		const place = await getPlaceById(id_place);
-		if (place) return place.id_user; // will return "" if not used, or user's id if used
-		return "#";
-	}
 
 	/**
 	 * This route is used to handle users login.
@@ -215,14 +64,14 @@ const post = (router: Router) => {
 			body.name = encrypt(body.name, req.userId);
 			body.fname = encrypt(body.fname, req.userId);
 
-			if (await userExists(body.id_user)) {
-				const user = await getUserById(body.id_user);
-				if (await matchUserInfo(user, body)) res.status(resultCodes.success).send({ user: user });
+			if (await model.userExists(body.id_user)) {
+				const user = await model.getUserById(body.id_user);
+				if (await model.matchUserInfo(user, body)) res.status(resultCodes.success).send({ user: user });
 				else res.status(resultCodes.serverError).send(errorMessages.userIdMatch);
 			}
 
 			else {
-				addUser(body.id_user, body.name, body.fname);
+				model.addUser(body.id_user, body.name, body.fname);
 				res.status(resultCodes.success).json({ result: "User Added" });
 			}
 		});
@@ -240,21 +89,21 @@ const post = (router: Router) => {
 			}
 
 			const id_place = body.id_place;
-			const usedById = await whoUses(id_place);
+			const usedById = await model.whoUses(id_place);
 			
 			if (usedById === "#" || usedById === "") {
 				const id_user = encrypt(body.id_user, req.userId);
-				const historical = await getUserById(id_user).then(user => user.historical);
+				const historical = await model.getUserById(id_user).then(user => user.historical);
 				const beginDate = new Date(Date.now()).toLocaleString();
 				if (usedById === "#") {
 					console.log("Place doesn't exist");
-					addPlace(id_place, true, id_user);
+					model.addPlace(id_place, true, id_user);
 				}
 				else {
 					console.log("Place exists and is free");
-					updatePlace(id_place, { using: true, id_user: id_user });
+					model.updatePlace(id_place, { using: true, id_user: id_user });
 				}
-				updateUser(id_user, {
+				model.updateUser(id_user, {
 					id_place: id_place,
 					historical: [...historical, { id_place: id_place, begin: beginDate, end: "" }]
 				});
@@ -263,7 +112,7 @@ const post = (router: Router) => {
 			
 			else {
 				console.log("Place already used");
-				const user = await getUserById(usedById);
+				const user = await model.getUserById(usedById);
 				const name = decrypt(user.name, req.userId);
 				const fname = decrypt(user.fname, req.userId);
 				res.status(resultCodes.serverError).json({
@@ -282,12 +131,12 @@ const post = (router: Router) => {
 				return res.status(resultCodes.syntaxError).send(errorMessages.invalidArguments);
 			}
 			const id_user = encrypt(body.id_user, req.userId);
-			const historical = await getUserById(id_user).then(user => user.historical);
+			const historical = await model.getUserById(id_user).then(user => user.historical);
 			const endDate = new Date(Date.now()).toLocaleString();
 			historical[historical.length - 1].end = endDate; // set the end date of the last place in array
 			
-			updateUser(id_user, { historical: historical, id_place: "" });
-			updatePlace(body.id_place, { using: false, id_user: "" });
+			model.updateUser(id_user, { historical: historical, id_place: "" });
+			model.updatePlace(body.id_place, { using: false, id_user: "" });
 			
 			res.status(resultCodes.success).send(successMessages.leavePlace);
 		});
@@ -369,9 +218,9 @@ const post = (router: Router) => {
 				body.photo &&
 				body.photo.match(HTTPS_REGEX) === null &&
 				(body.photo !== "" || body.photo !== null)
-			) updatePhoto(id_user, body.photo);
+			) model.updatePhoto(id_user, body.photo);
 			
-			if (body.remoteDay !== "") updateUser(id_user, { remoteDay: body.remoteDay });
+			if (body.remoteDay !== "") model.updateUser(id_user, { remoteDay: body.remoteDay });
 			res.status(resultCodes.success).send({success: "success"});
 		});
 };
