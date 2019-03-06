@@ -65,23 +65,6 @@ const Get = (router: Router) => {
     res.status(200).json(places);
   });
 
-  /** GET /places/:place_id */
-
-  router
-    .route("/places/:place_id")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      const query = <Query>{};
-      query.id = req.params.place_id;
-      Place.find(query, null, (err, user) => {
-        if (err) res.status(500).send(err);
-
-        User.find({ _id: user[0].id_user }, null, (err, user) => {
-          if (err) res.status(500).send(err);
-          res.status(200).json(user);
-        });
-      });
-    });
-
   /** GET /places/free */
 
   router
