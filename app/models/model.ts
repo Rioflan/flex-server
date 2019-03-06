@@ -47,6 +47,12 @@ export function updateUser(
 export const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
 
 /**
+ * This function is used to get all the users from the database.
+ * @returns an array containing objects with the fields of the users
+ */
+export const getUsers = () => User.find({}).then(users => users);
+
+/**
  * This function states whether a user is already registered in the database,
  * based on their id.
  * @param id_user the id of the user
