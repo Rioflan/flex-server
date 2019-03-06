@@ -1,18 +1,13 @@
 /* eslint-disable */
 
 import {
-	pick,
-	last,
 	append,
-	update,
-	findLastIndex,
-	propEq,
 	filter
 } from "ramda";
 
 import { Request, Response, Error, Router } from "express";
-import User, { UserSchema } from "../models/user";
-import Place, { PlaceSchema } from "../models/place";
+import User from "../models/user";
+import Place from "../models/place";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import cloudinary from "cloudinary";
@@ -199,32 +194,6 @@ const post = (router: Router) => {
 		const place = await getPlaceById(id_place);
 		if (place) return place.id_user; // will return "" if not used, or user's id if used
 		return "#";
-	}
-
-	/**
-	 * This function is used to know where the provided user is seated.
-	 * @param {string} id_place id of the current user
-	 */
-	async function whereSit(id_user: string) {
-		return await new Promise((resolve, reject) => {
-			User.findOne(
-				{ id: id_user },
-				null,
-				{ sort: { _id: -1 } },
-				(err: Error, user: UserSchema) => {
-					if (err) RES.status(resultCodes.serverError).send(errorMessages.userFind);
-					else if (user !== null) {
-						const userEnd =
-							user.historical.length > 0
-								? pick(["end"], last(user.historical))
-								: "";
-						if (userEnd.end === "") resolve(user.id_place);
-						else resolve("");
-					}
-					else resolve("#");
-				}
-			);
-		});
 	}
 
 	/**
