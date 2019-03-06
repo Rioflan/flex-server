@@ -57,26 +57,7 @@ const Get = (router: Router) => {
       const user = model.getUserById(id_user);
       res.status(200).json(user);
       });
-
-  /** GET /users/:user_id/last */
-
-  router
-    .route("/users/:user_id/last")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      const query = <Query>{};
-      query.id = req.params.user_id;
-
-      User.find(
-        query,
-        null,
-        { limit: 1, sort: { _id: -1 } },
-        (err, user: UserSchema) => {
-          if (err) res.status(400).send(err);
-          res.status(200).json(user);
-        }
-      );
-    });
-
+      
   /** GET /places */
 
   router.route("/places").get(VerifyToken, (req: Request, res: Response) => {
