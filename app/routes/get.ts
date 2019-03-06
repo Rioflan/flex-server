@@ -31,28 +31,21 @@ const Get = (router: Router) => {
 
   router
     .route("/users/:user_id/friends")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      const query = <Query>{};
-      query.id = encrypt(req.params.user_id, req.userId);
-      User.find(query, (err, user: UserSchema) => {
-        if (err) res.status(400).send(err);
-        console.log(user)
-        const friendsID = user[0].friend.map(e => e.id);
-        User.find({ 'id': { $in: friendsID } }, (err, friendList: Array<UserSchema>) => {
-          if (err) res.status(400).send(err);
-          const usersDecrypted = friendList.map(e => {
-            return {
-              id: e.id,
-              name: decrypt(e.name, req.userId),
-              fname: decrypt(e.fname, req.userId),
-              id_place: e.id_place || null,
-              remoteDay: e.remoteDay,
-              photo: e.photo
-            }
-            });
-            res.status(200).json(usersDecrypted);
-        });
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      const user_id = encrypt(req.params.user_id, req.userId);
+      const user = await model.getUserById(user_id);
+      const friendsArray = user.friend;
+      const usersDecrypted = friendsArray.map(friend => {
+        return {
+          id: decrypt(friend.id, req.userId),
+          name: decrypt(friend.name, req.userId),
+          fname: decrypt(friend.fname, req.userId),
+          id_place: friend.id_place || null,
+          remoteDay: friend.remoteDay,
+          photo: friend.photo
+        }
       });
+      res.status(200).json(usersDecrypted);
     });
 
   /** GET /users/:user_id */
