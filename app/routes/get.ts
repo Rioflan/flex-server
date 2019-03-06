@@ -65,19 +65,6 @@ const Get = (router: Router) => {
     res.status(200).json(places);
   });
 
-  /** GET /places/free */
-
-  router
-    .route("/places/free")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      const query = <Query>{};
-      query.using = false;
-      Place.find(query, null, (err, places: Array<PlaceSchema>) => {
-        if (err) res.status(500).send(err);
-        res.status(200).json(places);
-      });
-    });
-
   /** GET /environment */
 
   router
