@@ -64,18 +64,6 @@ const Get = (router: Router) => {
     const places = await model.getPlaces();
     res.status(200).json(places);
   });
-
-  /** GET /environment */
-
-  router
-    .route("/environment")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      const regexEnvironment = {
-        LOGIN_REGEX: process.env.LOGIN_REGEX,
-        PLACE_REGEX: process.env.PLACE_REGEX,
-      };
-      res.status(200).json(regexEnvironment);
-    });
 };
 
 export default Get;
