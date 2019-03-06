@@ -162,8 +162,8 @@ const post = (router: Router) => {
 						user.friend = append(
 							{
 								id: body.id,
-								name: body.name,
-								fname: body.fname,
+								name: encrypt(body.name, req.userId),
+								fname: encrypt(body.fname, req.userId),
 								id_place: body.id_place,
 								photo: body.photo
 							},
