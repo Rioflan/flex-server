@@ -40,6 +40,26 @@ export function updateUser(
 }
 
 /**
+ * This function is used to get a user document from the database.
+ * @param id_user the id of the user
+ * @returns an object containing the fields of the user if found, else null
+ */
+export const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
+
+/**
+ * This function states whether a user is already registered in the database,
+ * based on their id.
+ * @param id_user the id of the user
+ */
+export async function userExists(
+    id_user: string
+) {
+    const user = await getUserById(id_user);
+    if (user) return true;
+    return false;
+}
+
+/**
  * This function uploads and then updates a user's photo
  * @param id_user id of the user
  * @param photo base64 image
@@ -62,6 +82,20 @@ export function uploadPhoto(photo) {
         .upload("data:image/jpeg;base64," + photo)
         .then(result => result.secure_url)
         .catch(error => console.log(error));
+}
+
+/**
+ * This function checks if the info entered when logging in match
+ * the info saved in the database.
+ * @param user the user from the database
+ * @param info the user entered in login form
+ */
+export function matchUserInfo(
+    user,
+    info
+) {
+    if (user.fname !== info.fname || user.name !== info.name) return false;
+    return true;
 }
 
 /**
@@ -101,46 +135,12 @@ export function updatePlace(
     })
 }
 
-/**
- * This function is used to get a user document from the database.
- * @param id_user the id of the user
- * @returns an object containing the fields of the user if found, else null
- */
-export const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
-
     /**
  * This function is used to get a place document from the database.
  * @param id_place the id of the place
  * @returns an object containing the fields of the place if found, else null
  */
 export const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
-
-/**
- * This function states whether a user is already registered in the database,
- * based on their id.
- * @param id_user the id of the user
- */
-export async function userExists(
-    id_user: string
-) {
-    const user = await getUserById(id_user);
-    if (user) return true;
-    return false;
-}
-
-/**
- * This function checks if the info entered when logging in match
- * the info saved in the database.
- * @param user the user from the database
- * @param info the user entered in login form
- */
-export function matchUserInfo(
-    user,
-    info
-) {
-    if (user.fname !== info.fname || user.name !== info.name) return false;
-    return true;
-}
 
 /**
  * This function is used to know if a place exists and who uses it.
