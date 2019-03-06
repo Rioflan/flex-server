@@ -60,11 +60,9 @@ const Get = (router: Router) => {
       
   /** GET /places */
 
-  router.route("/places").get(VerifyToken, (req: Request, res: Response) => {
-    Place.find({}, null, (err, places: Array<PlaceSchema>) => {
-      if (err) res.status(500).send(err);
-      res.status(200).json(places);
-    });
+  router.route("/places").get(VerifyToken, async (req: Request, res: Response) => {
+    const places = await model.getPlaces();
+    res.status(200).json(places);
   });
 
   /** GET /places/:place_id */
