@@ -52,9 +52,9 @@ const Get = (router: Router) => {
 
   router
     .route("/users/:user_id")
-    .get(VerifyToken, (req: Request, res: Response) => {
+    .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
-      const user = model.getUserById(id_user);
+      const user = await model.getUserById(id_user);
       res.status(200).json(user);
       });
       
