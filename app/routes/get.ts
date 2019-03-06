@@ -1,14 +1,7 @@
-import { Request, Response, Error, Router } from "express";
-import User, { UserSchema } from "../models/user";
-import Place, { PlaceSchema } from "../models/place";
+import { Request, Response, Router } from "express";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
-
-interface Query {
-  id?: string;
-  using?: boolean;
-}
 
 const Get = (router: Router) => {
 
