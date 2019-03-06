@@ -3,6 +3,7 @@ import User, { UserSchema } from "../models/user";
 import Place, { PlaceSchema } from "../models/place";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
+import * as model from "../models/model";
 
 interface Query {
   id?: string;
@@ -13,21 +14,19 @@ const Get = (router: Router) => {
 
   /** GET /users => {name, fname, id_place} */
 
-  router.route("/users").get(VerifyToken, (req: Request, res: Response) => {
-    User.find({}, null, (err, users: Array<UserSchema>) => {
-      if (err) res.status(400).send(err);
-      const usersDecrypted = users.map(e => {
-        return {
-          id: e.id,
-          name: decrypt(e.name, req.userId),
-          fname: decrypt(e.fname, req.userId),
-          id_place: e.id_place || null,
-          remoteDay: e.remoteDay,
-          photo: e.photo
-        };
-      });
-      res.status(200).json(usersDecrypted);
+  router.route("/users").get(VerifyToken, async (req: Request, res: Response) => {
+    const users = await model.getUsers();
+    const usersDecrypted = users.map(user => {
+      return {
+        id: user.id,
+        name: decrypt(user.name, req.userId),
+        fname: decrypt(user.fname, req.userId),
+        id_place: user.id_place || null,
+        remoteDay: user.remoteDay,
+        photo: user.photo
+      };
     });
+    res.status(200).json(usersDecrypted);
   });
 
   router
