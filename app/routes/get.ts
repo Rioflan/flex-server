@@ -4,27 +4,12 @@ import Place, { PlaceSchema } from "../models/place";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 
-interface QueryUser {
-  name?: string;
-  fname?: string;
-  id_place?: string;
-  email?: string;
-}
-
 interface Query {
   id?: string;
   using?: boolean;
 }
 
 const Get = (router: Router) => {
-  function getQuery(req: Request) {
-    const query_user = <QueryUser>{};
-    if (req.query.name !== null) query_user.name = req.query.name;
-    if (req.query.fname !== null) query_user.fname = req.query.fname;
-    if (req.query.id_place !== null) query_user.id_place = req.query.id_place;
-
-    return query_user;
-  }
 
   /** GET /users => {name, fname, id_place} */
 
@@ -69,22 +54,6 @@ const Get = (router: Router) => {
             res.status(200).json(usersDecrypted);
         });
       });
-    });
-
-  /** GET /users/last */
-
-  router
-    .route("/users/last")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      User.find(
-        getQuery(req),
-        null,
-        { limit: 1, sort: { _id: -1 } },
-        (err, user: UserSchema) => {
-          if (err) res.status(400).send(err);
-          res.status(200).json(user);
-        }
-      );
     });
 
   /** GET /users/:user_id */
