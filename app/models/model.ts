@@ -149,6 +149,12 @@ export function updatePlace(
 export const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
 
 /**
+ * This function is used to get all the places from the database.
+ * @returns an array containing objects with the fields of the places
+ */
+export const getPlaces = () => Place.find({}).then(places => places);
+
+/**
  * This function is used to know if a place exists and who uses it.
  * @param {string} id_place id of the current place
  */
