@@ -83,3 +83,7 @@ typings/
 
 
 # End of https://www.gitignore.io/api/node
+lib/test/post.js
+lib/test/socketio.js
+app/test/post.ts
+app/test/socketio.ts
