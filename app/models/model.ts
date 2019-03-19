@@ -18,9 +18,10 @@ export function addUser(
     user.name = name;
     user.fname = fname;
 
-    user.save((err: Error) => {
+    return user.save()
+    .then((user, err) => {
         if (err) console.log(err);
-        console.log("User created");
+        else console.log("User created");
     });
 }
 
