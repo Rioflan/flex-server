@@ -1,12 +1,12 @@
 module.exports = {
-  "roots": [
+  roots: [
     "<rootDir>/app/test"
   ],
-  "transform": {
+  transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
-  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-  "moduleFileExtensions": [
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  moduleFileExtensions: [
     "ts",
     "tsx",
     "js",
@@ -14,4 +14,5 @@ module.exports = {
     "json",
     "node"
   ],
+  testEnvironment: 'node'
 }
