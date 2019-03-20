@@ -121,7 +121,8 @@ export function addPlace(
     place.using = using;
     place.id_user = id_user;
 
-    place.save((err: Error) => {
+    return place.save()
+    .then((place, err: Error) => {
         if (err) console.log(err);
         console.log("Place created");
     });
