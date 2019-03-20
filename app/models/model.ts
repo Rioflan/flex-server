@@ -45,13 +45,13 @@ export function updateUser(
  * @param id_user the id of the user
  * @returns an object containing the fields of the user if found, else null
  */
-export const getUserById = (id_user: string) => User.findOne({ id: id_user }).then(user => user);
+export const getUserById = (id_user: string) => User.findOne({ id: id_user });
 
 /**
  * This function is used to get all the users from the database.
  * @returns an array containing objects with the fields of the users
  */
-export const getUsers = () => User.find({}).then(users => users);
+export const getUsers = () => User.find({});
 
 /**
  * This function states whether a user is already registered in the database,
@@ -101,8 +101,7 @@ export function matchUserInfo(
     user,
     info
 ) {
-    if (user.fname !== info.fname || user.name !== info.name) return false;
-    return true;
+    return user.fname === info.fname && user.name === info.name;
 }
 
 /**
@@ -148,13 +147,13 @@ export function updatePlace(
  * @param id_place the id of the place
  * @returns an object containing the fields of the place if found, else null
  */
-export const getPlaceById = (id_place: string) => Place.findOne({ id: id_place }).then(place => place);
+export const getPlaceById = (id_place: string) => Place.findOne({ id: id_place });
 
 /**
  * This function is used to get all the places from the database.
  * @returns an array containing objects with the fields of the places
  */
-export const getPlaces = () => Place.find({}).then(places => places);
+export const getPlaces = () => Place.find({});
 
 /**
  * This function is used to know if a place exists and who uses it.
