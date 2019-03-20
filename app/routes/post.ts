@@ -66,13 +66,14 @@ const post = (router: Router) => {
 
 			if (await model.userExists(body.id_user)) {
 				const user = await model.getUserById(body.id_user);
-				if (await model.matchUserInfo(user, body)) res.status(resultCodes.success).send({ user: user });
+				if (model.matchUserInfo(user, body)) res.status(resultCodes.success).send(user);
 				else res.status(resultCodes.serverError).send(errorMessages.userIdMatch);
 			}
 
 			else {
-				model.addUser(body.id_user, body.name, body.fname);
-				res.status(resultCodes.success).json({ result: "User Added" });
+				await model.addUser(body.id_user, body.name, body.fname);
+				const user = await model.getUserById(body.id_user);
+				res.status(resultCodes.success).json(user);
 			}
 		});
 	
