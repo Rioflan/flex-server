@@ -36,6 +36,7 @@
     "http-errors": "~1.6.2",
     "jsonwebtoken": "latest",
     "mockgoose": "^7.3.5",
+    "mongodb-memory-server": "^4.2.1",
     "mongoose": "latest",
     "node-gyp": "^3.8.0",
     "nodemon": "^1.18.3",
