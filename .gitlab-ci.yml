@@ -4,6 +4,8 @@ image:
 stages:
   - build
   - test
+  - deploy_test
+  - test_api
   - deploy
 
 cache:
@@ -14,12 +16,32 @@ build:
   stage: build
   script:
     - npm install
+    - npm run build
     - echo "Build Successfull"
 
 test:
   stage: test
   script:
     - npm test
+    - echo "Test Successfull"
+
+deploy_test:
+  stage: deploy_test
+  image: ruby:latest
+  only:
+    - master
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=flex-server-test --api-key=$HEROKU_TEST_API_KEY
+    - echo "Deployment Successfull"
+
+test_api:
+  stage: test_api
+  script:
+    - npm install -y -g dredd
+    - dredd ./swagger/swagger.yaml $HEROKU_TEST_URL --hookfiles=./swagger/hooks.js
     - echo "Test Successfull"
 
 deploy:
