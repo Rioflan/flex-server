@@ -28,8 +28,6 @@ test:
 deploy_test:
   stage: deploy_test
   image: ruby:latest
-  only:
-    - master
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
