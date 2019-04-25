@@ -41,18 +41,4 @@ websocket.on('connect', (socket) => {
     });
 });
 
-placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
-    if (changes.fullDocument) { // fullDocument is undefined if the operation is not an update (e.g. insert or remove)
-        const place = changes.fullDocument;
-        if (place.using === false) {
-            // if the user is disconnected, the room doesn't exist
-            const userConnected = websocket.sockets.adapter.rooms[place.id];
-            if (userConnected)
-                websocket.in(place.id).emit('leavePlace');
-            else
-                pool.push(place.id);
-        }
-    }
-});
-
 listOfRoutes(router, websocket, pool);
