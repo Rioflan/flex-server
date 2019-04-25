@@ -3,7 +3,7 @@ import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
 import placesCollection from "./models/place"
 
-import app from './app';
+import app, { router, listOfRoutes } from './app';
 
 const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
 
@@ -54,3 +54,5 @@ placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) 
         }
     }
 });
+
+listOfRoutes(router, websocket, pool);
