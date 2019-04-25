@@ -25,7 +25,7 @@ async function init() {
     });
 
     const websocket = socketio(server);
-    let pool = new Array();
+    let pool = await getPooledPlaces();
 
     websocket.on('connect', (socket) => {
         socket.on('joinRoom', room => socket.join(room));
