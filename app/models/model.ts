@@ -41,6 +41,21 @@ export function updateUser(
 }
 
 /**
+ * This function updates several existing users.
+ * @param {object} conditions conditions for the users to be updated (e.g. { id: "foo" })
+ * @param {object} params list of fields to be updated
+ */
+export function updateManyUsers(
+    conditions,
+    params
+) {
+    User.updateMany(conditions, params, (err: Error) => {
+        if (err) console.log(err);
+        console.log("Updated users matching condition " + JSON.stringify(conditions, null, 2));
+    })
+}
+
+/**
  * This function is used to get a user document from the database.
  * @param id_user the id of the user
  * @returns an object containing the fields of the user if found, else null
