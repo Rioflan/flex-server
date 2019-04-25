@@ -182,6 +182,38 @@ export async function whoUses(id_place: string) {
 }
 
 /**
+ * This function is used to set all the places to free
+ * and all the users to not seated.
+ * @param websocket the sockets to use to make the connection between client and server
+ * @param {Array<string>} pool the pool array to fill in case a user is disconnected
+ */
+export async function resetPlaces(websocket, pool: Array<string>) {
+    //Updates all used places
+    const places = await getPlaces(); // get every place from database
+    const length = places.length;
+
+    for (let index = 0; index < length; index++) { // for each place
+        const place = places[index];
+        if (place.using === true) {
+            // If the user of the place is connected,
+            // the sockects room doesn't exist meaning that
+            // userConnected will be undefined.
+            // Else, it will be an object.
+            const userConnected = websocket.sockets.adapter.rooms[place.id];
+            if (userConnected)
+                websocket.in(place.id).emit('leavePlace');
+            else {
+                pool.push(place.id);
+                addPooledPlace(place.id);
+            }
+        }
+    }
+
+    //Update all seated users
+    updateManyUsers({ id_place: { $ne: "" } }, { id_place: "" });
+}
+
+/**
  * This function is used to add a place to the database's pool.
  * @param id_place the id of the place to be saved
  */
