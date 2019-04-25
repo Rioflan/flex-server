@@ -1,5 +1,6 @@
 import User from "../models/user";
 import Place from "../models/place";
+import PooledPlace from "../models/pooledPlace";
 import cloudinary from "cloudinary";
 
 /**
@@ -179,3 +180,39 @@ export async function whoUses(id_place: string) {
     if (place) return place.id_user; // will return "" if not used, or user's id if used
     return "#";
 }
+
+/**
+ * This function is used to add a place to the database's pool.
+ * @param id_place the id of the place to be saved
+ */
+export function addPooledPlace(
+    id_place: string
+) {
+    const pooledPlace = new PooledPlace();
+    pooledPlace.id = id_place;
+    
+    return pooledPlace.save()
+    .then((pooledPlace, err: Error) => {
+        if (err) console.log(err);
+        else console.log(`Place ${pooledPlace.id} added to pool`);
+    });
+}
+
+/**
+ * This function is used to remove a place from the database's pool.
+ * @param id_place the id of the place to be removed
+ */
+export function removePooledPlace(
+    id_place: string
+) {
+    PooledPlace.deleteOne({id: id_place}, (err: Error) => {
+        if (err) console.log(err);
+        else console.log(`${id_place} removed from pool`);
+    })
+}
+
+/**
+ * This function is used to get all the places of the database's pool.
+ * @returns an array of string containing the id of the places
+ */
+export const getPooledPlaces = () => PooledPlace.find({}).then(pooledPlaces => pooledPlaces.map(pooledPlace => pooledPlace.id));
