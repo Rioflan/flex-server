@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
-import placesCollection from "./models/place"
+import { removePooledPlace, getPooledPlaces } from "./models/model";
 
-import app from './app';
+import app, { router, listOfRoutes } from './app';
 
 const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
 
@@ -18,39 +18,30 @@ try {
     console.log(err);
 }
 
-const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
-    const port = server.address().port;
-    console.log('App now running on port : ', port);
-});
-
-const websocket = socketio(server);
-
-let pool = new Array();
-
-websocket.on('connect', (socket) => {
-    socket.on('joinRoom', room => socket.join(room));
-    socket.on('leaveRoom', room => socket.leave(room));
-    socket.on('checkPlace', place => {
-        const index = pool.indexOf(place);
-        if (index > -1) {
-            socket.emit('leavePlace');
-            pool.splice(index, 1);
-        }
-        else
-            socket.join(place);
+async function init() {
+    const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
+        const port = server.address().port;
+        console.log('App now running on port : ', port);
     });
-});
 
-placesCollection.watch({ fullDocument: 'updateLookup' }).on('change', (changes) => {
-    if (changes.fullDocument) { // fullDocument is undefined if the operation is not an update (e.g. insert or remove)
-        const place = changes.fullDocument;
-        if (place.using === false) {
-            // if the user is disconnected, the room doesn't exist
-            const userConnected = websocket.sockets.adapter.rooms[place.id];
-            if (userConnected)
-                websocket.in(place.id).emit('leavePlace');
+    const websocket = socketio(server);
+    let pool = await getPooledPlaces();
+
+    websocket.on('connect', (socket) => {
+        socket.on('joinRoom', room => socket.join(room));
+        socket.on('leaveRoom', room => socket.leave(room));
+        socket.on('checkPlace', place => {
+            const index = pool.indexOf(place);
+            if (index > -1) {
+                socket.emit('leavePlace');
+                pool.splice(index, 1);
+                removePooledPlace(place);
+            }
             else
-                pool.push(place.id);
-        }
-    }
-});
+                socket.join(place);
+        });
+    });
+    listOfRoutes(router, websocket, pool);
+}
+
+init();

@@ -1,5 +1,6 @@
 import User from "../models/user";
 import Place from "../models/place";
+import PooledPlace from "../models/pooledPlace";
 import cloudinary from "cloudinary";
 
 /**
@@ -37,6 +38,21 @@ export function updateUser(
     User.updateOne({ id: id_user }, params, (err: Error) => {
         if (err) console.log(err);
         console.log("User updated");
+    })
+}
+
+/**
+ * This function updates several existing users.
+ * @param {object} conditions conditions for the users to be updated (e.g. { id: "foo" })
+ * @param {object} params list of fields to be updated
+ */
+export function updateManyUsers(
+    conditions,
+    params
+) {
+    User.updateMany(conditions, params, (err: Error) => {
+        if (err) console.log(err);
+        console.log("Updated users matching condition " + JSON.stringify(conditions, null, 2));
     })
 }
 
@@ -164,3 +180,71 @@ export async function whoUses(id_place: string) {
     if (place) return place.id_user; // will return "" if not used, or user's id if used
     return "#";
 }
+
+/**
+ * This function is used to set all the places to free
+ * and all the users to not seated.
+ * @param websocket the sockets to use to make the connection between client and server
+ * @param {Array<string>} pool the pool array to fill in case a user is disconnected
+ */
+export async function resetPlaces(websocket, pool: Array<string>) {
+    //Updates all used places
+    const places = await getPlaces(); // get every place from database
+    const length = places.length;
+
+    for (let index = 0; index < length; index++) { // for each place
+        const place = places[index];
+        if (place.using === true) {
+            // If the user of the place is connected,
+            // the sockects room doesn't exist meaning that
+            // userConnected will be undefined.
+            // Else, it will be an object.
+            const userConnected = websocket.sockets.adapter.rooms[place.id];
+            if (userConnected)
+                websocket.in(place.id).emit('leavePlace');
+            else {
+                pool.push(place.id);
+                addPooledPlace(place.id);
+            }
+        }
+    }
+
+    //Update all seated users
+    updateManyUsers({ id_place: { $ne: "" } }, { id_place: "" });
+}
+
+/**
+ * This function is used to add a place to the database's pool.
+ * @param id_place the id of the place to be saved
+ */
+export function addPooledPlace(
+    id_place: string
+) {
+    const pooledPlace = new PooledPlace();
+    pooledPlace.id = id_place;
+    
+    return pooledPlace.save()
+    .then((pooledPlace, err: Error) => {
+        if (err) console.log(err);
+        else console.log(`Place ${pooledPlace.id} added to pool`);
+    });
+}
+
+/**
+ * This function is used to remove a place from the database's pool.
+ * @param id_place the id of the place to be removed
+ */
+export function removePooledPlace(
+    id_place: string
+) {
+    PooledPlace.deleteOne({id: id_place}, (err: Error) => {
+        if (err) console.log(err);
+        else console.log(`${id_place} removed from pool`);
+    })
+}
+
+/**
+ * This function is used to get all the places of the database's pool.
+ * @returns an array of string containing the id of the places
+ */
+export const getPooledPlaces = () => PooledPlace.find({}).then(pooledPlaces => pooledPlaces.map(pooledPlace => pooledPlace.id));
