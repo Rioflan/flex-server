@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
-import placesCollection from "./models/place"
+import { removePooledPlace, getPooledPlaces } from "./models/model";
 
 import app, { router, listOfRoutes } from './app';
 
@@ -18,27 +18,30 @@ try {
     console.log(err);
 }
 
-const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
-    const port = server.address().port;
-    console.log('App now running on port : ', port);
-});
-
-const websocket = socketio(server);
-
-let pool = new Array();
-
-websocket.on('connect', (socket) => {
-    socket.on('joinRoom', room => socket.join(room));
-    socket.on('leaveRoom', room => socket.leave(room));
-    socket.on('checkPlace', place => {
-        const index = pool.indexOf(place);
-        if (index > -1) {
-            socket.emit('leavePlace');
-            pool.splice(index, 1);
-        }
-        else
-            socket.join(place);
+async function init() {
+    const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
+        const port = server.address().port;
+        console.log('App now running on port : ', port);
     });
-});
 
-listOfRoutes(router, websocket, pool);
+    const websocket = socketio(server);
+    let pool = new Array();
+
+    websocket.on('connect', (socket) => {
+        socket.on('joinRoom', room => socket.join(room));
+        socket.on('leaveRoom', room => socket.leave(room));
+        socket.on('checkPlace', place => {
+            const index = pool.indexOf(place);
+            if (index > -1) {
+                socket.emit('leavePlace');
+                pool.splice(index, 1);
+                removePooledPlace(place);
+            }
+            else
+                socket.join(place);
+        });
+    });
+    listOfRoutes(router, websocket, pool);
+}
+
+init();
