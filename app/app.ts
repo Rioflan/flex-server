@@ -11,15 +11,13 @@ const app: express.Application = express(); // use express on our app
 if (process.env.NODE_ENV === "production")
   app.use(enforce.HTTPS({ trustProtoHeader: true })); // Redirect http => https
 
-const listOfRoutes = (router: Router) => {
+export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);
-  Get(router);
+  Get(router, websocket, pool);
   Auth(router);
 };
 
-const router: Router = express.Router(); // get an instance of the express Router
-
-listOfRoutes(router);
+export const router: Router = express.Router(); // get an instance of the express Router
 
 router.use((req: Request, res: Response, next) => {
   console.log(req.connection.remoteAddress);
