@@ -206,6 +206,7 @@ export async function resetPlaces(websocket, pool: Array<string>) {
                 pool.push(place.id);
                 addPooledPlace(place.id);
             }
+            updatePlace(place.id, { using: false, id_user: "" });
         }
     }
 
