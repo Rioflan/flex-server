@@ -141,9 +141,9 @@ describe('Testing models', () => {
 
         it('resets places', async () => {
             await model.addPlace("4-V-RER11");
-            model.updatePlace("4-V-RER11", { using: true });
+            model.updatePlace("4-V-RER11", { using: true, id_user: "AA00000" });
             await model.addPlace("4-V-RER12");
-            model.updatePlace("4-V-RER12", { using: true });
+            model.updatePlace("4-V-RER12", { using: true, id_user: "AA00001" });
             const mockB = jest.fn();
             const mockA = jest.fn(() => { return { emit: mockB }});
             const websocket = {
@@ -161,6 +161,8 @@ describe('Testing models', () => {
             assert.equal(mockB.mock.calls[0][0], 'leavePlace');
             const places = await model.getPlaces();
             assert(!places.some(x => x.using));
+            assert(!(await model.getUserById("AA00000")).pool);
+            assert((await model.getUserById("AA00001")).pool);
         });
 
         it('gets all pooled users', async () => {
