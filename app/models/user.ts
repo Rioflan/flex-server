@@ -10,7 +10,8 @@ const UserSchema = new Schema({
   historical: Array,
   remoteDay: { type: String, default: "" },
   photo: { type: String, default: "" },
-  friend: Array
+  friend: Array,
+  pool: { type: Boolean, default: false }
 });
 
 export interface UserSchema {

@@ -20,7 +20,6 @@ export const listOfRoutes = (router: Router, websocket, pool) => {
 export const router: Router = express.Router(); // get an instance of the express Router
 
 router.use((req: Request, res: Response, next) => {
-  console.log(req.connection.remoteAddress);
   next();
 });
 

@@ -4,7 +4,6 @@ import assert from "assert";
 import * as model from '../models/model';
 jest.mock('cloudinary');
 import cloudinary from 'cloudinary';
-import PooledPlace from "../models/pooledPlace";
 
 let mockDB;
 
@@ -154,31 +153,17 @@ describe('Testing models', () => {
                 }}},
                 in: mockA
             };
-            const pooledPlaces = await model.getPooledPlaces();
-            await model.resetPlaces(websocket, pooledPlaces);
+            const pooledUsers = await model.getPooledUsers();
+            await model.resetPlaces(websocket, pooledUsers);
             assert.equal(mockA.mock.calls.length, 1);
             assert.equal(mockB.mock.calls.length, mockA.mock.calls.length);
             assert.equal(mockA.mock.calls[0][0], "4-V-RER11");
             assert.equal(mockB.mock.calls[0][0], 'leavePlace');
         });
 
-        it('adds pooled place', async () => {
-            const id_place = "4-V-RER10";
-            await model.addPooledPlace(id_place);
-            const place = await PooledPlace.findOne({ id: id_place });
-            assert(place);
-        });
-
-        it('removes pooled place', async () => {
-            const id_place = "4-V-RER10";
-            await model.removePooledPlace(id_place);
-            const place = await PooledPlace.findOne({ id: id_place });
-            assert(!place);
-        });
-
-        it('gets all pooled places', async () => {
-            const pooledPlaces = await model.getPooledPlaces();
-            assert(pooledPlaces);
+        it('gets all pooled users', async () => {
+            const pooledUsers = await model.getPooledUsers();
+            assert(pooledUsers);
         });
     })
 

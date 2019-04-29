@@ -60,8 +60,8 @@ const Get = (router: Router, websocket, pool) => {
 
   router
     .route("/reset_places")
-    .get(VerifyToken, (req: Request, res: Response) => {
-      model.resetPlaces(websocket, pool);
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      await model.resetPlaces(websocket, pool);
       res.status(200).send("Places successfully reset");
     })
 };
