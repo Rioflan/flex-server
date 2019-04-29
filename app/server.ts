@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
-import { removePooledPlace, getPooledPlaces } from "./models/model";
+import { encrypt } from './routes/test';
+import { updateUser, getPooledUsers } from "./models/model";
 
 import app, { router, listOfRoutes } from './app';
 
@@ -25,20 +26,22 @@ async function init() {
     });
 
     const websocket = socketio(server);
-    let pool = await getPooledPlaces();
+    let pool = await getPooledUsers();
 
     websocket.on('connect', (socket) => {
         socket.on('joinRoom', room => socket.join(room));
         socket.on('leaveRoom', room => socket.leave(room));
-        socket.on('checkPlace', place => {
-            const index = pool.indexOf(place);
+        socket.on('checkPlace', (id_user, id_place, apiUserId) => {
+            id_user = encrypt(id_user, apiUserId);
+            const index = pool.indexOf(id_user);
             if (index > -1) {
                 socket.emit('leavePlace');
                 pool.splice(index, 1);
-                removePooledPlace(place);
+                updateUser(id_user, { pool: false });
+                console.log(`User ${id_user} removed from pool`);
             }
             else
-                socket.join(place);
+                socket.join(id_place);
         });
     });
     listOfRoutes(router, websocket, pool);
