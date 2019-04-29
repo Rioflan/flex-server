@@ -1,6 +1,5 @@
 import User from "../models/user";
 import Place from "../models/place";
-import PooledPlace from "../models/pooledPlace";
 import cloudinary from "cloudinary";
 
 /**
@@ -203,9 +202,11 @@ export async function resetPlaces(websocket, pool: Array<string>) {
             if (userConnected)
                 websocket.in(place.id).emit('leavePlace');
             else {
-                pool.push(place.id);
-                addPooledPlace(place.id);
+                pool.push(place.id_user);
+                updateUser(place.id_user, { pool: true });
+                console.log(`User ${place.id_user} added to pool`);
             }
+            updatePlace(place.id, { using: false, id_user: "" }); // set the place free
         }
     }
 
@@ -214,37 +215,7 @@ export async function resetPlaces(websocket, pool: Array<string>) {
 }
 
 /**
- * This function is used to add a place to the database's pool.
- * @param id_place the id of the place to be saved
+ * This function is used to get all the users of the database's pool.
+ * @returns an array of string containing the id of the users
  */
-export function addPooledPlace(
-    id_place: string
-) {
-    const pooledPlace = new PooledPlace();
-    pooledPlace.id = id_place;
-    
-    return pooledPlace.save()
-    .then((pooledPlace, err: Error) => {
-        if (err) console.log(err);
-        else console.log(`Place ${pooledPlace.id} added to pool`);
-    });
-}
-
-/**
- * This function is used to remove a place from the database's pool.
- * @param id_place the id of the place to be removed
- */
-export function removePooledPlace(
-    id_place: string
-) {
-    PooledPlace.deleteOne({id: id_place}, (err: Error) => {
-        if (err) console.log(err);
-        else console.log(`${id_place} removed from pool`);
-    })
-}
-
-/**
- * This function is used to get all the places of the database's pool.
- * @returns an array of string containing the id of the places
- */
-export const getPooledPlaces = () => PooledPlace.find({}).then(pooledPlaces => pooledPlaces.map(pooledPlace => pooledPlace.id));
+export const getPooledUsers = () => User.find({ pool: true }).then(pooledUsers => pooledUsers.map(pooledUser => pooledUser.id));
