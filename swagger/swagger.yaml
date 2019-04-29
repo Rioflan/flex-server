@@ -264,6 +264,21 @@ paths:
           schema:
             $ref: '#/definitions/userModel'
       description: Remove a friend from a user
+  /api/reset_places:
+    get:
+      produces:
+        - text/html; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Confirms the reset
+      description: Reset places
   /api/settings_user:
     post:
       consumes:

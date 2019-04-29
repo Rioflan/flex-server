@@ -330,6 +330,29 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/reset_places:
+    get:
+      description: Reset places
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+          example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Confirms the reset
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
   /api/settings_user:
     post:
       description: Modify the user's settings

@@ -159,6 +159,8 @@ describe('Testing models', () => {
             assert.equal(mockB.mock.calls.length, mockA.mock.calls.length);
             assert.equal(mockA.mock.calls[0][0], "4-V-RER11");
             assert.equal(mockB.mock.calls[0][0], 'leavePlace');
+            const places = await model.getPlaces();
+            assert(!places.some(x => x.using));
         });
 
         it('gets all pooled users', async () => {
