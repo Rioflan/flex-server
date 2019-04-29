@@ -163,6 +163,7 @@ describe('Testing models', () => {
             assert(!places.some(x => x.using));
             assert(!(await model.getUserById("AA00000")).pool);
             assert((await model.getUserById("AA00001")).pool);
+            assert.equal(pooledUsers[pooledUsers.length - 1], "AA00001");
         });
 
         it('gets all pooled users', async () => {
