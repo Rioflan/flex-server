@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 
-const DATABASE_NAME = 'appdb';
 dotenv.config();
 
 const wrapper = {
@@ -24,9 +23,9 @@ const wrapper = {
       let mongodbUser = process.env.DATABASE_USERNAME;
       let mongodbPass = process.env.DATABASE_PASSWORD;
 
-      const mongoURI = process.env.DATABASE_URL_TMP === "" ? // temporary before a fix is done
+      const mongoURI = process.env.DATABASE_URL === "" ? // temporary before a fix is done
       `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}`
-      : process.env.DATABASE_URL_TMP; // temporary before a fix is done
+      : process.env.DATABASE_URL; // temporary before a fix is done
       return mongoURI;
     }
   },
