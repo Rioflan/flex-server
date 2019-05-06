@@ -41,6 +41,21 @@ export function updateUser(
 }
 
 /**
+ * This function updates several existing users.
+ * @param {object} conditions conditions for the users to be updated (e.g. { id: "foo" })
+ * @param {object} params list of fields to be updated
+ */
+export function updateManyUsers(
+    conditions,
+    params
+) {
+    User.updateMany(conditions, params, (err: Error) => {
+        if (err) console.log(err);
+        console.log("Updated users matching condition " + JSON.stringify(conditions, null, 2));
+    })
+}
+
+/**
  * This function is used to get a user document from the database.
  * @param id_user the id of the user
  * @returns an object containing the fields of the user if found, else null
@@ -164,3 +179,43 @@ export async function whoUses(id_place: string) {
     if (place) return place.id_user; // will return "" if not used, or user's id if used
     return "#";
 }
+
+/**
+ * This function is used to set all the places to free
+ * and all the users to not seated.
+ * @param websocket the sockets to use to make the connection between client and server
+ * @param {Array<string>} pool the pool array to fill in case a user is disconnected
+ */
+export async function resetPlaces(websocket, pool: Array<string>) {
+    //Updates all used places
+    const places = await getPlaces(); // get every place from database
+    const length = places.length;
+
+    for (let index = 0; index < length; index++) { // for each place
+        const place = places[index];
+        if (place.using === true) {
+            // If the user of the place is connected,
+            // the sockects room doesn't exist meaning that
+            // userConnected will be undefined.
+            // Else, it will be an object.
+            const userConnected = websocket.sockets.adapter.rooms[place.id];
+            if (userConnected)
+                websocket.in(place.id).emit('leavePlace');
+            else {
+                pool.push(place.id_user);
+                updateUser(place.id_user, { pool: true });
+                console.log(`User ${place.id_user} added to pool`);
+            }
+            updatePlace(place.id, { using: false, id_user: "" }); // set the place free
+        }
+    }
+
+    //Update all seated users
+    updateManyUsers({ id_place: { $ne: "" } }, { id_place: "" });
+}
+
+/**
+ * This function is used to get all the users of the database's pool.
+ * @returns an array of string containing the id of the users
+ */
+export const getPooledUsers = () => User.find({ pool: true }).then(pooledUsers => pooledUsers.map(pooledUser => pooledUser.id));

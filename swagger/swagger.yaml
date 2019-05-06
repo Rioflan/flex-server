@@ -1,0 +1,448 @@
+swagger: '2.0'
+info:
+  description: defaultDescription
+  title: defaultTitle
+  version: '0.1'
+host: whispering-lowlands-83497.herokuapp.com
+basePath: /
+schemes:
+  - https
+paths:
+  /api:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters: []
+      responses:
+        '200':
+          description: Message confirming that the API is working
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      description: Verify that the API is working
+  /api/add_friend:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              fname:
+                type: string
+              id:
+                type: string
+              id_place: {}
+              id_user:
+                type: string
+              name:
+                type: string
+              photo:
+                type: string
+            type: object
+            example: |-
+              {
+                  "id_user": "AB12345",
+                  "id": "c19f60bc2df02a",
+                  "name": " TZ#ýý",
+                  "fname": "4V@-",
+                  "id_place": null,
+                  "photo": ""
+              }
+      responses:
+        '200':
+          description: Returns the user
+          schema:
+            $ref: '#/definitions/userModel'
+      description: Add a friend to a user
+  /api/leave_place:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - text/html; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              id_place:
+                type: string
+              id_user:
+                type: string
+            type: object
+            example: |-
+              {
+                  "id_place": "3-V-RER01",
+                  "id_user": "AB12345"
+              }
+      responses:
+        '200':
+          description: Confirms that the user has left the place
+      description: Leave a place for a user
+  /api/login:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: body
+          name: body
+          schema:
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+            type: object
+            example: |-
+              {
+                  "email": "abc@abc.abc",
+                  "password": "abcabc"
+              }
+      responses:
+        '200':
+          description: Confirms that the user is connected and returns the token
+          schema:
+            $ref: '#/definitions/authModel'
+      description: Log in
+  /api/login_user:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              fname:
+                type: string
+              id_user:
+                type: string
+              name:
+                type: string
+            type: object
+            example: |-
+              {
+                  "name": "a",
+                  "fname": "a a",
+                  "id_user": "AB12345"
+              }
+      responses:
+        '200':
+          description: Returns the user
+          schema:
+            $ref: '#/definitions/userModel'
+      description: Log in user
+  /api/logout:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters: []
+      responses:
+        '200':
+          description: Confirms that the user is no longer connected
+          schema:
+            $ref: '#/definitions/authModel'
+      description: Log out
+  /api/me:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Returns the user
+          schema:
+            $ref: '#/definitions/userModel'
+      description: Get user
+  /api/places:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Returns the places
+          schema:
+            items:
+              $ref: '#/definitions/placeModel'
+            type: array
+      description: Get places
+  /api/register:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: body
+          name: body
+          schema:
+            properties:
+              email:
+                type: string
+              name:
+                type: string
+              password:
+                type: string
+            type: object
+      responses:
+        '200':
+          description: Confirms that the user is connected and returns the token
+          schema:
+            $ref: '#/definitions/authModel'
+      description: Register new user
+  /api/remove_friend:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              id:
+                type: string
+              id_user:
+                type: string
+            type: object
+            example: |-
+              {
+                  "id_user": "AB12345",
+                  "id": "c19f60bc2df02a"
+              }
+      responses:
+        '200':
+          description: Returns the user
+          schema:
+            $ref: '#/definitions/userModel'
+      description: Remove a friend from a user
+  /api/reset_places:
+    get:
+      produces:
+        - text/html; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Confirms the reset
+      description: Reset places
+  /api/settings_user:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              id_user:
+                type: string
+              photo:
+                type: string
+              remoteDay:
+                type: string
+            type: object
+            example: |-
+              {
+                  "id_user": "AB12345",
+                  "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Mallard2.jpg/1200px-Mallard2.jpg",
+                  "remoteDay": "Jeudi"
+              }
+      responses:
+        '200':
+          description: Confirms the modification
+          schema:
+            properties:
+              success:
+                type: string
+            type: object
+      description: Modify the user's settings
+  /api/take_place:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - text/html; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              id_place:
+                type: string
+              id_user:
+                type: string
+            type: object
+            example: |-
+              {
+                  "id_place": "3-V-RER01",
+                  "id_user": "AB12345"
+              }
+      responses:
+        '200':
+          description: Confirms that the place has been taken by the user
+      description: Take a place for a user
+  /api/users:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Returns the users
+          schema:
+            items:
+              $ref: '#/definitions/userModel'
+            type: array
+      description: Get users
+  '/api/users/{user_id}':
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - description: String ID of the user to get
+          in: path
+          name: user_id
+          required: true
+          type: string
+          x-example: AB12345
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Returns the user
+          schema:
+            $ref: '#/definitions/userModel'
+      description: Get specified user
+  '/api/users/{user_id}/friends':
+    get:
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - description: String ID of the user whose friends to get
+          in: path
+          name: user_id
+          required: true
+          type: string
+          x-example: AB12345
+        - in: header
+          name: x-access-token
+          required: true
+          type: string
+          x-example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+      responses:
+        '200':
+          description: Returns the friends
+          schema:
+            items:
+              $ref: '#/definitions/userModel'
+            type: array
+      description: Get the friends of a user
+definitions:
+  authModel:
+    properties:
+      auth:
+        type: boolean
+      token: {}
+    type: object
+  placeModel:
+    properties:
+      id:
+        type: string
+      id_user:
+        type: string
+      using:
+        type: boolean
+    type: object
+  userModel:
+    properties:
+      fname:
+        type: string
+      id:
+        type: string
+      id_place: {}
+      name:
+        type: string
+      photo: {}
+      remoteDay: {}
+    type: object
+x-components: {}
+

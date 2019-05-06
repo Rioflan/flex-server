@@ -33,7 +33,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -59,7 +59,7 @@ paths:
                 value: |-
                   {
                       "id_user": "AB12345",
-                      "id": "c28260b92bf224",
+                      "id": "c19f60bc2df02a",
                       "name": " TZ#ýý",
                       "fname": "4V@-",
                       "id_place": null,
@@ -86,7 +86,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -102,7 +102,7 @@ paths:
               '0':
                 value: |-
                   {
-                      "id_place": "5c76a50dbd894f5a366d0469",
+                      "id_place": "3-V-RER01",
                       "id_user": "AB12345"
                   }
       responses:
@@ -158,7 +158,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -216,7 +216,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlY2Y4NWQ4ZTA1MDAxNTdkYzk3MyIsImlhdCI6MTU1NTQ5MjA4OX0._DlaVo865gdMg9wyth3xfyGSsEuyeJPs6RXWmFQ-YiU
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       responses:
         '200':
@@ -239,7 +239,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       responses:
         '200':
@@ -299,7 +299,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -316,7 +316,7 @@ paths:
                 value: |-
                   {
                       "id_user": "AB12345",
-                      "id": "c28260b92bf224"
+                      "id": "c19f60bc2df02a"
                   }
       responses:
         '200':
@@ -325,6 +325,29 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/reset_places:
+    get:
+      description: Reset places
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+          example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Confirms the reset
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
               examples: {}
       servers:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
@@ -339,7 +362,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -385,7 +408,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       requestBody:
         content:
@@ -401,7 +424,7 @@ paths:
               '0':
                 value: |-
                   {
-                      "id_place": "5c76a50dbd894f5a366d0469",
+                      "id_place": "3-V-RER01",
                       "id_user": "AB12345"
                   }
       responses:
@@ -411,18 +434,6 @@ paths:
             text/html; charset=utf-8:
               schema:
                 type: string
-              examples: {}
-        '500':
-          description: Returns the user that already occupies the place
-          content:
-            text/html; charset=utf-8:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  fname:
-                    type: string
               examples: {}
       servers:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
@@ -437,7 +448,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       responses:
         '200':
@@ -469,7 +480,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       responses:
         '200':
@@ -499,7 +510,7 @@ paths:
           schema:
             type: string
           example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYjZlYmUwMGUxMWQ3MDAxNTI2NjM2YyIsImlhdCI6MTU1NTUwNTgyOH0.QjUiMnRUdqddhcPgJyBu8MiZcXudDKUM38OFAtjjQqk
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
           required: true
       responses:
         '200':
@@ -524,14 +535,17 @@ components:
           type: string
         id_place:
           type: string
+          nullable: true
         name:
           type: string
         fname:
           type: string
         remoteDay:
           type: string
+          nullable: true
         photo:
           type: string
+          nullable: true
     placeModel:
       type: object
       properties:

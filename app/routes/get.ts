@@ -3,7 +3,7 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 
-const Get = (router: Router) => {
+const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
 
@@ -57,6 +57,13 @@ const Get = (router: Router) => {
     const places = await model.getPlaces();
     res.status(200).json(places);
   });
+
+  router
+    .route("/reset_places")
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      await model.resetPlaces(websocket, pool);
+      res.status(200).send("Places successfully reset");
+    })
 };
 
 export default Get;
