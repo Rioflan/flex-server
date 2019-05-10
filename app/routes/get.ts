@@ -30,7 +30,7 @@ const Get = (router: Router, websocket, pool) => {
       const friendsArray = user.friend;
       const usersDecrypted = friendsArray.map(friend => {
         return {
-          id: decrypt(friend.id, req.userId),
+          id: friend.id,
           name: decrypt(friend.name, req.userId),
           fname: decrypt(friend.fname, req.userId),
           id_place: friend.id_place || null,
