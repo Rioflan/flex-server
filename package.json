@@ -15,7 +15,8 @@
     "test": "jest",
     "test:typescript": "npx jest",
     "build:go": "node-gyp configure build",
-    "compile:go": "go build -buildmode=c-shared -o crypto.so crypto-go/golang/crypto.go"
+    "compile:go": "go build -buildmode=c-shared -o crypto.so crypto-go/golang/crypto.go",
+    "docker": "if test \"$DOCKER_ENV\" = \"production\" ; then npm start ; else npm run build:live ; fi "
   },
   "repository": {
     "type": "git",

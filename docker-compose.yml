@@ -1,21 +1,36 @@
 version: "2"
 services:
-  app:
+  prod: &prod
     container_name: app
-    restart: always
+    restart: unless-stopped
     build: .
     ports:
       - "3000:3000"
     links:
       - mongo
-    environment:
+    volumes:
+      - .:/app
+    environment: &prod-env
       DATABASE_HOST: 172.17.0.1
       DATABASE_PORT: 27017
       DATABASE_DB: flex
-      DATABASE_MODE: local
+      DATABASE_MODE: remote
+      DATABASE_URL: "${DATABASE_URL}"
       LOGIN_REGEX: ^[A-Z]{2}[0-9]{5}$$
       NODE_ENV: remote
       API_SECRET: supersecret
+      DOCKER_ENV: production
+    depends_on:
+      - mongo
+
+  dev:
+    <<: *prod
+    container_name: app-dev
+    restart: "no"
+    environment:
+      <<: *prod-env
+      DATABASE_MODE: local
+      DOCKER_ENV: development
 
   mongo:
     container_name: mongo

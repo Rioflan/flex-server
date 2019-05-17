@@ -1,4 +1,5 @@
-# Flex Server [![CircleCI](https://circleci.com/gh/BREDFactory/flex-server.svg?style=svg)](https://circleci.com/gh/BREDFactory/flex-server)
+# Flex Server [![pipeline status](https://gitlab.com/Pujomir/flex-server/badges/master/pipeline.svg)](https://gitlab.com/Pujomir/flex-server/commits/master)
+
 
 
 The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
@@ -23,16 +24,16 @@ docker-compose build
 ```
 Which will buid the containers and then :
 ```
-docker-compose run
+docker-compose up [dev|prod]
 ```
 Which will run the containers.
 
 By default app will launch on port **3000** and mongoDB on port **27017**
 
-You can list all your running containers by typing the command: 
+You can list all your running containers by typing the command:
 ``` docker container ls ```
 
-### **Configure** ( without docker ) 
+### **Configure** ( without docker )
 
 To use the server you will have to configure the database you use.
 
@@ -42,7 +43,7 @@ Install MongoDB
 
 Create `flex` database
 
-An other and easy way is to use [mlab](https://docs.mlab.com/).
+Another easy way is to use [mlab](https://docs.mlab.com/).
 
 You have to pass variables as environment variables.
 
@@ -64,7 +65,7 @@ DATABASE_MODE=remote // 'local' || 'remote'
 
 ### Installing
 
-There is two ways to install the server:
+There are two ways to install the server:
 
 #### Using npm
 
@@ -113,7 +114,7 @@ You have to send the API token on the headers as `x-access-token` to access API 
 
 ## Configure https
 
-I recommend you to use [Let's Encrypt](https://letsencrypt.org/).    
+I recommend you to use [Let's Encrypt](https://letsencrypt.org/).
 You have to create a self-signed certificate with openSSL :
 
 ```openssl req -nodes -new -x509 -keyout server.key -out server.cert```
@@ -122,14 +123,14 @@ And put the `cert.pem` and `key.pem` under a folder `cert` in `./app`.
 
 Then enable https in Express by adding this lines in app/server.ts:
 
-``` js 
+``` js
 const httpsOptions = {
     key:   fs.readFileSync(path.join(__dirname, 'cert', 'server.key')),
     cert:   fs.readFileSync(path.join(__dirname, 'cert', 'server.cert'))
 };
 ```
 
-You can then add those lines in the `server.ts` file: 
+You can then add those lines in the `server.ts` file:
 
 ``` js
 https.createServer(httpsOptions, app).listen(process.env.PORT || DEFAULT_PORT, function() {
@@ -176,7 +177,7 @@ For deployment, I recommend using [Heroku](https://dashboard.heroku.com/apps).
 
 TODO
 
-## Contributing 
+## Contributing
 - Check the current opened issues
 - Fork the project
 - Create your feature branch (git checkout -b - my-new-feature)
