@@ -1,4 +1,5 @@
-# Flex Server [![CircleCI](https://circleci.com/gh/BREDFactory/flex-server.svg?style=svg)](https://circleci.com/gh/BREDFactory/flex-server)
+# Flex Server [![pipeline status](https://gitlab.com/Pujomir/flex-server/badges/master/pipeline.svg)](https://gitlab.com/Pujomir/flex-server/commits/master)
+
 
 
 The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
