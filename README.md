@@ -23,7 +23,7 @@ docker-compose build
 ```
 Which will buid the containers and then :
 ```
-docker-compose up
+docker-compose up [dev|prod]
 ```
 Which will run the containers.
 
