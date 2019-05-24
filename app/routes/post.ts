@@ -7,6 +7,7 @@ import {
 
 import { Request, Response, Error, Router } from "express";
 import User from "../models/user";
+import Place from "../models/place";
 import * as model from "../models/model"
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
@@ -76,7 +77,7 @@ const post = (router: Router) => {
 				res.status(resultCodes.success).json(user);
 			}
 		});
-	
+
 	/**
 	 * This route is used to assign a place to a user.
 	 */
@@ -90,37 +91,35 @@ const post = (router: Router) => {
 			}
 
 			const id_place = body.id_place;
-			const usedById = await model.whoUses(id_place);
-			
-			if (usedById === "#" || usedById === "") {
-				const id_user = encrypt(body.id_user, req.userId);
-				const historical = await model.getUserById(id_user).then(user => user.historical);
-				const beginDate = new Date(Date.now()).toLocaleString();
-				if (usedById === "#") {
-					console.log("Place doesn't exist");
-					model.addPlace(id_place, true, id_user);
-				}
-				else {
-					console.log("Place exists and is free");
-					model.updatePlace(id_place, { using: true, id_user: id_user });
-				}
-				model.updateUser(id_user, {
-					id_place: id_place,
-					historical: [...historical, { id_place: id_place, begin: beginDate, end: "" }]
-				});
-				res.status(resultCodes.success).send(successMessages.takePlace);
-			}
-			
-			else {
+			const id_user = encrypt(body.id_user, req.userId);
+			const place = await model.getPlaceById(id_place);
+
+			if (place && !place.using && (!place.semi_flex || (place.start_date < Date.now() && Date.now() < place.end_date))) {
 				console.log("Place already used");
-				const user = await model.getUserById(usedById);
+				const user = await model.getUserById(place.id_user);
 				const name = decrypt(user.name, req.userId);
 				const fname = decrypt(user.fname, req.userId);
 				res.status(resultCodes.serverError).json({
 					name: name,
 					fname: fname
 				});
+				return
 			}
+			const historical = await model.getUserById(id_user).then(user => user.historical);
+			const beginDate = new Date(Date.now()).toLocaleString();
+			if (!place) {
+				console.log("Place doesn't exist");
+				model.addPlace(id_place, true, id_user);
+			}
+			else {
+				console.log("Place exists and is free");
+				model.updatePlace(id_place, { using: true, id_user: id_user });
+			}
+			model.updateUser(id_user, {
+				id_place: id_place,
+				historical: [...historical, { id_place: id_place, begin: beginDate, end: "" }]
+			});
+			res.status(resultCodes.success).send(successMessages.takePlace);
 		});
 
 	router
@@ -135,10 +134,10 @@ const post = (router: Router) => {
 			const historical = await model.getUserById(id_user).then(user => user.historical);
 			const endDate = new Date(Date.now()).toLocaleString();
 			historical[historical.length - 1].end = endDate; // set the end date of the last place in array
-			
+
 			model.updateUser(id_user, { historical: historical, id_place: "" });
 			model.updatePlace(body.id_place, { using: false, id_user: "" });
-			
+
 			res.status(resultCodes.success).send(successMessages.leavePlace);
 		});
 
@@ -220,8 +219,11 @@ const post = (router: Router) => {
 				body.photo.match(HTTPS_REGEX) === null &&
 				(body.photo !== "" || body.photo !== null)
 			) model.updatePhoto(id_user, body.photo);
-			
+
 			if (body.remoteDay !== "") model.updateUser(id_user, { remoteDay: body.remoteDay });
+			if (body.startDate !== "" && body.endDate !== "") {
+				model.updateAvailabilityPeriod(id_user, new Date(body.startDate), new Date(body.endDate))
+			}
 			res.status(resultCodes.success).send({success: "success"});
 		});
 };
