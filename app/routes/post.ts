@@ -230,6 +230,27 @@ const post = (router: Router) => {
 			}
 			res.status(resultCodes.success).send({success: "success"});
 		});
+
+	router
+		.route("/assign_place")
+
+		.post(VerifyToken, (req: Request, res: Response) => {
+			const body = req.body;
+			const id_user = encrypt(body.id_user, req.userId);
+
+            model.updatePlace(body.id_place, { id_owner: id_user, semi_flex: true, start_date: null, end_date: null })
+			res.status(resultCodes.success).send({success: "success"});
+		});
+
+	router
+		.route("/unassign_place")
+
+		.post(VerifyToken, (req: Request, res: Response) => {
+			const body = req.body;
+
+            model.updatePlace(body.id_place, { id_owner: "", semi_flex: false, start_date: null, end_date: null })
+			res.status(resultCodes.success).send({success: "success"});
+		});
 };
 
 export default post;
