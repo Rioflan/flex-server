@@ -11,6 +11,7 @@ import Place from "../models/place";
 import * as model from "../models/model"
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
+import moment from "moment"
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -94,10 +95,8 @@ const post = (router: Router) => {
 			const id_user = encrypt(body.id_user, req.userId);
 			const place = await model.getPlaceById(id_place);
 
-			const placeIsAvailable = place => !place.using &&
-				(!place.semi_flex ||
-					(place.start_date && place.end_date &&
-					place.start_date < Date.now() && Date.now() < place.end_date))
+            const placeIsAllowed = place => place.start_date && place.end_date && moment().isBetween(place.start_date, place.end_date)
+			const placeIsAvailable = place => !place.using && (!place.semi_flex || placeIsAllowed(place))
 
 			if (place && !placeIsAvailable(place)) {
 				console.log("Place already used");
@@ -226,8 +225,8 @@ const post = (router: Router) => {
 			) model.updatePhoto(id_user, body.photo);
 
 			if (body.remoteDay !== "") model.updateUser(id_user, { remoteDay: body.remoteDay });
-			if (body.startDate !== "" && body.endDate !== "") {
-				model.updateAvailabilityPeriod(id_user, new Date(body.startDate), new Date(body.endDate))
+			if (body.startDate && body.endDate) {
+				model.updateAvailabilityPeriod(id_user, moment(body.startDate, "DD/MM/YYYY").toDate(), moment(body.endDate, "DD/MM/YYYY").toDate())
 			}
 			res.status(resultCodes.success).send({success: "success"});
 		});
