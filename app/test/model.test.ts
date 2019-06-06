@@ -4,6 +4,7 @@ import assert from "assert";
 import * as model from '../models/model';
 jest.mock('cloudinary');
 import cloudinary from 'cloudinary';
+import Place from "../models/place";
 
 let mockDB;
 
@@ -170,6 +171,16 @@ describe('Testing models', () => {
             const pooledUsers = await model.getPooledUsers();
             assert(pooledUsers);
         });
+    })
+
+    describe('Availability Period', () => {
+        it ('updates the availability period', async () => {
+            Place.findOne = jest.fn(() => undefined)
+            jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve(undefined))))
+            assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), false)
+            jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve({id: "test"}))))
+            assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), true)
+        })
     })
 
     afterAll(() => {
