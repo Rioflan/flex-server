@@ -110,6 +110,9 @@ describe('Testing models', () => {
             await model.addPlace("4-V-RER10");
             const place = await model.getPlaceById("4-V-RER10");
             assert(place);
+            await model.addPlace("5-V-RER10", true, "AB12345");
+            const placeB = await model.getPlaceById("5-V-RER10");
+            assert(placeB);
         });
 
         it('updates a place', async () => {
@@ -179,6 +182,7 @@ describe('Testing models', () => {
             jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve(undefined))))
             assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), false)
             jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve({id: "test"}))))
+            jest.spyOn(Place, "updateOne").mockImplementation(jest.fn())
             assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), true)
         })
     })
