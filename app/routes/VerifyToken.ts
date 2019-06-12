@@ -10,7 +10,7 @@ import apiUser, {ApiSchema} from '../models/apikey';
  */
 
 const verifyToken = (req: Request, res: Response, next) => {
-    const token = req.headers['x-access-token'];
+    const token = req.headers['authorization'].substring(7);
     if (!token) return res.status(403).send({auth: false, message: 'No token provided.'});
 
     jwt.verify(token, process.env.API_SECRET, (err: Error, decoded) => {
