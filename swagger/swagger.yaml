@@ -30,11 +30,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -74,11 +74,11 @@ paths:
         - text/html; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -132,11 +132,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -177,11 +177,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Returns the user
@@ -194,11 +194,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Returns the places
@@ -239,11 +239,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -270,11 +270,11 @@ paths:
         - text/html; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Confirms the reset
@@ -287,11 +287,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -326,11 +326,11 @@ paths:
         - text/html; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
         - in: body
           name: body
           schema:
@@ -355,11 +355,11 @@ paths:
         - application/json; charset=utf-8
       parameters:
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Returns the users
@@ -380,11 +380,11 @@ paths:
           type: string
           x-example: AB12345
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Returns the user
@@ -403,11 +403,11 @@ paths:
           type: string
           x-example: AB12345
         - in: header
-          name: x-access-token
+          name: authorization
           required: true
           type: string
           x-example: >-
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
       responses:
         '200':
           description: Returns the friends

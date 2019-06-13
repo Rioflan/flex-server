@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
+import Place from "../models/place";
 
 const Get = (router: Router, websocket, pool) => {
 
@@ -50,7 +51,17 @@ const Get = (router: Router, websocket, pool) => {
       const user = await model.getUserById(id_user);
       res.status(200).json(user);
       });
-      
+
+  /** GET /users/:user_id/place */
+
+  router
+    .route("/users/:user_id/place")
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      const id_user = encrypt(req.params.user_id, req.userId);
+      const place = await Place.findOne({ id_owner: id_user })
+      res.status(200).json(place);
+      });
+
   /** GET /places */
 
   router.route("/places").get(VerifyToken, async (req: Request, res: Response) => {

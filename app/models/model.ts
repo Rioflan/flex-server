@@ -127,8 +127,8 @@ export function matchUserInfo(
  */
 export function addPlace(
     id_place: string,
-    using = false,
-    id_user = ""
+    using: boolean = false,
+    id_user: string = ""
 ) {
     const place = new Place()
     place.id = id_place;
@@ -219,3 +219,16 @@ export async function resetPlaces(websocket, pool: Array<string>) {
  * @returns an array of string containing the id of the users
  */
 export const getPooledUsers = () => User.find({ pool: true }).then(pooledUsers => pooledUsers.map(pooledUser => pooledUser.id));
+
+/**
+ * This function updates the period during which the user's place is available.
+ * @param {string} id_user id of the user
+ * @param {Date} start_date date when the period begins
+ * @param {Date} end_date date when the period ends
+ */
+export const updateAvailabilityPeriod = async (id_user: string, start_date: Date, end_date: Date) => {
+    const place = await Place.findOne({ id_owner: id_user })
+    if (!place) return false
+    updatePlace(place.id, { start_date, end_date })
+    return true
+}
