@@ -5,8 +5,11 @@ import Post from "./routes/post";
 import Get from "./routes/get";
 import Auth from "./routes/auth";
 import enforce from "express-sslify";
+import cors from "cors"
 
 const app: express.Application = express(); // use express on our app
+
+app.use(cors())
 
 if (process.env.NODE_ENV === "production")
   app.use(enforce.HTTPS({ trustProtoHeader: true })); // Redirect http => https
