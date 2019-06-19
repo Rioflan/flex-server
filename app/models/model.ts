@@ -29,10 +29,10 @@ export function addUser(
  * This function removes a user.
  * @param {string} id_user id of the new user
  */
-export function removeUser(
-    user: any
+export function removeUserById(
+    id_user: string
 ) {
-    return User.deleteOne(user)
+    return User.deleteOne({id: id_user})
 }
 
 /**

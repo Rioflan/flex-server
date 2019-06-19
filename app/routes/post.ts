@@ -252,7 +252,7 @@ const post = (router: Router) => {
 
 			try {
 				const user = await model.getUser({name, fname})
-				await model.removeUser(user)
+				await model.removeUserById(user.id)
 				res.status(resultCodes.success).send({success: "success"});
 			} catch (err) {
 				console.log(err)
