@@ -26,6 +26,16 @@ export function addUser(
 }
 
 /**
+ * This function removes a user.
+ * @param {string} id_user id of the new user
+ */
+export function removeUser(
+    user: any
+) {
+    return User.deleteOne(user)
+}
+
+/**
  * This function updates an existing user.
  * @param {string} id_user id of the user
  * @param {object} params list of fields to be updated
@@ -61,6 +71,13 @@ export function updateManyUsers(
  * @returns an object containing the fields of the user if found, else null
  */
 export const getUserById = (id_user: string) => User.findOne({ id: id_user });
+
+/**
+ * This function is used to get a user document from the database.
+ * @param params the query params
+ * @returns an object containing the fields of the user if found, else null
+ */
+export const getUser = (params: any) => User.findOne(params);
 
 /**
  * This function is used to get all the users from the database.
