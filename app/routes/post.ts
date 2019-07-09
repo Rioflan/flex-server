@@ -243,6 +243,24 @@ const post = (router: Router) => {
 		});
 
 	router
+		.route("/remove_user")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			const name = encrypt(body.name, req.userId)
+			const fname = encrypt(body.fname, req.userId)
+
+			try {
+				const user = await model.getUser({name, fname})
+				await model.removeUserById(user.id)
+				res.status(resultCodes.success).send({success: "success"});
+			} catch (err) {
+				console.log(err)
+				res.status(resultCodes.serverError).send(err);
+			}
+		});
+
+	router
 		.route("/unassign_place")
 
 		.post(VerifyToken, (req: Request, res: Response) => {
