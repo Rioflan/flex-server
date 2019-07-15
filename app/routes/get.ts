@@ -4,6 +4,17 @@ import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
 
+const resultCodes = {
+	success: 200,
+	syntaxError: 400,
+  notFound: 404,
+	serverError: 500,
+}
+
+const errorMessages = {
+  notFound: "Not found"
+}
+
 const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
@@ -49,8 +60,15 @@ const Get = (router: Router, websocket, pool) => {
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(id_user);
-      res.status(200).json(user);
-      });
+      if (!user) {
+        res.status(resultCodes.notFound).send(errorMessages.notFound);
+        return
+      }
+      res.status(200).json(Object.assign({...user}, {
+        name: decrypt(user.name, req.userId),
+        fname: decrypt(user.fname, req.userId),
+      }));
+    });
 
   /** GET /users/:user_id/place */
 
