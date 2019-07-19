@@ -19,8 +19,6 @@ export interface PlaceSchema {
   semi_flex: boolean,
   id_user: string,
   id_owner: string,
-  start_date: Date,
-  end_date: Date,
   save: Types.save,
 }
 

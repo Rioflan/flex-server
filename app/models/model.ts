@@ -244,8 +244,5 @@ export const getPooledUsers = () => User.find({ pool: true }).then(pooledUsers =
  * @param {Date} end_date date when the period ends
  */
 export const updateAvailabilityPeriod = async (id_user: string, start_date: Date, end_date: Date) => {
-    const place = await Place.findOne({ id_owner: id_user })
-    if (!place) return false
-    updatePlace(place.id, { start_date, end_date })
-    return true
+    updateUser(id_user, { start_date, end_date })
 }

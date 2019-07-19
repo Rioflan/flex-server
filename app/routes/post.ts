@@ -95,10 +95,13 @@ const post = (router: Router) => {
 			const id_user = encrypt(body.id_user, req.userId);
 			const place = await model.getPlaceById(id_place);
 
-            const placeIsAllowed = place => place.start_date && place.end_date && moment().isBetween(place.start_date, place.end_date)
-			const placeIsAvailable = place => !place.using && (!place.semi_flex || placeIsAllowed(place))
+            const placeIsAllowed = async place => {
+                const user = await model.getUserById(place.id_owner)
+                return user.start_date && user.end_date && moment().isBetween(user.start_date, user.end_date)
+            }
+			const placeIsAvailable = async place => !place.using && (!place.semi_flex || (await placeIsAllowed(place)))
 
-			if (place && !placeIsAvailable(place)) {
+			if (place && !(await placeIsAvailable(place))) {
 				console.log("Place already used");
 				const user = await model.getUserById(place.id_user);
 				const name = decrypt(user.name, req.userId);

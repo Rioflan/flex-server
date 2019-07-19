@@ -23,7 +23,9 @@ export interface UserSchema {
   historical: Array<object>,
   remoteDay: string,
   photo: string,
-  friend: Array<object>
+  friend: Array<object>,
+  start_date: Date,
+  end_date: Date,
 }
 
 const Model = mongoose.model("User", UserSchema);

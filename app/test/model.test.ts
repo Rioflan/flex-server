@@ -176,17 +176,6 @@ describe('Testing models', () => {
         });
     })
 
-    describe('Availability Period', () => {
-        it ('updates the availability period', async () => {
-            Place.findOne = jest.fn(() => undefined)
-            jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve(undefined))))
-            assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), false)
-            jest.spyOn(Place, "findOne").mockImplementation(jest.fn(() => new Promise(resolve => resolve({id: "test"}))))
-            jest.spyOn(Place, "updateOne").mockImplementation(jest.fn())
-            assert.equal(await model.updateAvailabilityPeriod("test", new Date(), new Date()), true)
-        })
-    })
-
     afterAll(() => {
         mongoose.disconnect();
         mockDB.stop();
