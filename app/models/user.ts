@@ -11,7 +11,9 @@ const UserSchema = new Schema({
   remoteDay: { type: String, default: "" },
   photo: { type: String, default: "" },
   friend: Array,
-  pool: { type: Boolean, default: false }
+  pool: { type: Boolean, default: false },
+  start_date: Date,
+  end_date: Date,
 });
 
 export interface UserSchema {

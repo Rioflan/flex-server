@@ -8,8 +8,6 @@ const PlaceSchema = new Schema({
   semi_flex: { type: Boolean, default: false },
   id_user: { type: String, default: "" },
   id_owner: { type: String, default: "" },
-  start_date: Date,
-  end_date: Date,
 });
 
 export interface PlaceSchema {
