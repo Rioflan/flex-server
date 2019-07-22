@@ -28,7 +28,9 @@ const Get = (router: Router, websocket, pool) => {
         fname: decrypt(user.fname, req.userId),
         id_place: user.id_place || null,
         remoteDay: user.remoteDay,
-        photo: user.photo
+        photo: user.photo,
+        start_date: user.start_date,
+        end_date: user.end_date,
       };
     });
     res.status(200).json(usersDecrypted);
