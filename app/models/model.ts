@@ -246,3 +246,14 @@ export const getPooledUsers = () => User.find({ pool: true }).then(pooledUsers =
 export const updateAvailabilityPeriod = async (id_user: string, start_date: Date, end_date: Date) => {
     updateUser(id_user, { start_date, end_date })
 }
+
+const NB_REMOTE_DAYS_ALLOWED = 2
+/**
+ * This function user's remote days.
+ * @param {string} id_user id of the user
+ * @param {Array<string>} days days when the user works remotely
+ */
+export const updateRemoteDays = async (id_user: string, days: Array<string>) => {
+    if (!id_user || !days || days.length > NB_REMOTE_DAYS_ALLOWED || days.some(x => !x)) return
+    updateUser(id_user, { remoteDay: days })
+}
