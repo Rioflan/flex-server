@@ -6,6 +6,7 @@ const UserSchema = new Schema({
   id: String,
   name: String,
   fname: String,
+  email: String,
   id_place: { type: String, default: "" },
   historical: Array,
   remoteDay: { type: Array, default: [] },
@@ -14,6 +15,8 @@ const UserSchema = new Schema({
   pool: { type: Boolean, default: false },
   start_date: Date,
   end_date: Date,
+  confirmation_token: { type: String, default: "" },
+  // connection_token: { type: String, default: "" },
 });
 
 export interface UserSchema {
@@ -21,6 +24,7 @@ export interface UserSchema {
   id: string,
   name: string,
   fname: string,
+  email: string,
   id_place: string,
   historical: Array<object>,
   remoteDay: Array<string>,
@@ -28,6 +32,8 @@ export interface UserSchema {
   friend: Array<object>,
   start_date: Date,
   end_date: Date,
+  confirmation_token: string,
+  // connection_token: string,
 }
 
 const Model = mongoose.model("User", UserSchema);

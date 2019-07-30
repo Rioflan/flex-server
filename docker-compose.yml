@@ -20,6 +20,7 @@ services:
       NODE_ENV: remote
       API_SECRET: supersecret
       DOCKER_ENV: production
+      ZAPIER_URL: "https://hooks.zapier.com/hooks/catch/5415376/ooel5b2/"
     depends_on:
       - mongo
 

@@ -12,6 +12,7 @@ import * as model from "../models/model"
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import moment from "moment"
+import jwt from 'jsonwebtoken';
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -24,7 +25,8 @@ const errorMessages = {
 	placeFind: "Error finding the place",
 	placeUpdate: "Error updating the place",
 	placeAlreadyUsed: "Place already used by : ",
-	invalidArguments: "Invalid arguments"
+	invalidArguments: "Invalid arguments",
+	invalidCode: "Invalid confirmation code"
 }
 
 const successMessages = {
@@ -41,6 +43,7 @@ const resultCodes = {
 interface Request {
 	userId?: string | Buffer | DataView;
 	body: any;
+	params: any
 }
 
 let RES;
@@ -56,28 +59,67 @@ const post = (router: Router) => {
 		.post(VerifyToken, async (req: Request, res: Response) => {
 			const body = req.body;
 			if (
+				body.email === null
+			)
+				return res.status(resultCodes.syntaxError).json(errorMessages.invalidArguments);
+			const email = encrypt(body.email, req.userId);
+
+			if (!(await model.getUser({email})))
+				await model.addUser(email);
+			const user = await model.getUser({email});
+			const confirmation_token = jwt.sign({email}, process.env.API_SECRET, {expiresIn: 360})
+			await User.updateOne({email}, {confirmation_token})
+			model.sendConfirmationEmail({...user, confirmation_token, email: body.email})
+			res.status(resultCodes.success).json({email});
+		});
+
+	router
+		.route("/verify")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			const token = body.token
+			let decoded
+			try {
+				decoded = await jwt.verify(token, process.env.API_SECRET)
+			} catch (_) {
+				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
+			}
+			const email = decoded.email
+			const user = await model.getUser({email})
+			if (!user || user.confirmation_token !== token)
+				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
+
+			await User.updateOne({email}, {confirmation_token: ""})
+			res.status(resultCodes.success).json(user);
+		});
+
+	router
+		.route("/complete_user")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			if (
+				body.email === null ||
 				body.name === null ||
 				body.fname === null ||
 				body.id_user === null ||
 				body.id_user.match(process.env.LOGIN_REGEX) === null
 			)
 				return res.status(resultCodes.syntaxError).json(errorMessages.invalidArguments);
-			body.id_user = encrypt(body.id_user, req.userId);
-			body.name = encrypt(body.name, req.userId);
-			body.fname = encrypt(body.fname, req.userId);
-
-			if (await model.userExists(body.id_user)) {
-				const user = await model.getUserById(body.id_user);
-				if (model.matchUserInfo(user, body)) res.status(resultCodes.success).send(user);
-				else res.status(resultCodes.serverError).send(errorMessages.userIdMatch);
-			}
-
-			else {
-				await model.addUser(body.id_user, body.name, body.fname);
-				const user = await model.getUserById(body.id_user);
-				res.status(resultCodes.success).json(user);
-			}
-		});
+			const id = encrypt(body.id_user, req.userId);
+			const name = encrypt(body.name, req.userId);
+			const fname = encrypt(body.fname, req.userId);
+			const email = encrypt(body.eamil, req.userId)
+			await User.updateOne({email}, {id, name, fname})
+			if (
+				body.photo &&
+				body.photo.match(HTTPS_REGEX) === null &&
+				(body.photo !== "" || body.photo !== null)
+			) model.updatePhoto(id, body.photo);
+			const user = await model.getUserById(id)
+			res.status(resultCodes.success).json(user);
+		})
 
 	/**
 	 * This route is used to assign a place to a user.
@@ -270,6 +312,16 @@ const post = (router: Router) => {
 			const body = req.body;
 
             model.updatePlace(body.id_place, { id_owner: "", semi_flex: false, start_date: null, end_date: null })
+			res.status(resultCodes.success).send({success: "success"});
+		});
+
+	router
+		.route("/send_email")
+
+		.post(VerifyToken, (req: Request, res: Response) => {
+			const body = req.body;
+
+			model.sendEmail(body.to, body.subject, body.body)
 			res.status(resultCodes.success).send({success: "success"});
 		});
 };

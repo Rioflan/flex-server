@@ -41,6 +41,7 @@
     "moment": "^2.24.0",
     "mongodb-memory-server": "^4.2.1",
     "mongoose": "latest",
+    "node-fetch": "^2.6.0",
     "node-gyp": "^3.8.0",
     "nodemon": "^1.18.3",
     "ramda": "^0.25.0",

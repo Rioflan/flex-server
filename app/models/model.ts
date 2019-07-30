@@ -1,22 +1,17 @@
 import User from "../models/user";
 import Place from "../models/place";
 import cloudinary from "cloudinary";
+import fetch from "node-fetch"
 
 /**
  * This function adds a new user.
- * @param {string} id_user id of the new user
- * @param {string} name name of the new user
- * @param {string} fname first name of the new user
+ * @param {string} email email of the new user
  */
 export function addUser(
-    id_user: string,
-    name: string,
-    fname: string
+    email: string,
 ) {
     const user = new User();
-    user.id = id_user;
-    user.name = name;
-    user.fname = fname;
+    user.email = email;
 
     return user.save()
     .then((user, err) => {
@@ -256,4 +251,33 @@ const NB_REMOTE_DAYS_ALLOWED = 2
 export const updateRemoteDays = async (id_user: string, days: Array<string>) => {
     if (!id_user || !days || days.length > NB_REMOTE_DAYS_ALLOWED || days.some(x => !x)) return
     updateUser(id_user, { remoteDay: days })
+}
+
+/**
+ * This function sends an email
+ * @param {string} to destination email address
+ * @param {string} subject subject
+ * @param {string} body body
+ */
+export const sendEmail = (to: string, subject: string, body: string) => {
+    if (!process.env.ZAPIER_URL) return
+    fetch(process.env.ZAPIER_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            "emailTo": to,
+            "Subject": subject,
+            "Body": body
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .catch(err => console.log(err))
+}
+
+export const sendConfirmationEmail = (user) => {
+    const message = `
+        <p>Voilà votre code de confirmation ${user.confirmation_token}</p>
+    `
+    sendEmail(user.email, "Confirmation", message)
 }
