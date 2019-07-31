@@ -166,27 +166,24 @@ paths:
             schema:
               type: object
               properties:
-                fname:
-                  type: string
-                name:
-                  type: string
-                id_user:
+                email:
                   type: string
             examples:
               '0':
                 value: |-
                   {
-                      "name": "a",
-                      "fname": "a a",
-                      "id_user": "AB12345"
+                      "email": "a@a.com"
                   }
       responses:
         '200':
-          description: Returns the user
+          description: Returns the user's email
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: '#/components/schemas/userModel'
+                type: object
+                properties:
+                  email:
+                    type: string
               examples: {}
       servers:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
