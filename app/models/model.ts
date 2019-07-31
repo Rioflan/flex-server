@@ -9,9 +9,15 @@ import fetch from "node-fetch"
  */
 export function addUser(
     email: string,
+    id?: string,
+    name?: string,
+    fname?: string,
 ) {
     const user = new User();
     user.email = email;
+    if (id) user.id = id
+    if (name) user.name = name
+    if (fname) user.fname = fname
 
     return user.save()
     .then((user, err) => {

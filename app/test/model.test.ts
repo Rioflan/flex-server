@@ -18,7 +18,7 @@ describe('Testing models', () => {
 
     describe('Users collection', () => {
         it('adds a new user', async () => {
-            await model.addUser("AA00000", "Name", "Fname");
+            await model.addUser("a@a.com", "AA00000", "Name", "Fname");
             const user = await model.getUserById("AA00000");
             assert(user);
         });
@@ -30,7 +30,7 @@ describe('Testing models', () => {
         });
 
         it('updates many users', async () => {
-            await model.addUser("AA00001", "Name", "Fname");
+            await model.addUser("b@a.com", "AA00001", "Name", "Fname");
             model.updateManyUsers({ id: /AA0000\d/ }, { name: "OtherName" });
             const nameA = await model.getUserById("AA00000").then(user => user.name);
             const nameB = await model.getUserById("AA00001").then(user => user.name);
