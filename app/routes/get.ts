@@ -24,8 +24,8 @@ const Get = (router: Router, websocket, pool) => {
     const usersDecrypted = users.map(user => {
       return {
         id: user.id,
-        name: decrypt(user.name, req.userId),
-        fname: decrypt(user.fname, req.userId),
+        name: decrypt(user.name || "", req.userId),
+        fname: decrypt(user.fname || "", req.userId),
         id_place: user.id_place || null,
         remoteDay: user.remoteDay,
         photo: user.photo,
@@ -45,8 +45,8 @@ const Get = (router: Router, websocket, pool) => {
       const usersDecrypted = friendsArray.map(friend => {
         return {
           id: friend.id,
-          name: decrypt(friend.name, req.userId),
-          fname: decrypt(friend.fname, req.userId),
+          name: decrypt(friend.name || "", req.userId),
+          fname: decrypt(friend.fname || "", req.userId),
           id_place: friend.id_place || null,
           remoteDay: friend.remoteDay,
           photo: friend.photo
@@ -67,8 +67,8 @@ const Get = (router: Router, websocket, pool) => {
         return
       }
       res.status(200).json(Object.assign({...user}, {
-        name: decrypt(user.name, req.userId),
-        fname: decrypt(user.fname, req.userId),
+        name: decrypt(user.name || "", req.userId),
+        fname: decrypt(user.fname || "", req.userId),
       }));
     });
 

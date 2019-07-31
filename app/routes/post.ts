@@ -146,8 +146,8 @@ const post = (router: Router) => {
 			if (place && !(await placeIsAvailable(place))) {
 				console.log("Place already used");
 				const user = await model.getUserById(place.id_user);
-				const name = decrypt(user.name, req.userId);
-				const fname = decrypt(user.fname, req.userId);
+				const name = decrypt(user.name || "", req.userId);
+				const fname = decrypt(user.fname || "", req.userId);
 				res.status(resultCodes.serverError).json({
 					name: name,
 					fname: fname
