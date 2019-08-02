@@ -20,13 +20,14 @@ const errorMessages = {
 	userCreation: "Error creating the user",
 	userFind: "Error finding the user",
 	userUpdate: "Error updating the user",
-	userIdMatch: "User's ID not matching user's info",
+	userIdMatch: "User's ID does not match user's info",
+    userIdTaken: "The ID you specified is taken",
 	placeCreation: "Error creating the place",
 	placeFind: "Error finding the place",
 	placeUpdate: "Error updating the place",
 	placeAlreadyUsed: "Place already used by : ",
 	invalidArguments: "Invalid arguments",
-	invalidCode: "Invalid confirmation code"
+	invalidCode: "Invalid confirmation code",
 }
 
 const successMessages = {
@@ -118,6 +119,8 @@ const post = (router: Router) => {
 			const email = encrypt(body.email, req.userId)
 			const existingUser = await model.getUserById(id)
             if (existingUser) {
+                if (existingUser.email)
+                    return res.status(resultCodes.syntaxError).json(errorMessages.userIdTaken);
                 await model.removeUser({email})
                 await User.updateOne({id}, {email, name, fname})
             }
