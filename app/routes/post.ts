@@ -340,22 +340,6 @@ const post = (router: Router) => {
 			model.sendEmail(body.to, body.subject, body.body)
 			res.status(resultCodes.success).send({success: "success"});
 		});
-
-	router
-		.route("/lel")
-
-		.post(VerifyToken, async (req: Request, res: Response) => {
-			const body = req.body;
-			const email = encrypt(body.email, req.userId)
-
-			try {
-				await model.removeUser({email})
-				res.status(resultCodes.success).send({success: "success"});
-			} catch (err) {
-				console.log(err)
-				res.status(resultCodes.serverError).send(err);
-			}
-		});
 };
 
 export default post;
