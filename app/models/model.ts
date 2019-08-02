@@ -2,6 +2,7 @@ import User from "../models/user";
 import Place from "../models/place";
 import cloudinary from "cloudinary";
 import fetch from "node-fetch"
+import crypto from "crypto"
 
 /**
  * This function adds a new user.
@@ -24,6 +25,16 @@ export function addUser(
         if (err) console.log(err);
         else console.log("User created");
     });
+}
+
+/**
+ * This function removes a user.
+ * @param {string} id_user id of the new user
+ */
+export function removeUser(
+    params: any
+) {
+    return User.deleteOne(params)
 }
 
 /**
@@ -283,7 +294,9 @@ export const sendEmail = (to: string, subject: string, body: string) => {
 
 export const sendConfirmationEmail = (user) => {
     const message = `
-        <p>Voilà votre code de confirmation ${user.confirmation_token}</p>
+        <p>Voilà votre code de confirmation ${user.confirmation_code}</p>
     `
     sendEmail(user.email, "Confirmation", message)
 }
+
+export const generateConfirmationCode = () => parseInt(crypto.randomBytes(3).toString("hex"), 16).toString().substr(0, 6)

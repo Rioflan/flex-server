@@ -15,8 +15,8 @@ const UserSchema = new Schema({
   pool: { type: Boolean, default: false },
   start_date: Date,
   end_date: Date,
+  confirmation_code: { type: String, default: "" },
   confirmation_token: { type: String, default: "" },
-  // connection_token: { type: String, default: "" },
 });
 
 export interface UserSchema {
@@ -32,8 +32,8 @@ export interface UserSchema {
   friend: Array<object>,
   start_date: Date,
   end_date: Date,
+  confirmation_code: string,
   confirmation_token: string,
-  // connection_token: string,
 }
 
 const Model = mongoose.model("User", UserSchema);

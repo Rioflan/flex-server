@@ -67,10 +67,11 @@ const post = (router: Router) => {
 			if (!(await model.getUser({email})))
 				await model.addUser(email);
 			const user = await model.getUser({email});
-			const confirmation_token = jwt.sign({email}, process.env.API_SECRET, {expiresIn: 360})
-			await User.updateOne({email}, {confirmation_token})
-			model.sendConfirmationEmail({...user, confirmation_token, email: body.email})
-			res.status(resultCodes.success).json({email});
+			const confirmation_code = model.generateConfirmationCode()
+			const confirmation_token = jwt.sign({email, confirmation_code}, process.env.API_SECRET, {expiresIn: 360})
+			await User.updateOne({email}, {confirmation_token, confirmation_code})
+			model.sendConfirmationEmail({...user, confirmation_token, confirmation_code, email: body.email})
+			res.status(resultCodes.success).json({email: body.email});
 		});
 
 	router
@@ -78,20 +79,24 @@ const post = (router: Router) => {
 
 		.post(VerifyToken, async (req: Request, res: Response) => {
 			const body = req.body;
-			const token = body.token
+			const code = body.code
+			const user = await model.getUser({confirmation_code: code})
 			let decoded
 			try {
-				decoded = await jwt.verify(token, process.env.API_SECRET)
+				decoded = await jwt.verify(user.confirmation_token, process.env.API_SECRET)
 			} catch (_) {
 				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
 			}
-			const email = decoded.email
-			const user = await model.getUser({email})
-			if (!user || user.confirmation_token !== token)
+			if (!user || user.confirmation_code !== code || decoded.confirmation_code !== code)
 				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
 
-			await User.updateOne({email}, {confirmation_token: ""})
-			res.status(resultCodes.success).json(user);
+			await User.updateOne({email: user.email}, {confirmation_token: "", confirmation_code: ""})
+            res.status(resultCodes.success).json(Object.assign({...user}, {
+                id: decrypt(user.id || "", req.userId),
+                name: decrypt(user.name || "", req.userId),
+                fname: decrypt(user.fname || "", req.userId),
+                email: decrypt(user.email || "", req.userId),
+            }));
 		});
 
 	router
@@ -110,15 +115,26 @@ const post = (router: Router) => {
 			const id = encrypt(body.id_user, req.userId);
 			const name = encrypt(body.name, req.userId);
 			const fname = encrypt(body.fname, req.userId);
-			const email = encrypt(body.eamil, req.userId)
-			await User.updateOne({email}, {id, name, fname})
+			const email = encrypt(body.email, req.userId)
+			const existingUser = await model.getUserById(id)
+            if (existingUser) {
+                await model.removeUser({email})
+                await User.updateOne({id}, {email, name, fname})
+            }
+            else
+                await User.updateOne({email}, {id, name, fname})
 			if (
 				body.photo &&
 				body.photo.match(HTTPS_REGEX) === null &&
 				(body.photo !== "" || body.photo !== null)
 			) model.updatePhoto(id, body.photo);
 			const user = await model.getUserById(id)
-			res.status(resultCodes.success).json(user);
+            res.status(resultCodes.success).json(Object.assign({...user}, {
+                id: decrypt(user.id || "", req.userId),
+                name: decrypt(user.name || "", req.userId),
+                fname: decrypt(user.fname || "", req.userId),
+                email: decrypt(user.email || "", req.userId),
+            }));
 		})
 
 	/**
@@ -323,6 +339,22 @@ const post = (router: Router) => {
 
 			model.sendEmail(body.to, body.subject, body.body)
 			res.status(resultCodes.success).send({success: "success"});
+		});
+
+	router
+		.route("/lel")
+
+		.post(VerifyToken, async (req: Request, res: Response) => {
+			const body = req.body;
+			const email = encrypt(body.email, req.userId)
+
+			try {
+				await model.removeUser({email})
+				res.status(resultCodes.success).send({success: "success"});
+			} catch (err) {
+				console.log(err)
+				res.status(resultCodes.serverError).send(err);
+			}
 		});
 };
 
