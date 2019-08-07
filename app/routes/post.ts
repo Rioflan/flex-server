@@ -92,12 +92,17 @@ const post = (router: Router) => {
 				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
 
 			await User.updateOne({email: user.email}, {confirmation_token: "", confirmation_code: ""})
-            res.status(resultCodes.success).json(Object.assign({...user}, {
+            res.status(resultCodes.success).json({
                 id: decrypt(user.id || "", req.userId),
                 name: decrypt(user.name || "", req.userId),
                 fname: decrypt(user.fname || "", req.userId),
                 email: decrypt(user.email || "", req.userId),
-            }));
+                remoteDay: user.remoteDay,
+                photo: user.photo,
+                start_date: user.start_date,
+                end_date: user.end_date,
+                historical: user.historical,
+            });
 		});
 
 	router
@@ -132,12 +137,17 @@ const post = (router: Router) => {
 				(body.photo !== "" || body.photo !== null)
 			) model.updatePhoto(id, body.photo);
 			const user = await model.getUserById(id)
-            res.status(resultCodes.success).json(Object.assign({...user}, {
+            res.status(resultCodes.success).json({
                 id: decrypt(user.id || "", req.userId),
                 name: decrypt(user.name || "", req.userId),
                 fname: decrypt(user.fname || "", req.userId),
                 email: decrypt(user.email || "", req.userId),
-            }));
+                remoteDay: user.remoteDay,
+                photo: user.photo,
+                start_date: user.start_date,
+                end_date: user.end_date,
+                historical: user.historical,
+            });
 		})
 
 	/**

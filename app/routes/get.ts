@@ -66,10 +66,17 @@ const Get = (router: Router, websocket, pool) => {
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
-      res.status(200).json(Object.assign({...user}, {
+      res.status(200).json({
+        id: user.id,
         name: decrypt(user.name || "", req.userId),
         fname: decrypt(user.fname || "", req.userId),
-      }));
+        id_place: user.id_place || null,
+        remoteDay: user.remoteDay,
+        historical: user.historical,
+        photo: user.photo,
+        start_date: user.start_date,
+        end_date: user.end_date,
+      });
     });
 
   /** GET /users/:user_id/place */

@@ -16,6 +16,7 @@ services:
       DATABASE_DB: flex
       DATABASE_MODE: remote
       DATABASE_URL: "${DATABASE_URL}"
+      CLOUDINARY_URL: "${CLOUDINARY_URL}"
       LOGIN_REGEX: ^[A-Z]{2}[0-9]{5}$$
       NODE_ENV: remote
       API_SECRET: supersecret
