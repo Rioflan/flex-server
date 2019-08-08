@@ -20,13 +20,14 @@ const errorMessages = {
 	userCreation: "Error creating the user",
 	userFind: "Error finding the user",
 	userUpdate: "Error updating the user",
-	userIdMatch: "User's ID not matching user's info",
+	userIdMatch: "User's ID does not match user's info",
+    userIdTaken: "The ID you specified is taken",
 	placeCreation: "Error creating the place",
 	placeFind: "Error finding the place",
 	placeUpdate: "Error updating the place",
 	placeAlreadyUsed: "Place already used by : ",
 	invalidArguments: "Invalid arguments",
-	invalidCode: "Invalid confirmation code"
+	invalidCode: "Invalid confirmation code",
 }
 
 const successMessages = {
@@ -91,12 +92,17 @@ const post = (router: Router) => {
 				return res.status(resultCodes.syntaxError).send(errorMessages.invalidCode);
 
 			await User.updateOne({email: user.email}, {confirmation_token: "", confirmation_code: ""})
-            res.status(resultCodes.success).json(Object.assign({...user}, {
+            res.status(resultCodes.success).json({
                 id: decrypt(user.id || "", req.userId),
                 name: decrypt(user.name || "", req.userId),
                 fname: decrypt(user.fname || "", req.userId),
                 email: decrypt(user.email || "", req.userId),
-            }));
+                remoteDay: user.remoteDay,
+                photo: user.photo,
+                start_date: user.start_date,
+                end_date: user.end_date,
+                historical: user.historical,
+            });
 		});
 
 	router
@@ -118,6 +124,8 @@ const post = (router: Router) => {
 			const email = encrypt(body.email, req.userId)
 			const existingUser = await model.getUserById(id)
             if (existingUser) {
+                if (existingUser.email)
+                    return res.status(resultCodes.syntaxError).json(errorMessages.userIdTaken);
                 await model.removeUser({email})
                 await User.updateOne({id}, {email, name, fname})
             }
@@ -129,12 +137,17 @@ const post = (router: Router) => {
 				(body.photo !== "" || body.photo !== null)
 			) model.updatePhoto(id, body.photo);
 			const user = await model.getUserById(id)
-            res.status(resultCodes.success).json(Object.assign({...user}, {
+            res.status(resultCodes.success).json({
                 id: decrypt(user.id || "", req.userId),
                 name: decrypt(user.name || "", req.userId),
                 fname: decrypt(user.fname || "", req.userId),
                 email: decrypt(user.email || "", req.userId),
-            }));
+                remoteDay: user.remoteDay,
+                photo: user.photo,
+                start_date: user.start_date,
+                end_date: user.end_date,
+                historical: user.historical,
+            });
 		})
 
 	/**

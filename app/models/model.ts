@@ -119,8 +119,12 @@ export async function updatePhoto(
     id_user: string,
     photo: string
 ) {
-    const url = await uploadPhoto(photo);
-    updateUser(id_user, { photo: url });
+    try {
+        const url = await uploadPhoto(photo);
+        updateUser(id_user, { photo: url });
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 /**
