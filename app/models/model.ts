@@ -294,7 +294,16 @@ export const sendEmail = (to: string, subject: string, body: string) => {
 
 export const sendConfirmationEmail = (user) => {
     const message = `
-        <p>Voilà votre code de confirmation ${user.confirmation_code}</p>
+
+    <img/>
+    <p>Cet e-mail a été envoyé automatiquement par l’application FlexOffice de la BRED Banque Populaire.</p>
+    <p>Code d’inscription à reporter sur l’application FlexOffice pour finaliser votre enregistrement :</p>
+    <p> ${user.confirmation_code}</p>
+    <p>-------------------------</p>
+    <p>Veuillez ne pas répondre à cet e-mail.</p>
+    <p>Si vous souhaitez nous contacter, envoyez un email à : </br>
+    it-factory@bred.fr</p>
+    <img/>
     `
     sendEmail(user.email, "Confirmation", message)
 }
