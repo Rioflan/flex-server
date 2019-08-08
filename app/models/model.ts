@@ -305,11 +305,12 @@ export const sendConfirmationEmail = (user) => {
     <p> ${user.confirmation_code}</p>
     <p>-------------------------</p>
     <p>Veuillez ne pas répondre à cet e-mail.</p>
-    <p>Si vous souhaitez nous contacter, envoyez un email à : </br>
+    <p>Si vous souhaitez nous contacter, envoyez un email à : <br/>
     it-factory@bred.fr</p>
-    <img/>
+    <img src="https://upload.wikimedia.org/wikipedia/fr/e/e7/Logo_2018_de_la_BRED.png"/>
     `
     sendEmail(user.email, "Confirmation", message)
 }
+ 
 
 export const generateConfirmationCode = () => parseInt(crypto.randomBytes(3).toString("hex"), 16).toString().substr(0, 6)
