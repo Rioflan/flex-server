@@ -298,19 +298,21 @@ export const sendEmail = (to: string, subject: string, body: string) => {
 
 export const sendConfirmationEmail = (user) => {
     const message = `
-
-    <img/>
-    <p>Cet e-mail a été envoyé automatiquement par l’application FlexOffice de la BRED Banque Populaire.</p>
-    <p>Code d’inscription à reporter sur l’application FlexOffice pour finaliser votre enregistrement :</p>
-    <p> ${user.confirmation_code}</p>
-    <p>-------------------------</p>
-    <p>Veuillez ne pas répondre à cet e-mail.</p>
-    <p>Si vous souhaitez nous contacter, envoyez un email à : <br/>
-    it-factory@bred.fr</p>
-    <img src="https://upload.wikimedia.org/wikipedia/fr/e/e7/Logo_2018_de_la_BRED.png"/>
+    <div>
+        <p style="margin:30px; text-align:center; color:#1B3F7B; font-size:18px; font-weight:bold">Vous souhaitez vous connecter à Flex-Office ?</p>
+        <p style="margin:30px;text-align:center; color:#1B3F7B; font-size:13px">Veuillez récupérer le code de vérification suivant pour finaliser votre connexion :</p>
+        <p style="margin:30px; text-align:center; font-size: 20px; font-weight:bold; color:#E64417">${user.confirmation_code}</p
+        <div style="margin:30px; width: 386px; text-align:center; margin:auto">
+            <p style="margin:30px; font-size:12px; color:#8FA1BE; text-align:center">Veuillez ne pas répondre à cet e-mail.</p>
+            <p style="margin:30px; font-size:12px; color:#8FA1BE; text-align:center">Cet e-mail a été envoyé automatiquement par l’application FlexOffice de la BRED Banque Populaire.</p
+        </div>
+        <p style="text-align: center; color:#1B3F7B; font-weight: bold; font-size:14px">Nous contacter ? </p>
+        <p style="text-align: center; font-weight:bold; font-size:12px; color:#8FA1BE">
+            Envoyer un mail à <a style="font-weight:bold; font-size:12px; color:#8FA1BE" href="mailto:it-factory@bred.fr">it-factory@bred.fr</a>
+        </p>
+    </div>
     `
-    sendEmail(user.email, "Confirmation", message)
+    sendEmail(user.email, "FlexOffice : Code d’inscription", message)
 }
- 
 
 export const generateConfirmationCode = () => parseInt(crypto.randomBytes(3).toString("hex"), 16).toString().substr(0, 6)
