@@ -25,6 +25,7 @@
   "author": "rioflan",
   "license": "ISC",
   "dependencies": {
+    "azure-storage": "^2.10.3",
     "bcryptjs": "latest",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.13.2",
@@ -54,7 +55,7 @@
   "description": "",
   "devDependencies": {
     "@types/jest": "^23.3.5",
-    "@types/node": "^10.12.0",
+    "@types/node": "^10.14.16",
     "dredd": "^9.0.5",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
