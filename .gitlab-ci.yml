@@ -50,5 +50,5 @@ deploy:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - dpl --provider=azure_web_apps --app=$HEROKU_NAME --api-key=$HEROKU_API_KEY
+    - curl $AZURE_DEPLOYMENT_WEBHOOK
     - echo "Deployment Successfull"
