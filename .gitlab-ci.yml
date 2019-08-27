@@ -35,11 +35,11 @@ test:
 #     - dpl --provider=heroku --app=$HEROKU_TEST_NAME --api-key=$HEROKU_TEST_API_KEY
 #     - echo "Deployment Successfull"
 
-test_api:
-  stage: test_api
-  script:
-    - ./node_modules/.bin/dredd ./swagger/swagger.yaml $HEROKU_TEST_URL --hookfiles=./swagger/hooks.js
-    - echo "Test Successfull"
+# test_api:
+#   stage: test_api
+#   script:
+#     - ./node_modules/.bin/dredd ./swagger/swagger.yaml $HEROKU_TEST_URL --hookfiles=./swagger/hooks.js
+#     - echo "Test Successfull"
 
 deploy:
   stage: deploy
