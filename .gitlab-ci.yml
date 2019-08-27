@@ -50,5 +50,4 @@ deploy:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - curl $AZURE_DEPLOYMENT_WEBHOOK
     - echo "Deployment Successfull"
