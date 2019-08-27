@@ -16,10 +16,12 @@ services:
       DATABASE_DB: flex
       DATABASE_MODE: remote
       DATABASE_URL: "${DATABASE_URL}"
+      CLOUDINARY_URL: "${CLOUDINARY_URL}"
       LOGIN_REGEX: ^[A-Z]{2}[0-9]{5}$$
       NODE_ENV: remote
       API_SECRET: supersecret
       DOCKER_ENV: production
+      ZAPIER_URL: "https://hooks.zapier.com/hooks/catch/5415376/ooel5b2/"
     depends_on:
       - mongo
 

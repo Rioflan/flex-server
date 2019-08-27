@@ -25,15 +25,15 @@ test:
     - npm test
     - echo "Test Successfull"
 
-deploy_test:
-  stage: deploy_test
-  image: ruby:latest
-  script:
-    - apt-get update -qy
-    - apt-get install -y ruby-dev
-    - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_TEST_NAME --api-key=$HEROKU_TEST_API_KEY
-    - echo "Deployment Successfull"
+# deploy_test:
+#   stage: deploy_test
+#   image: ruby:latest
+#   script:
+#     - apt-get update -qy
+#     - apt-get install -y ruby-dev
+#     - gem install dpl
+#     - dpl --provider=heroku --app=$HEROKU_TEST_NAME --api-key=$HEROKU_TEST_API_KEY
+#     - echo "Deployment Successfull"
 
 test_api:
   stage: test_api
@@ -44,11 +44,31 @@ test_api:
 deploy:
   stage: deploy
   image: ruby:latest
+  before_script:
+    - docker login $CI_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
   only:
     - master
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
-    - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_NAME --api-key=$HEROKU_API_KEY
+    - docker build \                                     
+      -t flex_server-v0.2 \
+      --build-arg API_SECRET=${API_SECRET} \
+      --build-arg API_TOKEN=${API_TOKEN} \
+      --build-arg CLOUDINARY_URL=${CLOUDINARY_URL} \
+      --build-arg DATABASE_MODE=${DATABASE_MODE} \
+      --build-arg DATABASE_URL=${DATABASE_URL} \
+      --build-arg DB_NAME=${DB_NAME} \
+      --build-arg DB_PASSWORD=${DB_PASSWORD} \
+      --build-arg LOGIN_REGEX=${LOGIN_REGEX} \
+      --build-arg NODE_ENV=${NODE_ENV} \
+      --build-arg PAPERTRAIL_API_TOKEN=${PAPERTRAIL_API_TOKEN} \
+      --build-arg AZURE_STORAGE_TOKEN=${AZURE_STORAGE_TOKEN} \
+      --build-arg AZURE_STORAGE_CONTAINER_NAME=${AZURE_STORAGE_CONTAINER_NAME} \
+      --build-arg AZURE_STORAGE_BLOB_NAME=${AZURE_STORAGE_BLOB_NAME} \
+      --build-arg ZAPIER_URL=${ZAPIER_URL} \
+      --build-arg DOCKER_ENV=${DOCKER_ENV} \
+      .
+    - docker tag "$CI_REGISTRY_IMAGE_SHORT" "$CI_REGISTRY_IMAGE"
+    - docker push "$CI_REGISTRY_IMAGE"
     - echo "Deployment Successfull"

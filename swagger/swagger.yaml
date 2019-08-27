@@ -141,24 +141,20 @@ paths:
           name: body
           schema:
             properties:
-              fname:
-                type: string
-              id_user:
-                type: string
-              name:
+              email:
                 type: string
             type: object
             example: |-
               {
-                  "name": "a",
-                  "fname": "a a",
-                  "id_user": "AB12345"
+                  "email": "a@a.com"
               }
       responses:
         '200':
           description: Returns the user
           schema:
-            $ref: '#/definitions/userModel'
+            properties:
+              email:
+                type: string
       description: Log in user
   /api/logout:
     get:

@@ -4,6 +4,17 @@ import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
 
+const resultCodes = {
+	success: 200,
+	syntaxError: 400,
+  notFound: 404,
+	serverError: 500,
+}
+
+const errorMessages = {
+  notFound: "Not found"
+}
+
 const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
@@ -13,11 +24,13 @@ const Get = (router: Router, websocket, pool) => {
     const usersDecrypted = users.map(user => {
       return {
         id: user.id,
-        name: decrypt(user.name, req.userId),
-        fname: decrypt(user.fname, req.userId),
+        name: decrypt(user.name || "", req.userId),
+        fname: decrypt(user.fname || "", req.userId),
         id_place: user.id_place || null,
         remoteDay: user.remoteDay,
-        photo: user.photo
+        photo: user.photo,
+        start_date: user.start_date,
+        end_date: user.end_date,
       };
     });
     res.status(200).json(usersDecrypted);
@@ -32,8 +45,8 @@ const Get = (router: Router, websocket, pool) => {
       const usersDecrypted = friendsArray.map(friend => {
         return {
           id: friend.id,
-          name: decrypt(friend.name, req.userId),
-          fname: decrypt(friend.fname, req.userId),
+          name: decrypt(friend.name || "", req.userId),
+          fname: decrypt(friend.fname || "", req.userId),
           id_place: friend.id_place || null,
           remoteDay: friend.remoteDay,
           photo: friend.photo
@@ -49,8 +62,22 @@ const Get = (router: Router, websocket, pool) => {
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(id_user);
-      res.status(200).json(user);
+      if (!user) {
+        res.status(resultCodes.notFound).send(errorMessages.notFound);
+        return
+      }
+      res.status(200).json({
+        id: user.id,
+        name: decrypt(user.name || "", req.userId),
+        fname: decrypt(user.fname || "", req.userId),
+        id_place: user.id_place || null,
+        remoteDay: user.remoteDay,
+        historical: user.historical,
+        photo: user.photo,
+        start_date: user.start_date,
+        end_date: user.end_date,
       });
+    });
 
   /** GET /users/:user_id/place */
 
