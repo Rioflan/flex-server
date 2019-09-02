@@ -51,7 +51,7 @@ const post = (router: Router) => {
    * This route is used to handle users login.
    */
   router
-    .route("/login_user")
+    .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -178,7 +178,7 @@ const post = (router: Router) => {
    * This route is used to assign a place to a user.
    */
   router
-    .route("/take_place")
+    .route("/places/take-place")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -236,7 +236,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/leave_place")
+    .route("/places/leave")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -262,7 +262,7 @@ const post = (router: Router) => {
    * This route is used to add a friend.
    */
   router
-    .route("/add_friend")
+    .route("/users/add")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -303,7 +303,7 @@ const post = (router: Router) => {
    * This route is used to remove a friend.
    */
   router
-    .route("/remove_friend")
+    .route("/users/remove")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -333,7 +333,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/settings_user")
+    .route("/user/settings")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
