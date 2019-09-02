@@ -260,7 +260,7 @@ paths:
           schema:
             $ref: '#/definitions/userModel'
       description: Remove a friend from a user
-  /api/reset_places:
+  /api/places/reset:
     get:
       produces:
         - text/html; charset=utf-8

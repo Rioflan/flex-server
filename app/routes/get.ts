@@ -19,7 +19,9 @@ const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
 
-  router.route("/users").get(VerifyToken, async (req: Request, res: Response) => {
+  router
+    .route("/users")
+    .get(VerifyToken, async (req: Request, res: Response) => {
     const users = await model.getUsers();
     const usersDecrypted = users.map(user => {
       return {
@@ -91,13 +93,15 @@ const Get = (router: Router, websocket, pool) => {
 
   /** GET /places */
 
-  router.route("/places").get(VerifyToken, async (req: Request, res: Response) => {
-    const places = await model.getPlaces();
-    res.status(200).json(places);
+  router
+    .route("/places")
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      const places = await model.getPlaces();
+      res.status(200).json(places);
   });
 
   router
-    .route("/reset_places")
+    .route("/places/reset")
     .get(VerifyToken, async (req: Request, res: Response) => {
       await model.resetPlaces(websocket, pool);
       res.status(200).send("Places successfully reset");

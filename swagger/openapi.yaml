@@ -327,7 +327,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/reset_places:
+  /api/places/reset:
     get:
       description: Reset places
       parameters:
