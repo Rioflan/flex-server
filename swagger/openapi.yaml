@@ -396,7 +396,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/places/take-place:
+  /api/places/take:
     post:
       description: Take a place for a user
       parameters:

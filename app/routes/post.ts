@@ -178,7 +178,7 @@ const post = (router: Router) => {
    * This route is used to assign a place to a user.
    */
   router
-    .route("/places/take-place")
+    .route("/places/take")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
