@@ -109,7 +109,7 @@ Note: This file should always be there but it makes the installation on Circle C
 
 ## Use the API
 
-You can find the begining of the API documentation [here](https://app.swaggerhub.com/apis-docs/Lformery8/FlexServer/0.1#/default).
+You can find the begining of the API documentation [here](https://app.swaggerhub.com/apis-docs/Lformery8/Flex-Server/1.0.0).
 
 
 ## Deployment
