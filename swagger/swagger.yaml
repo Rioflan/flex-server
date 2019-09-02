@@ -1,12 +1,21 @@
 swagger: '2.0'
 info:
-  description: defaultDescription
-  title: defaultTitle
-  version: '0.1'
-host: whispering-lowlands-83497.herokuapp.com
-basePath: /
+  description: FlexOffice Demo API
+  title: FlexOffice Rest API
+  version: "1.0.0"
+# host: whispering-lowlands-83497.herokuapp.com
+# basePath: /
 schemes:
-  - https
+- https
+securityDefinitions:
+  UserSecurity: 
+    type: apiKey
+    in: header
+    name: X-Access-Token
+
+security:
+  - UserSecurity: []
+
 paths:
   /api:
     get:
@@ -22,7 +31,7 @@ paths:
                 type: string
             type: object
       description: Verify that the API is working
-  /api/add_friend:
+  /api/users/add:
     post:
       consumes:
         - application/json
@@ -66,7 +75,7 @@ paths:
           schema:
             $ref: '#/definitions/userModel'
       description: Add a friend to a user
-  /api/leave_place:
+  /api/places/leave:
     post:
       consumes:
         - application/json
@@ -124,7 +133,7 @@ paths:
           schema:
             $ref: '#/definitions/authModel'
       description: Log in
-  /api/login_user:
+  /api/user/login:
     post:
       consumes:
         - application/json
@@ -227,7 +236,7 @@ paths:
           schema:
             $ref: '#/definitions/authModel'
       description: Register new user
-  /api/remove_friend:
+  /api/users/remove:
     post:
       consumes:
         - application/json
@@ -275,7 +284,7 @@ paths:
         '200':
           description: Confirms the reset
       description: Reset places
-  /api/settings_user:
+  /api/user/settings:
     post:
       consumes:
         - application/json
@@ -314,7 +323,7 @@ paths:
                 type: string
             type: object
       description: Modify the user's settings
-  /api/take_place:
+  /api/places/take:
     post:
       consumes:
         - application/json
@@ -441,4 +450,6 @@ definitions:
       remoteDay: {}
     type: object
 x-components: {}
-
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /Lformery8/flex/1.0.0

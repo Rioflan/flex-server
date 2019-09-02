@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: defaultTitle
-  description: defaultDescription
+  title: FlexOffice Rest API
+  description: FlexOffice Demo API
   version: '0.1'
 servers:
   - url: 'https://whispering-lowlands-83497.herokuapp.com'
@@ -24,7 +24,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/add_friend:
+  /api/users/add:
     post:
       description: Add a friend to a user
       parameters:
@@ -77,7 +77,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/leave_place:
+  /api/places/leave:
     post:
       description: Leave a place for a user
       parameters:
@@ -149,7 +149,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/login_user:
+  /api/user/login:
     post:
       description: Log in user
       parameters:
@@ -287,7 +287,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/remove_friend:
+  /api/users/remove:
     post:
       description: Remove a friend from a user
       parameters:
@@ -350,7 +350,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/settings_user:
+  /api/user/settings:
     post:
       description: Modify the user's settings
       parameters:
@@ -396,7 +396,7 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
-  /api/take_place:
+  /api/places/take:
     post:
       description: Take a place for a user
       parameters:
