@@ -87,3 +87,6 @@ lib/test/post.js
 lib/test/socketio.js
 app/test/post.ts
 app/test/socketio.ts
+
+# Mac files
+.DS_Store
