@@ -1,96 +1,39 @@
-# Flex Server [![pipeline status](https://gitlab.com/Pujomir/flex-server/badges/master/pipeline.svg)](https://gitlab.com/Pujomir/flex-server/commits/master)
+<p align="center">
+  <img width="250" src="./assets/logo.png">
+</p>
 
+## Check that NodeJs is installed
 
+```
+$ nodejs -v
+$ npm -v
 
-The project implements JSON API to manage places of users in a building. You can run the server using a dockerfile.
+```
+Despite, you have to install nodeJs from the [official website](https://nodejs.org/en/download/)
 
-## **Getting Started**
+## Download and install the project
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+```
+$ git clone https://github.com/BREDFactory/flex-web-client.git
+$ cd flex-server
 
-### **Prerequisites**
+```
 
-You have to install nodeJs from the [official website](https://nodejs.org/en/download/)
-
-You can check that everything is ok by typing: `nodejs -v` and `npm -v`
 
 ## **Docker** 🐳
 
 You have to install docker from the [official website](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose)(If you are on Mac, Docker installation already includes docker-compose).
 
-And then you can run :
-```
-docker-compose build
-```
-Which will buid the containers and then :
+And then you can run and build the containers:
 ```
 docker-compose up [dev|prod]
 ```
-Which will run the containers.
 
 By default app will launch on port **3000** and mongoDB on port **27017**
 
 You can list all your running containers by typing the command:
 ``` docker container ls ```
 
-### **Configure** ( without docker )
-
-To use the server you will have to configure the database you use.
-
-In case of local deployment :
-
-Install MongoDB
-
-Create `flex` database
-
-Another easy way is to use [mlab](https://docs.mlab.com/).
-
-You have to pass variables as environment variables.
-
-Check the mongo configuration variables environnement :
-
-Add a `.env` file at the root of the project.
-Use 'local' mode for local deployment or 'remote' for cloud deployment.
-```
-API_SECRET=   // secret key
-
-DATABASE_URL=   // For mlab
-DATABASE_HOST=host.docker.internal // Must use this specific hostname for mac users only
-DATABASE_PORT=
-DATABASE_USERNAME=  // mlab user
-DATABASE_PASSWORD=  // mlab password
-DATABASE_DB=
-DATABASE_MODE=remote // 'local' || 'remote'
-```
-
-### Installing
-
-There are two ways to install the server:
-
-#### Using npm
-
-```
-npm install
-```
-
-#### 2. Using yarn
-
-```
-yarn install
-```
-### Run
-
-#### 1. Using npm
-
-```
-npm run build:live
-```
-
-#### 2. Using yarn
-
-```
-yarn run build:live
-```
 
 ### **Create an API token for use**
 
@@ -166,16 +109,51 @@ Note: This file should always be there but it makes the installation on Circle C
 
 ## Use the API
 
-You can find the begining of the API documentation [here](https://app.swaggerhub.com/apis-docs/ayshiff/flex-server-bred/0.1).
+You can find the begining of the API documentation [here](https://app.swaggerhub.com/apis-docs/Lformery8/FlexServer/0.1#/default).
 
 
 ## Deployment
 
-For deployment, I recommend using [Heroku](https://dashboard.heroku.com/apps).
+For deployment, we recommend using [Heroku](https://dashboard.heroku.com/apps).
 
 ## Built With
 
 TODO
+
+## Project structure
+
+```
+.
+├── Dockerfile
+├── README.md
+├── assets
+├── docker-compose.yml
+├── package-lock.json
+├── package.json
+├── jest.config.js
+├── LICENSE
+├── Makefile
+└── app
+    ├── app.ts
+    ├── initDB.ts
+    ├── server.ts
+    ├── database
+    │   └── mongoDB.ts
+    ├── models
+    │   ├── apikey.ts
+    │   ├── modelts 
+    │   ├── place.ts
+    │   └── user.ts
+    ├── routes
+    │   ├── auth.ts
+    │   ├── get.ts
+    │   ├── post.ts
+    │   ├── test.ts
+    │   └── VerifyToken.ts
+    └── test
+        └── model.test.ts
+
+```
 
 ## Contributing
 - Check the current opened issues
