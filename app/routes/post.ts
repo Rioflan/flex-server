@@ -127,7 +127,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/complete_user")
+    .route("/user/complete")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -359,7 +359,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/assign_place")
+    .route("/place/assign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -375,7 +375,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/remove_user")
+    .route("/user/remove")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -393,7 +393,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/unassign_place")
+    .route("/place/unassign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -408,7 +408,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/send_email")
+    .route("/send-email")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
