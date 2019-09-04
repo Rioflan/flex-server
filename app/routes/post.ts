@@ -202,6 +202,10 @@ const post = (router: Router) => {
       );
     });
 
+/*
+ * This route is used to remove delete an user
+ * Not necessarily used in the applicaton
+ */
     router
     .route("/user/remove")
 
@@ -248,7 +252,6 @@ const post = (router: Router) => {
 
   router
     .route("/verify")
-
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
       const code = body.code;
