@@ -11,7 +11,7 @@ securityDefinitions:
   UserSecurity: 
     type: apiKey
     in: header
-    name: X-Access-Token
+    name: authorization
 
 security:
   - UserSecurity: []
