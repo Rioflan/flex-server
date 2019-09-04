@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 import dbconfig from './database/mongoDB';
 import Places from "./models/place";
 
