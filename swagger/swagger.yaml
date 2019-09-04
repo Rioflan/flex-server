@@ -284,6 +284,78 @@ paths:
         '200':
           description: Confirms the reset
       description: Reset places
+
+
+  /api/user/complete:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: authorization
+          required: true
+          type: string
+          x-example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              email:
+                type: string
+              name:
+                type: string
+              fname:
+                type: string
+              id_user:
+                type: string
+            type: object
+            example: |-
+              {
+                  "email": "a@a.com",
+                  "name": "TZ#ýý",
+                  "fname": "4V@-",
+                  "id_user": "AB12345"
+              }
+      responses:
+        '200':
+          description: Confirm the register
+          schema:
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              fname:
+                type: string
+              email:
+                type: string
+              remoteDay:
+                type: string
+              photo:
+                type: string
+              start_date:
+                type: string
+              end_date:
+                type: string
+              historical:
+                type: string
+            example: |-
+              {
+                  "id": "c19f60bc2df02a"
+                  "name": "TZ#ýý",
+                  "fname": "4V@-",
+                  "email": "a@a.com",
+                  "remoteDay": null,
+                  "start_date": null,
+                  "end_date": null,
+                  "historical": null
+              }
+      description: Register a new user
+
+
   /api/user/settings:
     post:
       consumes:

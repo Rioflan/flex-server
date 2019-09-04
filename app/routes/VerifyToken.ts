@@ -13,9 +13,6 @@ const verifyToken = (req: Request, res: Response, next) => {
     const token = req.headers['authorization'];
     if (!token) return res.status(403).send({auth: false, message: 'No token provided.'});
 
-    console.log("API_SECRET" + process.env.API_SECRET);
-    console.log("TOKEN :" + token);
-
     jwt.verify(token, process.env.API_SECRET, (err: Error, decoded) => {
         if (err) {
             return res

@@ -268,7 +268,7 @@ const post = (router: Router) => {
       const body = req.body;
       RES = res;
       const id_user = encrypt(body.id_user, req.userId);
-
+      console.log(id_user)
       User.findOne(
         { id: id_user },
         null,
@@ -309,7 +309,6 @@ const post = (router: Router) => {
       const body = req.body;
       RES = res;
       const id_user = encrypt(body.id_user, req.userId);
-
       User.findOne(
         { id: id_user },
         null,
