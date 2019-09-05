@@ -314,10 +314,11 @@ export const updateRemoteDays = async (
  */
 export const sendEmail = (to: string, subject: string, body: string) => {
   if (!process.env.ZAPIER_URL) return;
+  console.log(process.env.ZAPIER_URL);
   fetch(process.env.ZAPIER_URL, {
     method: "POST",
     body: JSON.stringify({
-      emailTo: to,
+      EmailTo: to,
       Subject: subject,
       Body: body
     }),
