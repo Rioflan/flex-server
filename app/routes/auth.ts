@@ -23,6 +23,7 @@ const findUser = (req: Request, res: Response) => {
 };
 
 const createUser = (req: Request, res: Response, hashedPassword: any) => {
+    console.log("create api user");
     apiUser.create(
         {
             name: req.body.name,

@@ -90,3 +90,8 @@ app/test/socketio.ts
 
 # Mac files
 .DS_Store
+
+# Credentials
+app/credentials.json
+app/initDB.ts
+app/**/*.js
