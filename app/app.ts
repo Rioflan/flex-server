@@ -6,11 +6,14 @@ import cors from "cors";
 import Post from "./routes/post";
 import Get from "./routes/get";
 import Auth from "./routes/auth";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const app: express.Application = express(); // use express on our app
 
 app.use(cors());
-
+process.stdout.write("\nON LAUNCH >>>>> process.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
 if (process.env.NODE_ENV === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 } // Redirect http => https

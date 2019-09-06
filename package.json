@@ -27,6 +27,7 @@
   "dependencies": {
     "@types/jest": "^23.3.5",
     "@types/node": "^10.14.16",
+    "assert": "^2.0.0",
     "azure-storage": "^2.10.3",
     "bcryptjs": "latest",
     "body-parser": "^1.18.3",
@@ -43,6 +44,7 @@
     "express": "~4.16.0",
     "express-sslify": "^1.2.0",
     "greenlock-express": "^2.4.6",
+    "gridfs-stream": "^1.1.1",
     "http-errors": "~1.6.2",
     "jest": "^23.6.0",
     "jsonwebtoken": "latest",

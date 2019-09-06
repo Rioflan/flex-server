@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use strict';
 
 import { append, filter } from "ramda";
 
@@ -10,6 +11,14 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import moment from "moment";
 import jwt from "jsonwebtoken";
+import dbconfig from '../database/mongoDB';
+const mongodb = require('mongodb');
+
+const fs = require('fs');
+const mongoose = require("mongoose");
+var Grid = require('gridfs-stream');
+var assert = require('assert');
+var stream = require('stream');
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -45,6 +54,37 @@ interface Request {
 }
 
 let RES;
+
+function putFile(bytes, name) {
+
+  mongodb.MongoClient.connect(dbconfig.getMongoUri(), function(error, client) {
+    assert.ifError(error);    
+    const db = client.db("flex");
+    process.stdout.write("GOT A CONNECTION...\n");
+
+    let opts = {
+      bucketName: 'Avatars'
+    };
+    try{
+      var bucket = new mongodb.GridFSBucket(db, opts);
+      process.stdout.write("BUCKET CREATED...\n");
+      try{
+        const readablePhotoStream = new stream.Readable();
+        readablePhotoStream.push(bytes);
+        readablePhotoStream.push(null);
+
+        let uploadStream = bucket.openUploadStream(name);
+        let id = uploadStream.id;
+        readablePhotoStream.pipe(uploadStream);
+      }catch(error){
+        process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
+
+      }
+    }catch(error){
+      process.stdout.write("BUCKET CREATION FAILED...\n"+error);
+    }    
+  });
+}
 
 const post = (router: Router) => {
   /**
@@ -236,10 +276,20 @@ const post = (router: Router) => {
         body.photo.match(HTTPS_REGEX) === null &&
         (body.photo !== "" || body.photo !== null)
       )
+      process.stdout.write("\nprocess.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
+      if (process.env.NODE_ENV !== "development"){
         model.updatePhoto(id_user, body.photo);
+      }else{
+        putFile(body.photo, body.id_user);
+      }
 
       if (body.remoteDay !== "")
-        model.updateUser(id_user, { remoteDay: body.remoteDay });
+        model.updateUser(
+          id_user, { remoteDay: body.remoteDay }
+          );
+      
+
+
       if (body.startDate && body.endDate) {
         model.updateAvailabilityPeriod(
           id_user,
