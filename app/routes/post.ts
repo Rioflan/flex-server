@@ -14,9 +14,9 @@ import jwt from "jsonwebtoken";
 import dbconfig from '../database/mongoDB';
 const mongodb = require('mongodb');
 
-const fs = require('fs');
-const mongoose = require("mongoose");
-var Grid = require('gridfs-stream');
+//const fs = require('fs');
+//const mongoose = require("mongoose");
+//var Grid = require('gridfs-stream');
 var assert = require('assert');
 var stream = require('stream');
 
@@ -63,6 +63,7 @@ function putFile(bytes, name) {
     process.stdout.write("GOT A CONNECTION...\n");
 
     let opts = {
+      chunkSizeBytes: 1024,
       bucketName: 'Avatars'
     };
     try{
@@ -287,8 +288,6 @@ const post = (router: Router) => {
         model.updateUser(
           id_user, { remoteDay: body.remoteDay }
           );
-      
-
 
       if (body.startDate && body.endDate) {
         model.updateAvailabilityPeriod(

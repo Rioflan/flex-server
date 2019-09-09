@@ -3,6 +3,7 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
+var mongodb = require('mongodb');
 
 const resultCodes = {
 	success: 200,
@@ -64,20 +65,28 @@ const Get = (router: Router, websocket, pool) => {
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(id_user);
+      
       if (!user) {
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
+
+      //var localPhoto = getUserPhoto(req.params.user_id);
+      const image = await getUserPhotoWrapper(req.params.user_id);
+      process.stdout.write(image+"\n");
+
+      process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
+  
       res.status(200).json({
-        id: user.id,
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        id_place: user.id_place || null,
-        remoteDay: user.remoteDay,
-        historical: user.historical,
-        photo: user.photo,
-        start_date: user.start_date,
-        end_date: user.end_date,
+          id: user.id,
+          name: decrypt(user.name || "", req.userId),
+          fname: decrypt(user.fname || "", req.userId),
+          id_place: user.id_place || null,
+          remoteDay: user.remoteDay,
+          historical: user.historical,
+          photo: process.env.NODE_ENV === 'development' ? image:user.photo,
+          start_date: user.start_date,
+          end_date: user.end_date,
       });
     });
 
@@ -107,5 +116,64 @@ const Get = (router: Router, websocket, pool) => {
       res.status(200).send("Places successfully reset");
     })
 };
+
+function getUserPhotoWrapper(user_id) {
+  return new Promise((resolve, reject) => {
+    getUserPhoto(user_id,(successResponse) => {
+          process.stdout.write('RESOLVED!!!!!!!!!!!!\n');
+
+          resolve(successResponse);
+      });
+  });
+}
+
+
+
+function getUserPhoto(user_id, callback){
+  var url = 'mongodb://localhost:27017/flex';
+  mongodb.MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
+    const db = client.db("flex");
+ 
+    if (err) {
+      process.stdout.write('Sorry unable to connect to MongoDB Error:', err+'\n');
+    } else {
+      process.stdout.write('CONNECTION OK \n');
+
+        var bucket = new mongodb.GridFSBucket(db, {
+            chunkSizeBytes: 1024,
+            bucketName: 'Avatars'
+        });
+        process.stdout.write('BUCKET CREATED \n');
+        var str = '';
+        var gotData = 0;
+        bucket.openDownloadStreamByName(user_id)
+        .on('error', function(error) {
+          process.stdout.write('Error:-', error+'\n');
+        })
+        .on('data', function(data) {
+          process.stdout.write('GOT DATA!\n');
+          ++gotData;
+          str += data.toString('utf8');
+        })
+        .on('end', function() {
+          process.stdout.write('done!');
+          callback(str);
+        });
+        
+        
+        /*
+        .pipe(fs.createWriteStream(local_url))
+        .on('error', function(error) {
+              process.stdout.write('Error:-', error+'\n');
+            })
+        .on('finish', function() {
+              process.stdout.write('done!');
+        });*/
+    }
+});
+
+
+//  return local_url
+}
 
 export default Get;
