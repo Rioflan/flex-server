@@ -71,9 +71,7 @@ const Get = (router: Router, websocket, pool) => {
         return
       }
 
-      //var localPhoto = getUserPhoto(req.params.user_id);
       const image = await getUserPhotoWrapper(req.params.user_id);
-      process.stdout.write(image+"\n");
 
       process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
   
@@ -160,20 +158,9 @@ function getUserPhoto(user_id, callback){
           callback(str);
         });
         
-        
-        /*
-        .pipe(fs.createWriteStream(local_url))
-        .on('error', function(error) {
-              process.stdout.write('Error:-', error+'\n');
-            })
-        .on('finish', function() {
-              process.stdout.write('done!');
-        });*/
     }
 });
 
-
-//  return local_url
 }
 
 export default Get;
