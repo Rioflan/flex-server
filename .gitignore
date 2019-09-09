@@ -95,3 +95,6 @@ app/test/socketio.ts
 app/credentials.json
 app/initDB.ts
 app/**/*.js
+
+# Specific scripts
+install.sh
