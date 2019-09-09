@@ -93,7 +93,6 @@ app/test/socketio.ts
 
 # Credentials
 app/credentials.json
-app/initDB.ts
 app/**/*.js
 
 # Specific scripts
