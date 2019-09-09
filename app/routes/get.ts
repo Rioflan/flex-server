@@ -3,7 +3,8 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
-var mongodb = require('mongodb');
+//var mongodb = require('mongodb');
+import dbconfig from '../database/mongoDB';
 
 const resultCodes = {
 	success: 200,
@@ -70,8 +71,10 @@ const Get = (router: Router, websocket, pool) => {
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
-
-      const image = await getUserPhotoWrapper(req.params.user_id);
+      var image;
+      if (process.env.NODE_ENV === 'development') {
+        image = await dbconfig.getUserPhotoWrapper(req.params.user_id);
+      }
 
       process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
   
@@ -82,7 +85,7 @@ const Get = (router: Router, websocket, pool) => {
           id_place: user.id_place || null,
           remoteDay: user.remoteDay,
           historical: user.historical,
-          photo: process.env.NODE_ENV === 'development' ? image:user.photo,
+          photo: image ? image:user.photo,
           start_date: user.start_date,
           end_date: user.end_date,
       });
@@ -114,7 +117,7 @@ const Get = (router: Router, websocket, pool) => {
       res.status(200).send("Places successfully reset");
     })
 };
-
+/*
 function getUserPhotoWrapper(user_id) {
   return new Promise((resolve, reject) => {
     getUserPhoto(user_id,(successResponse) => {
@@ -123,10 +126,10 @@ function getUserPhotoWrapper(user_id) {
           resolve(successResponse);
       });
   });
-}
+}*/
 
 
-
+/*
 function getUserPhoto(user_id, callback){
   var url = 'mongodb://localhost:27017/flex';
   mongodb.MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
@@ -162,5 +165,5 @@ function getUserPhoto(user_id, callback){
 });
 
 }
-
+*/
 export default Get;

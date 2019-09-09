@@ -329,13 +329,21 @@ const post = (router: Router) => {
         { email: user.email },
         { confirmation_token: "", confirmation_code: "" }
       );
+
+      const user_id = decrypt(user.id || "", req.userId);
+
+      var image;
+      if (process.env.NODE_ENV === 'development') {
+        image = await dbconfig.getUserPhotoWrapper(user_id);
+      }
+
       res.status(resultCodes.success).json({
-        id: decrypt(user.id || "", req.userId),
+        id: user_id,
         name: decrypt(user.name || "", req.userId),
         fname: decrypt(user.fname || "", req.userId),
         email: decrypt(user.email || "", req.userId),
         remoteDay: user.remoteDay,
-        photo: user.photo,
+        photo: image ? image : user.photo,
         start_date: user.start_date,
         end_date: user.end_date,
         historical: user.historical
