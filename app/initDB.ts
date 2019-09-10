@@ -106,7 +106,7 @@ const nbSides = sides.length;
             if (err) return process.stdout.write('Error on the server.\n');
             if (!user) return process.stdout.write('No user found.\n');
 
-            const token = jwt.sign({id: user._id}, process.env.API_SECRET || credentials.api_secret);
+            const token = jwt.sign({id: user._id}, process.env.API_SECRET);
 
             process.stdout.write("API USER INSERTED :" +username+", "+usermail+"\n");
             process.stdout.write("API TOKEN (keep it for API Authentication):" +token+"\n");

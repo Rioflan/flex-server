@@ -100,6 +100,7 @@ const Get = (router: Router, websocket, pool) => {
       const place = await Place.findOne({ id_owner: id_user })
       res.status(200).json(place);
       });
+    
 
   /** GET /places */
 
