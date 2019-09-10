@@ -236,7 +236,7 @@ paths:
           schema:
             $ref: '#/definitions/authModel'
       description: Register new user
-# to check
+# TO FIX
   /api/send-email:
     post:
       consumes:
@@ -327,7 +327,6 @@ paths:
                   "historical": null
               }
       description: Send the authentication email
-
   /api/users/remove:
     post:
       consumes:
@@ -360,8 +359,8 @@ paths:
           description: Returns the user
           schema:
             $ref: '#/definitions/userModel'
-      description: Remove a friend from an user
-# to check
+      description: Remove a friend from a user
+# TO FIX
   /api/user/remove:
     post:
       consumes:
@@ -391,8 +390,8 @@ paths:
               }
       responses:
         '200':
-          description: Delete an user
-      description: Delete an user
+          description: Delete the user
+      description: Delete a user
   /api/places/reset:
     get:
       produces:
@@ -408,7 +407,7 @@ paths:
         '200':
           description: Confirms the reset
       description: Reset places
-# to check
+# TO FIX
   /api/place/assign:
     post:
       consumes:
@@ -445,8 +444,8 @@ paths:
       responses:
         '200':
           description: Place assigned
-      description: Assign a place to an user
-# to check
+      description: Assign a place to a user
+# TO FIX
   /api/place/unassign:
     post:
       consumes:
@@ -483,7 +482,7 @@ paths:
       responses:
         '200':
           description: Place unassigned
-      description: Unassign a place to an user
+      description: Unassign a place to a user
 
   /api/user/settings:
     post:
@@ -598,7 +597,7 @@ paths:
             $ref: '#/definitions/userModel'
       description: Get specified user
 
-# to check
+# TO FIX
   '/api/users/{user_id}/place':
     get:
       produces:
