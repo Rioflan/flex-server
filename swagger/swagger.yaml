@@ -265,7 +265,7 @@ paths:
         '200':
           description: Confirms the authentication email is sent
       description: Send the authentication email
-  # to check
+  # TO FIX
   /api/verify:
     post:
       consumes:
@@ -392,6 +392,43 @@ paths:
         '200':
           description: Delete the user
       description: Delete a user
+  /api/user/complete:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=utf-8
+      parameters:
+        - in: header
+          name: authorization
+          required: true
+          type: string
+          x-example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+        - in: body
+          name: body
+          schema:
+            properties:
+              email:
+                type: string
+              name:
+                type: string
+              fname:
+                type: string
+              id_user:
+                type: string
+            type: object
+            example: |-
+              {
+                "email": "a@a.a",
+                "name": "Doe",
+                "fname": "John",
+                "id_user": "AB12345"
+              }
+      responses:
+        '200':
+          description: Complete informations
+      description: Register a new user
   /api/places/reset:
     get:
       produces:
@@ -483,7 +520,6 @@ paths:
         '200':
           description: Place unassigned
       description: Unassign a place to a user
-
   /api/user/settings:
     post:
       consumes:
@@ -596,7 +632,6 @@ paths:
           schema:
             $ref: '#/definitions/userModel'
       description: Get specified user
-
 # TO FIX
   '/api/users/{user_id}/place':
     get:

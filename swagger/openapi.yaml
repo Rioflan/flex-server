@@ -367,6 +367,55 @@ paths:
         - url: 'https://whispering-lowlands-83497.herokuapp.com'
     servers:
       - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  
+    /api/user/complete:
+    post:
+      description: Register a new user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                fname:
+                  type: string
+                id_user:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "email": "a@a.a",
+                      "name": "Doe",
+                      "fname": "John",
+                      "id_user": "AB12345"
+                  }
+      responses:
+        '200':
+          description: Complete informations
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  
+  
   /api/places/reset:
     get:
       description: Reset places
