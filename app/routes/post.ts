@@ -95,6 +95,7 @@ const post = (router: Router) => {
     .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      console.log("process.env.API_SECRET : "+process.env.API_SECRET);
       const body = req.body;
       if (body.email === null)
         return res
@@ -333,8 +334,15 @@ const post = (router: Router) => {
       const user_id = decrypt(user.id || "", req.userId);
 
       var image;
+
       if (process.env.NODE_ENV === 'development') {
-        image = await dbconfig.getUserPhotoWrapper(user_id);
+        var response = await dbconfig.getUserPhotoWrapper(user_id)
+                        .catch((error) => {
+                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                        });
+        if (response !== "Photo not found"){
+          image = response;
+        }
       }
 
       res.status(resultCodes.success).json({

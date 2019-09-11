@@ -61,6 +61,8 @@ const Auth = (router: Router) => {
             || req.body.password === null
         ) res.status(400).send('invalid mail or name');
 
+        console.log(req.body);
+
         findUser(req, res);
 
         const hashedPassword = bcrypt.hashSync(req.body.password, 8);
@@ -82,16 +84,17 @@ const Auth = (router: Router) => {
     /** POST /login */
 
     router.post('/login', (req: Request, res: Response) => {
+        process.stdout.write("/login CALLED\n");
         apiUser.findOne({email: req.body.email}, (err: Error, user: ApiSchema) => {
             if (err) return res.status(500).send('Error on the server.');
             if (!user) return res.status(404).send('No user found.');
 
             const passwordIsValid = isValidPassword(req, user);
-
+            console.log("USER : "+req.body.email);
             if (!passwordIsValid) return res.status(401).send({auth: false, token: null});
 
             const token = jwt.sign({id: user._id}, process.env.API_SECRET);
-
+            console.log("token : "+token);
             res.status(200).send({auth: true, token});
         });
     });

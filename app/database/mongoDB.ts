@@ -33,8 +33,12 @@ const wrapper = {
   getUserPhotoWrapper(user_id) {
     return new Promise((resolve, reject) => {
       getUserPhoto(user_id,(successResponse) => {
-            process.stdout.write('RESOLVED!!!!!!!!!!!!\n');
-            resolve(successResponse);
+            if (successResponse === "Photo not found"){
+              reject(successResponse);
+            }else{
+              process.stdout.write('RESOLVED!!!!!!!!!!!!\n');
+              resolve(successResponse);
+            }
         });
     });
   },
@@ -49,30 +53,45 @@ function getUserPhoto(user_id, callback){
     const db = client.db("flex");
  
     if (err) {
-      process.stdout.write('Sorry unable to connect to MongoDB Error:', err+'\n');
+      process.stdout.write('getUserPhoto -> Sorry unable to connect to MongoDB Error:', err+'\n');
     } else {
-      process.stdout.write('CONNECTION OK \n');
+      process.stdout.write('getUserPhoto -> CONNECTION OK \n');
 
         var bucket = new mongodb.GridFSBucket(db, {
             chunkSizeBytes: 1024,
             bucketName: 'Avatars'
         });
-        process.stdout.write('BUCKET CREATED \n');
+        process.stdout.write('getUserPhoto -> BUCKET CREATED \n');
         var str = '';
         var gotData = 0;
-        bucket.openDownloadStreamByName(user_id)
-        .on('error', function(error) {
-          process.stdout.write('Error:-', error+'\n');
-        })
-        .on('data', function(data) {
-          ++gotData;
-          str += data.toString('utf8');
-        })
-        .on('end', function() {
-          process.stdout.write('done!');
-          callback(str);
-        });
-        
+        try{
+          bucket.openDownloadStreamByName(user_id)
+          .on('error', function(error) {
+            try{
+              throw new Error("FlexOffice Internal Exception : File not Found");
+            }catch(e){
+              process.stdout.write("HERE : getUserPhoto -> System Error : "  + e.message);
+              callback("Photo not found");
+            }
+          })
+          .on('data', function(data) {
+            process.stdout.write('Got DATA !\n');
+            ++gotData;
+            str += data.toString('utf8');
+          })
+          .on('end', function() {
+            process.stdout.write('THE END !\n');
+            process.stdout.write('done!');
+            callback(str);
+          });
+        }catch(e){
+          if(e instanceof Error) {
+            process.stdout.write("getUserPhoto -> System Error : "  + e.message);
+            callback("Photo not found");
+          }else {
+            throw e;
+          }
+        }       
     }
 });
 
