@@ -13,7 +13,14 @@ dotenv.config();
 const app: express.Application = express(); // use express on our app
 
 app.use(cors());
-process.stdout.write("\nON LAUNCH >>>>> process.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
+process.stdout.write("\nON LAUNCH >>>>> process.env.NODE_ENV      is "+process.env.NODE_ENV+"\n");
+process.stdout.write("\n          >>>>> process.env.DATABASE_HOST is "+process.env.DATABASE_HOST+"\n");
+process.stdout.write("\n          >>>>> process.env.DATABASE_PORT is "+process.env.DATABASE_PORT+"\n");
+process.stdout.write("\n          >>>>> process.env.DATABASE_DB   is "+process.env.DATABASE_DB+"\n");
+process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.env.DATABASE_MODE+"\n");
+process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
+process.stdout.write("\n          >>>>> process.env.API_SECRET    is "+process.env.API_SECRET+"\n");
+process.stdout.write("\n          >>>>> process.env.ZAPIER_URL    is "+process.env.ZAPIER_URL+"\n");
 if (process.env.NODE_ENV === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 } // Redirect http => https

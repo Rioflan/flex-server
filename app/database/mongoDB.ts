@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv';
 var mongodb = require('mongodb');
+var assert = require('assert');
+var stream = require('stream');
 
 dotenv.config();
 
@@ -39,14 +41,62 @@ const wrapper = {
               process.stdout.write('RESOLVED!!!!!!!!!!!!\n');
               resolve(successResponse);
             }
-        });
+      });
     });
   },
-  
+  putFileWrapper(bytes, name) {
+    return new Promise((resolve, reject) => {
+      putFile(bytes, name, (successResponse) =>{
+          resolve(successResponse);
+      });
+    })
+  },
 };
 
 export default wrapper;
 
+function putFile(bytes, name, callback){
+  mongodb.MongoClient.connect(wrapper.getMongoUri(), function(error, client) {
+    assert.ifError(error);    
+    const db = client.db("flex");
+    process.stdout.write("GOT A CONNECTION...\n");
+
+    let opts = {
+      chunkSizeBytes: 1024,
+      bucketName: 'Avatars'
+    };
+    try{
+      var bucket = new mongodb.GridFSBucket(db, opts);
+      process.stdout.write("BUCKET CREATED...\n");
+      try{
+        const readablePhotoStream = new stream.Readable();
+        readablePhotoStream.push(bytes);
+        readablePhotoStream.push(null);
+
+        let uploadStream = bucket.openUploadStream(name);
+        let id = uploadStream.id;
+        readablePhotoStream.pipe(uploadStream);
+
+        uploadStream.on('error', () => {
+          throw new Error("FlexOffice Internal Exception : Error uploading file");
+        });
+    
+        uploadStream.on('finish', () => {
+          process.stdout.write('\nFinished uploading file\n');
+          callback();  
+        });
+
+      }catch(error){
+        process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
+        callback();
+      }
+    }catch(error){
+      process.stdout.write("BUCKET CREATION FAILED...\n"+error);
+      callback();
+    }    
+  });
+
+}
 function getUserPhoto(user_id, callback){
   var url = 'mongodb://localhost:27017/flex';
   mongodb.MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {

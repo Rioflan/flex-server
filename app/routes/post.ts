@@ -12,13 +12,6 @@ import { encrypt, decrypt } from "./test";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import dbconfig from '../database/mongoDB';
-const mongodb = require('mongodb');
-
-//const fs = require('fs');
-//const mongoose = require("mongoose");
-//var Grid = require('gridfs-stream');
-var assert = require('assert');
-var stream = require('stream');
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -54,38 +47,6 @@ interface Request {
 }
 
 let RES;
-
-function putFile(bytes, name) {
-
-  mongodb.MongoClient.connect(dbconfig.getMongoUri(), function(error, client) {
-    assert.ifError(error);    
-    const db = client.db("flex");
-    process.stdout.write("GOT A CONNECTION...\n");
-
-    let opts = {
-      chunkSizeBytes: 1024,
-      bucketName: 'Avatars'
-    };
-    try{
-      var bucket = new mongodb.GridFSBucket(db, opts);
-      process.stdout.write("BUCKET CREATED...\n");
-      try{
-        const readablePhotoStream = new stream.Readable();
-        readablePhotoStream.push(bytes);
-        readablePhotoStream.push(null);
-
-        let uploadStream = bucket.openUploadStream(name);
-        let id = uploadStream.id;
-        readablePhotoStream.pipe(uploadStream);
-      }catch(error){
-        process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
-
-      }
-    }catch(error){
-      process.stdout.write("BUCKET CREATION FAILED...\n"+error);
-    }    
-  });
-}
 
 const post = (router: Router) => {
   /**
@@ -129,6 +90,12 @@ const post = (router: Router) => {
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
+
+      console.log(process.env.LOGIN_REGEX);
+      console.log(body.email);
+      console.log(body.name);
+      console.log(body.fname);
+      console.log(body.id_user);
       if (
         body.email === null ||
         body.name === null ||
@@ -156,8 +123,27 @@ const post = (router: Router) => {
         body.photo &&
         body.photo.match(HTTPS_REGEX) === null &&
         (body.photo !== "" || body.photo !== null)
-      )
-        model.updatePhoto(id, body.photo);
+      ){
+        if (process.env.NODE_ENV !== "development"){
+          model.updatePhoto(id, body.photo);
+        }else{
+          await dbconfig.putFileWrapper(body.photo, id);
+        }
+      }
+      var image;
+      if (process.env.NODE_ENV === 'development') {
+        console.log("try to get the photo with id :"+id);
+        var response = await dbconfig.getUserPhotoWrapper(id)
+                        .catch((error) => {
+                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                              return error;
+                        });
+        if (response !== "Photo not found"){
+          image = response;
+          console.log("WAY IN");
+        }
+      }
+
       const user = await model.getUserById(id);
       res.status(resultCodes.success).json({
         id: decrypt(user.id || "", req.userId),
@@ -165,7 +151,7 @@ const post = (router: Router) => {
         fname: decrypt(user.fname || "", req.userId),
         email: decrypt(user.email || "", req.userId),
         remoteDay: user.remoteDay,
-        photo: user.photo,
+        photo: image ? image:user.photo,
         start_date: user.start_date,
         end_date: user.end_date,
         historical: user.historical
@@ -282,7 +268,7 @@ const post = (router: Router) => {
       if (process.env.NODE_ENV !== "development"){
         model.updatePhoto(id_user, body.photo);
       }else{
-        putFile(body.photo, body.id_user);
+        dbconfig.putFileWrapper(body.photo, body.id_user);
       }
 
       if (body.remoteDay !== "")
@@ -336,7 +322,7 @@ const post = (router: Router) => {
       var image;
 
       if (process.env.NODE_ENV === 'development') {
-        var response = await dbconfig.getUserPhotoWrapper(user_id)
+        var response = await dbconfig.getUserPhotoWrapper(user.id)
                         .catch((error) => {
                               process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
                         });

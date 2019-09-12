@@ -107,41 +107,45 @@ export async function userExists(id_user: string) {
  * @returns the url of the uploaded image
  */
 export async function uploadPhoto(id_user, photo) {
-  const container_name = process.env.AZURE_STORAGE_CONTAINER_NAME;
-  const token = process.env.AZURE_STORAGE_TOKEN;
-  const blob_name = process.env.AZURE_STORAGE_BLOB_NAME;
+  if (process.env.NODE_ENV === 'development'){
 
-  // @ts-ignore
-  const blobService = azure.createBlobService(container_name, token);
-  const random = Math.random().toString();
-  const hash = `${crypto
-    .createHash("md5")
-    .update(id_user + random)
-    .digest("hex")}.jpeg`;
-
-  const data_photo = photo.includes("data:image/jpeg;base64,")
-    ? photo
-    : "data:image/jpeg;base64,".concat(photo);
-  const matches = data_photo.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-  // @ts-ignore
-  const type = matches[1];
-  // @ts-ignore
-  const buffer = new Buffer.from(matches[2], "base64");
-
-  blobService.createBlockBlobFromText(
-    blob_name,
-    hash,
-    buffer,
-    { contentType: type },
-    (error, result, response) => {
-      if (!error) {
-        const sasUrl = blobService.getUrl(blob_name, hash);
-        console.log(sasUrl);
-        updateUser(id_user, { photo: sasUrl });
+  }else{
+    const container_name = process.env.AZURE_STORAGE_CONTAINER_NAME;
+    const token = process.env.AZURE_STORAGE_TOKEN;
+    const blob_name = process.env.AZURE_STORAGE_BLOB_NAME;
+  
+    // @ts-ignore
+    const blobService = azure.createBlobService(container_name, token);
+    const random = Math.random().toString();
+    const hash = `${crypto
+      .createHash("md5")
+      .update(id_user + random)
+      .digest("hex")}.jpeg`;
+  
+    const data_photo = photo.includes("data:image/jpeg;base64,")
+      ? photo
+      : "data:image/jpeg;base64,".concat(photo);
+    const matches = data_photo.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    // @ts-ignore
+    const type = matches[1];
+    // @ts-ignore
+    const buffer = new Buffer.from(matches[2], "base64");
+  
+    blobService.createBlockBlobFromText(
+      blob_name,
+      hash,
+      buffer,
+      { contentType: type },
+      (error, result, response) => {
+        if (!error) {
+          const sasUrl = blobService.getUrl(blob_name, hash);
+          console.log(sasUrl);
+          updateUser(id_user, { photo: sasUrl });
+        }
+        console.log(error);
       }
-      console.log(error);
-    }
-  );
+    );
+  }
 }
 
 /**
