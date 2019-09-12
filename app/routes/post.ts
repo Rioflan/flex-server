@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use strict';
 
 import { append, filter } from "ramda";
 
@@ -10,6 +11,7 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import moment from "moment";
 import jwt from "jsonwebtoken";
+import dbconfig from '../database/mongoDB';
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -51,9 +53,10 @@ const post = (router: Router) => {
    * This route is used to handle users login.
    */
   router
-    .route("/login_user")
+    .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      console.log("process.env.API_SECRET : "+process.env.API_SECRET);
       const body = req.body;
       if (body.email === null)
         return res
@@ -82,9 +85,209 @@ const post = (router: Router) => {
       res.status(resultCodes.success).json({ email: body.email });
     });
 
+    router
+    .route("/user/complete")
+
+    .post(VerifyToken, async (req: Request, res: Response) => {
+      const body = req.body;
+
+      console.log(process.env.LOGIN_REGEX);
+      console.log(body.email);
+      console.log(body.name);
+      console.log(body.fname);
+      console.log(body.id_user);
+      if (
+        body.email === null ||
+        body.name === null ||
+        body.fname === null ||
+        body.id_user === null ||
+        body.id_user.match(process.env.LOGIN_REGEX) === null
+      )
+        return res
+          .status(resultCodes.syntaxError)
+          .json(errorMessages.invalidArguments);
+      const id = encrypt(body.id_user, req.userId);
+      const name = encrypt(body.name, req.userId);
+      const fname = encrypt(body.fname, req.userId);
+      const email = encrypt(body.email, req.userId);
+      const existingUser = await model.getUserById(id);
+      if (existingUser) {
+        if (existingUser.email)
+          return res
+            .status(resultCodes.syntaxError)
+            .json(errorMessages.userIdTaken);
+        await model.removeUser({ email });
+        await User.updateOne({ id }, { email, name, fname });
+      } else await User.updateOne({ email }, { id, name, fname });
+      if (
+        body.photo &&
+        body.photo.match(HTTPS_REGEX) === null &&
+        (body.photo !== "" || body.photo !== null)
+      ){
+        if (process.env.NODE_ENV !== "development"){
+          model.updatePhoto(id, body.photo);
+        }else{
+          await dbconfig.putFileWrapper(body.photo, id);
+        }
+      }
+      var image;
+      if (process.env.NODE_ENV === 'development') {
+        console.log("try to get the photo with id :"+id);
+        var response = await dbconfig.getUserPhotoWrapper(id)
+                        .catch((error) => {
+                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                              return error;
+                        });
+        if (response !== "Photo not found"){
+          image = response;
+          console.log("WAY IN");
+        }
+      }
+
+      const user = await model.getUserById(id);
+      res.status(resultCodes.success).json({
+        id: decrypt(user.id || "", req.userId),
+        name: decrypt(user.name || "", req.userId),
+        fname: decrypt(user.fname || "", req.userId),
+        email: decrypt(user.email || "", req.userId),
+        remoteDay: user.remoteDay,
+        photo: image ? image:user.photo,
+        start_date: user.start_date,
+        end_date: user.end_date,
+        historical: user.historical
+      });
+    });
+  /**
+   * This route is used to add a friend.
+   */
+  router
+    .route("/users/add")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      RES = res;
+      const id_user = encrypt(body.id_user, req.userId);
+      console.log(id_user)
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err)
+            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
+          else if (user) {
+            user.friend = append(
+              {
+                id: body.id,
+                name: encrypt(body.name, req.userId),
+                fname: encrypt(body.fname, req.userId),
+                id_place: body.id_place,
+                photo: body.photo
+              },
+              user.friend
+            );
+            user.save((err: Error) => {
+              if (err)
+                RES.status(resultCodes.serverError).send(
+                  errorMessages.userUpdate
+                );
+              RES.status(resultCodes.success).send({ user });
+            });
+          }
+        }
+      );
+    });
+
+  /**
+   * This route is used to remove a friend.
+   */
+  router
+    .route("/users/remove")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      RES = res;
+      const id_user = encrypt(body.id_user, req.userId);
+      User.findOne(
+        { id: id_user },
+        null,
+        { sort: { _id: -1 } },
+        (err: Error, user) => {
+          if (err)
+            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
+          else if (user) {
+            const isRemovedUser = userFriend => userFriend.id !== body.id;
+            user.friend = filter(isRemovedUser, user.friend);
+            user.save((err: Error) => {
+              if (err)
+                RES.status(resultCodes.serverError).send(
+                  errorMessages.userUpdate
+                );
+              RES.status(resultCodes.success).send({ user });
+            });
+          }
+        }
+      );
+    });
+
+/*
+ * This route is used to remove delete an user
+ * Not necessarily used in the applicaton
+ */
+    router
+    .route("/user/remove")
+
+    .post(VerifyToken, async (req: Request, res: Response) => {
+      const body = req.body;
+      const name = encrypt(body.name, req.userId);
+      const fname = encrypt(body.fname, req.userId);
+
+      try {
+        const user = await model.getUser({ name, fname });
+        await model.removeUserById(user.id);
+        res.status(resultCodes.success).send({ success: "success" });
+      } catch (err) {
+        console.log(err);
+        res.status(resultCodes.serverError).send(err);
+      }
+    });
+    
+  router
+    .route("/user/settings")
+
+    .post(VerifyToken, (req: Request, res: Response) => {
+      const body = req.body;
+      const id_user = encrypt(body.id_user, req.userId);
+
+      if (
+        body.photo &&
+        body.photo.match(HTTPS_REGEX) === null &&
+        (body.photo !== "" || body.photo !== null)
+      )
+      process.stdout.write("\nprocess.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
+      if (process.env.NODE_ENV !== "development"){
+        model.updatePhoto(id_user, body.photo);
+      }else{
+        dbconfig.putFileWrapper(body.photo, body.id_user);
+      }
+
+      if (body.remoteDay !== "")
+        model.updateUser(
+          id_user, { remoteDay: body.remoteDay }
+          );
+
+      if (body.startDate && body.endDate) {
+        model.updateAvailabilityPeriod(
+          id_user,
+          moment(body.startDate, "DD/MM/YYYY").toDate(),
+          moment(body.endDate, "DD/MM/YYYY").toDate()
+        );
+      }
+      res.status(resultCodes.success).send({ success: "success" });
+    });
+
   router
     .route("/verify")
-
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
       const code = body.code;
@@ -113,72 +316,41 @@ const post = (router: Router) => {
         { email: user.email },
         { confirmation_token: "", confirmation_code: "" }
       );
+
+      const user_id = decrypt(user.id || "", req.userId);
+
+      var image;
+
+      if (process.env.NODE_ENV === 'development') {
+        var response = await dbconfig.getUserPhotoWrapper(user.id)
+                        .catch((error) => {
+                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                        });
+        if (response !== "Photo not found"){
+          image = response;
+        }
+      }
+
       res.status(resultCodes.success).json({
-        id: decrypt(user.id || "", req.userId),
+        id: user_id,
         name: decrypt(user.name || "", req.userId),
         fname: decrypt(user.fname || "", req.userId),
         email: decrypt(user.email || "", req.userId),
         remoteDay: user.remoteDay,
-        photo: user.photo,
+        photo: image ? image : user.photo,
         start_date: user.start_date,
         end_date: user.end_date,
         historical: user.historical
       });
     });
 
-  router
-    .route("/complete_user")
-
-    .post(VerifyToken, async (req: Request, res: Response) => {
-      const body = req.body;
-      if (
-        body.email === null ||
-        body.name === null ||
-        body.fname === null ||
-        body.id_user === null ||
-        body.id_user.match(process.env.LOGIN_REGEX) === null
-      )
-        return res
-          .status(resultCodes.syntaxError)
-          .json(errorMessages.invalidArguments);
-      const id = encrypt(body.id_user, req.userId);
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
-      const email = encrypt(body.email, req.userId);
-      const existingUser = await model.getUserById(id);
-      if (existingUser) {
-        if (existingUser.email)
-          return res
-            .status(resultCodes.syntaxError)
-            .json(errorMessages.userIdTaken);
-        await model.removeUser({ email });
-        await User.updateOne({ id }, { email, name, fname });
-      } else await User.updateOne({ email }, { id, name, fname });
-      if (
-        body.photo &&
-        body.photo.match(HTTPS_REGEX) === null &&
-        (body.photo !== "" || body.photo !== null)
-      )
-        model.updatePhoto(id, body.photo);
-      const user = await model.getUserById(id);
-      res.status(resultCodes.success).json({
-        id: decrypt(user.id || "", req.userId),
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        email: decrypt(user.email || "", req.userId),
-        remoteDay: user.remoteDay,
-        photo: user.photo,
-        start_date: user.start_date,
-        end_date: user.end_date,
-        historical: user.historical
-      });
-    });
+  
 
   /**
    * This route is used to assign a place to a user.
    */
   router
-    .route("/take_place")
+    .route("/places/take")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -236,7 +408,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/leave_place")
+    .route("/places/leave")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
@@ -258,108 +430,10 @@ const post = (router: Router) => {
       res.status(resultCodes.success).send(successMessages.leavePlace);
     });
 
-  /**
-   * This route is used to add a friend.
-   */
-  router
-    .route("/add_friend")
 
-    .post(VerifyToken, (req: Request, res: Response) => {
-      const body = req.body;
-      RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
-
-      User.findOne(
-        { id: id_user },
-        null,
-        { sort: { _id: -1 } },
-        (err: Error, user) => {
-          if (err)
-            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
-          else if (user) {
-            user.friend = append(
-              {
-                id: body.id,
-                name: encrypt(body.name, req.userId),
-                fname: encrypt(body.fname, req.userId),
-                id_place: body.id_place,
-                photo: body.photo
-              },
-              user.friend
-            );
-            user.save((err: Error) => {
-              if (err)
-                RES.status(resultCodes.serverError).send(
-                  errorMessages.userUpdate
-                );
-              RES.status(resultCodes.success).send({ user });
-            });
-          }
-        }
-      );
-    });
-
-  /**
-   * This route is used to remove a friend.
-   */
-  router
-    .route("/remove_friend")
-
-    .post(VerifyToken, (req: Request, res: Response) => {
-      const body = req.body;
-      RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
-
-      User.findOne(
-        { id: id_user },
-        null,
-        { sort: { _id: -1 } },
-        (err: Error, user) => {
-          if (err)
-            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
-          else if (user) {
-            const isRemovedUser = userFriend => userFriend.id !== body.id;
-            user.friend = filter(isRemovedUser, user.friend);
-            user.save((err: Error) => {
-              if (err)
-                RES.status(resultCodes.serverError).send(
-                  errorMessages.userUpdate
-                );
-              RES.status(resultCodes.success).send({ user });
-            });
-          }
-        }
-      );
-    });
 
   router
-    .route("/settings_user")
-
-    .post(VerifyToken, (req: Request, res: Response) => {
-      const body = req.body;
-      const id_user = encrypt(body.id_user, req.userId);
-
-      if (
-        body.photo &&
-        body.photo.match(HTTPS_REGEX) === null &&
-        (body.photo !== "" || body.photo !== null)
-      )
-        model.updatePhoto(id_user, body.photo);
-
-      if (body.remoteDay !== "")
-        model.updateUser(id_user, { remoteDay: body.remoteDay });
-      if (body.startDate && body.endDate) {
-        model.updateAvailabilityPeriod(
-          id_user,
-          moment(body.startDate, "DD/MM/YYYY").toDate(),
-          moment(body.endDate, "DD/MM/YYYY").toDate()
-        );
-      }
-      res.status(resultCodes.success).send({ success: "success" });
-    });
-
-  router
-    .route("/assign_place")
+    .route("/place/assign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -375,25 +449,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/remove_user")
-
-    .post(VerifyToken, async (req: Request, res: Response) => {
-      const body = req.body;
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
-
-      try {
-        const user = await model.getUser({ name, fname });
-        await model.removeUserById(user.id);
-        res.status(resultCodes.success).send({ success: "success" });
-      } catch (err) {
-        console.log(err);
-        res.status(resultCodes.serverError).send(err);
-      }
-    });
-
-  router
-    .route("/unassign_place")
+    .route("/place/unassign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
@@ -408,7 +464,7 @@ const post = (router: Router) => {
     });
 
   router
-    .route("/send_email")
+    .route("/send-email")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;

@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/app
     environment: &prod-env
-      DATABASE_HOST: 172.17.0.1
+      DATABASE_HOST: localhost
       DATABASE_PORT: 27017
       DATABASE_DB: flex
       DATABASE_MODE: remote
@@ -21,7 +21,7 @@ services:
       NODE_ENV: remote
       API_SECRET: supersecret
       DOCKER_ENV: production
-      ZAPIER_URL: "https://hooks.zapier.com/hooks/catch/5415376/ooel5b2/"
+      ZAPIER_URL: "https://hooks.zapier.com/hooks/catch/5495873/o323o5d/"
     depends_on:
       - mongo
 

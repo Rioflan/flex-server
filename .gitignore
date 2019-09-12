@@ -83,7 +83,16 @@ typings/
 
 
 # End of https://www.gitignore.io/api/node
-lib/test/post.js
-lib/test/socketio.js
+lib
 app/test/post.ts
 app/test/socketio.ts
+
+# Mac files
+.DS_Store
+
+# Credentials
+app/credentials.json
+app/**/*.js
+
+# Specific scripts
+install.sh

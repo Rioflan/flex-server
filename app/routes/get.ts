@@ -3,6 +3,8 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
+//var mongodb = require('mongodb');
+import dbconfig from '../database/mongoDB';
 
 const resultCodes = {
 	success: 200,
@@ -19,7 +21,9 @@ const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
 
-  router.route("/users").get(VerifyToken, async (req: Request, res: Response) => {
+  router
+    .route("/users")
+    .get(VerifyToken, async (req: Request, res: Response) => {
     const users = await model.getUsers();
     const usersDecrypted = users.map(user => {
       return {
@@ -62,20 +66,35 @@ const Get = (router: Router, websocket, pool) => {
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(id_user);
+      
       if (!user) {
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
+      var image;
+
+      if (process.env.NODE_ENV === 'development') {
+        var response = await dbconfig.getUserPhotoWrapper(id_user)
+                        .catch((error) => {
+                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                        });
+        if (response !== "Photo not found"){
+          image = response;
+        }
+      }
+
+      process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
+  
       res.status(200).json({
-        id: user.id,
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        id_place: user.id_place || null,
-        remoteDay: user.remoteDay,
-        historical: user.historical,
-        photo: user.photo,
-        start_date: user.start_date,
-        end_date: user.end_date,
+          id: user.id,
+          name: decrypt(user.name || "", req.userId),
+          fname: decrypt(user.fname || "", req.userId),
+          id_place: user.id_place || null,
+          remoteDay: user.remoteDay,
+          historical: user.historical,
+          photo: image ? image:user.photo,
+          start_date: user.start_date,
+          end_date: user.end_date,
       });
     });
 
@@ -88,20 +107,24 @@ const Get = (router: Router, websocket, pool) => {
       const place = await Place.findOne({ id_owner: id_user })
       res.status(200).json(place);
       });
+    
 
   /** GET /places */
 
-  router.route("/places").get(VerifyToken, async (req: Request, res: Response) => {
-    const places = await model.getPlaces();
-    res.status(200).json(places);
+  router
+    .route("/places")
+    .get(VerifyToken, async (req: Request, res: Response) => {
+      const places = await model.getPlaces();
+      res.status(200).json(places);
   });
 
   router
-    .route("/reset_places")
+    .route("/places/reset")
     .get(VerifyToken, async (req: Request, res: Response) => {
       await model.resetPlaces(websocket, pool);
       res.status(200).send("Places successfully reset");
     })
 };
+
 
 export default Get;
