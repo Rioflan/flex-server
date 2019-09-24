@@ -13,8 +13,8 @@ const UserSchema = new Schema({
   photo: { type: String, default: "" },
   friend: Array,
   pool: { type: Boolean, default: false },
-  start_date: Date,
-  end_date: Date,
+  start_date: { type: Date, default: new Date(+new Date() - 24 * 60 * 60 * 1000) },
+  end_date: { type: Date, default: new Date(+new Date() - 24 * 60 * 60 * 1000) },
   confirmation_code: { type: String, default: "" },
   confirmation_token: { type: String, default: "" },
 });
