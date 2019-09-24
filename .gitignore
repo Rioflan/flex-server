@@ -91,8 +91,9 @@ app/test/socketio.ts
 .DS_Store
 
 # Credentials
-app/credentials.json
+app/credentials*
 app/**/*.js
 
 # Specific scripts
 install.sh
+app/initDB_AZURE*
