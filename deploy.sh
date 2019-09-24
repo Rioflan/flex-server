@@ -110,8 +110,10 @@ fi
 selectNodeVersion
 
 # 3. Install npm packages
-if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
-  cd "$DEPLOYMENT_TARGET/app"
+ls -lart $DEPLOYMENT_TARGET;
+
+if [ -e "$DEPLOYMENT_TARGET/flex-server/package.json" ]; then
+  cd "$DEPLOYMENT_TARGET/flex-server/app"
   echo "Running $NPM_CMD install --production"
   eval $NPM_CMD install --production
   npm run build
