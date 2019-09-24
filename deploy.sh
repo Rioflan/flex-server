@@ -52,9 +52,6 @@ fi
 if [[ ! -n "$KUDU_SYNC_CMD" ]]; then
   # Install kudu sync
   echo Installing Kudu Sync
-  npm install -g -save mocha;
-  npm install -g -save chai; 
-  npm install -g -save chai-http;
   npm install kudusync -g --silent
   exitWithMessageOnError "npm failed"
 
@@ -117,6 +114,7 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   echo "Running $NPM_CMD install --production"
   eval $NPM_CMD install --production
+  npm start
   exitWithMessageOnError "npm failed"
   cd - > /dev/null
 fi

@@ -1,5 +1,5 @@
 {
-  "name": "AppBred",
+  "name": "FlexOffice",
   "version": "0.2.0",
   "private": true,
   "main": "server.js",
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node lib/server.js",
-    "build": "npm install -g -save mocha; npm install -g -save chai; npm install -g -save chai-http; ./node_modules/typescript/bin/tsc -p .",
+    "build": "npm install -g -save mocha; npm install -g -save chai; npm install -g -save chai-http; npm install sleep;./node_modules/typescript/bin/tsc -p .",
     "lint": "eslint app --ext ts",
     "lint:fix": "eslint app --ext ts --fix",
     "build:live": "nodemon --watch 'app/**/*.ts' --exec 'ts-node' ./app/server.ts",
