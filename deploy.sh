@@ -122,7 +122,7 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   eval $NPM_CMD install --production
   
   echo ">>>>>>>>>>>> NPM START"
-  npm start
+  PORT=1025 npm start
   exitWithMessageOnError "npm failed"
   cd - > /dev/null
 fi
