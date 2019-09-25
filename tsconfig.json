@@ -63,6 +63,6 @@
     "resolveJsonModule": true, /* Include modules imported with '.json' extension */
   },
   "exclude" : [
-    "*node_modules"
+    "node_modules","lib","crypto-go", "app/initDB.ts"
   ]
 }
