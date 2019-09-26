@@ -27,7 +27,7 @@ const wrapper = {
       let mongodbPass = process.env.DATABASE_PASSWORD;
 
       const mongoURI = process.env.DATABASE_URL === "" ? // temporary before a fix is done
-      `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}?ssl=true&replicaSet=globaldb`
+      `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}`
       : process.env.DATABASE_URL; // temporary before a fix is done
       return mongoURI;
     }

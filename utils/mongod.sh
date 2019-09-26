@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mongod=/usr/local/canatac/bin/mongod
+mongod=/usr/local/opt/mongodb@3.6/bin/mongod
 mongod_data=/Users/canatac/work/mongodb_data
 mongod_log=/Users/canatac/work/mongodb_log/mongodb.log
 prog=mongod.sh
@@ -24,7 +24,7 @@ start() {
     then
 	echo "MongoDB is already running."
     else
-	echo "Start MongoDB."
+	echo "Start MongoDB with auth."
 	`${mongod} --dbpath ${mongod_data} --logpath ${mongod_log} --fork --logappend`
 	RETVAL=$?
     fi
