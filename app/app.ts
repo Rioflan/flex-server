@@ -21,10 +21,11 @@ process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.e
 process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
 process.stdout.write("\n          >>>>> process.env.API_SECRET    is "+process.env.API_SECRET+"\n");
 process.stdout.write("\n          >>>>> process.env.ZAPIER_URL    is "+process.env.ZAPIER_URL+"\n");
+/*
 if (process.env.NODE_ENV === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 } // Redirect http => https
-
+*/
 export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);
   Get(router, websocket, pool);
