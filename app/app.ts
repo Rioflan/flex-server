@@ -21,6 +21,8 @@ process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.e
 process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
 process.stdout.write("\n          >>>>> process.env.API_SECRET    is "+process.env.API_SECRET+"\n");
 process.stdout.write("\n          >>>>> process.env.ZAPIER_URL    is "+process.env.ZAPIER_URL+"\n");
+process.stdout.write("\n >>>>>>>>>  VERSION 0.2.0 <<<<<<<<<<<<<\n");
+
 /*
 if (process.env.NODE_ENV === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
