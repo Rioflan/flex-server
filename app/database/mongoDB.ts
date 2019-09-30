@@ -29,6 +29,8 @@ const wrapper = {
       const mongoURI = process.env.DATABASE_URL === "" ? // temporary before a fix is done
       `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}`
       : process.env.DATABASE_URL; // temporary before a fix is done
+      process.stdout.write('mongoURI : '+mongoURI+'\n');
+
       return mongoURI;
     }
   },
