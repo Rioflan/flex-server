@@ -56,6 +56,9 @@ const Auth = (router: Router) => {
     process.stdout.write("\n..........HERE........\n");
 
     router.post('/register', (req: Request, res: Response) => {
+        process.stdout.write("\n..........REGISTER........\n");
+        //process.stdout.write(req.body);
+
         if (
             req.body.name === null
             || req.body.email === null

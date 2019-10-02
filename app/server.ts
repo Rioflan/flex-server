@@ -3,6 +3,7 @@ import dbconfig from './database/mongoDB';
 import socketio from "socket.io";
 import { encrypt } from './routes/test';
 import { updateUser, getPooledUsers } from "./models/model";
+import * as dotenv from 'dotenv';
 
 import app, { router, listOfRoutes } from './app';
 
@@ -10,11 +11,33 @@ const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI 
 
 const DEFAULT_PORT: number = 3000;
 
+dotenv.config();
+
 try {
-    mongoose.connect(
-        DEFAULT_URI,
-        { useNewUrlParser: true },
-    ).catch(err => console.log(err));
+    console.log();
+
+    if (process.env.NODE_ENV === "production"){
+        console.log('Connection to CosmosDB in Production');
+        mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
+            auth: {
+                user: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD
+              },
+            useNewUrlParser: true,
+          })
+          .then(() => console.log('Connection to CosmosDB successful'))
+          .catch((err) => console.error(err));
+    }else{
+        console.log('Connection to MongoDb in Local');
+
+        mongoose.connect(
+            DEFAULT_URI,
+            { useNewUrlParser: true },
+        ).catch(err => console.log(err));
+    
+    }
+    
+
 } catch (err) {
     console.log(err);
 }

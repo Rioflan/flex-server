@@ -13,6 +13,8 @@ const wrapper = {
     user = process.env.DATABASE_USERNAME,
     pass = process.env.DATABASE_PASSWORD,
   ) {
+
+    /*
     if (mode === 'local') {
       // local mongo database URI
       return `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
@@ -33,6 +35,12 @@ const wrapper = {
 
       return mongoURI;
     }
+    */
+   const mongoURI = `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
+   process.stdout.write('mongoURI : '+mongoURI+'\n');
+
+   return mongoURI;
+
   },
   getUserPhotoWrapper(user_id) {
     return new Promise((resolve, reject) => {
