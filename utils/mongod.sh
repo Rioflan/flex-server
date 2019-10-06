@@ -25,7 +25,8 @@ start() {
 	echo "MongoDB is already running."
     else
 	echo "Start MongoDB with auth."
-	`${mongod} --dbpath ${mongod_data} --logpath ${mongod_log} --fork --logappend`
+	#`${mongod} --auth --dbpath ${mongod_data} --logpath ${mongod_log} --fork --logappend`
+	`${mongod} --auth --dbpath ${mongod_data}`
 	RETVAL=$?
     fi
 }

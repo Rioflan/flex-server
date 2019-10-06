@@ -124,14 +124,16 @@ const post = (router: Router) => {
         body.photo.match(HTTPS_REGEX) === null &&
         (body.photo !== "" || body.photo !== null)
       ){
+        await dbconfig.putFileWrapper(body.photo, id);
+        /*
         if (process.env.NODE_ENV !== "development"){
           model.updatePhoto(id, body.photo);
         }else{
           await dbconfig.putFileWrapper(body.photo, id);
-        }
+        }*/
       }
       var image;
-      if (process.env.NODE_ENV === 'development') {
+      //if (process.env.NODE_ENV === 'development') {
         console.log("try to get the photo with id :"+id);
         var response = await dbconfig.getUserPhotoWrapper(id)
                         .catch((error) => {
@@ -142,7 +144,7 @@ const post = (router: Router) => {
           image = response;
           console.log("WAY IN");
         }
-      }
+      //}
 
       const user = await model.getUserById(id);
       res.status(resultCodes.success).json({
@@ -265,11 +267,16 @@ const post = (router: Router) => {
         (body.photo !== "" || body.photo !== null)
       )
       process.stdout.write("\nprocess.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
+      //
+      dbconfig.putFileWrapper(body.photo, body.id_user);
+      //
+      /*
       if (process.env.NODE_ENV !== "development"){
         model.updatePhoto(id_user, body.photo);
       }else{
         dbconfig.putFileWrapper(body.photo, body.id_user);
       }
+      */
 
       if (body.remoteDay !== "")
         model.updateUser(

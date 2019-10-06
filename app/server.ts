@@ -16,8 +16,8 @@ dotenv.config();
 try {
     console.log();
 
-    if (process.env.NODE_ENV === "production"){
-        console.log('Connection to CosmosDB in Production');
+    if (process.env.NODE_ENV === "production" && process.env.DATABASE_MODE === "remote"){
+        console.log('Connection to DB in Production');
         mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
             auth: {
                 user: process.env.DATABASE_USERNAME,
@@ -25,15 +25,20 @@ try {
               },
             useNewUrlParser: true,
           })
-          .then(() => console.log('Connection to CosmosDB successful'))
+          .then(() => console.log('Connection to DB successful'))
           .catch((err) => console.error(err));
     }else{
         console.log('Connection to MongoDb in Local');
 
-        mongoose.connect(
-            DEFAULT_URI,
-            { useNewUrlParser: true },
-        ).catch(err => console.log(err));
+        mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
+            auth: {
+                user: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD
+              },
+            useNewUrlParser: true,
+          })
+          .then(() => console.log('Connection to DB successful'))
+          .catch((err) => console.error(err));
     
     }
     

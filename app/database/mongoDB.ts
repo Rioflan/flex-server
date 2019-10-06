@@ -66,6 +66,75 @@ const wrapper = {
 export default wrapper;
 
 function putFile(bytes, name, callback){
+
+  if (process.env.NODE_ENV === "production"){
+    console.log('PutFile : Connection to CosmosDB in Production');
+    mongodb.MongoClient.connect(
+      wrapper.getMongoUri(),
+      {
+        auth: {
+          user: process.env.DATABASE_USERNAME,
+          password: process.env.DATABASE_PASSWORD
+        },
+      useNewUrlParser: true,
+      },
+       function(error, client) {
+        assert.ifError(error);    
+        const db = client.db("flex");
+        process.stdout.write("GOT A CONNECTION...\n");
+        console.log('Connection to CosmosDB successful');
+
+        let opts = {
+          chunkSizeBytes: 1024,
+          bucketName: 'Avatars'
+        };
+        try{
+          var bucket = new mongodb.GridFSBucket(db, opts);
+          process.stdout.write("BUCKET CREATED...\n");
+          try{
+            const readablePhotoStream = new stream.Readable();
+            readablePhotoStream.push(bytes);
+            readablePhotoStream.push(null);
+    
+            let uploadStream = bucket.openUploadStream(name);
+            let id = uploadStream.id;
+            readablePhotoStream.pipe(uploadStream);
+    
+            uploadStream.on('error', () => {
+              throw new Error("FlexOffice Internal Exception : Error uploading file");
+            });
+        
+            uploadStream.on('finish', () => {
+              process.stdout.write('\nFinished uploading file\n');
+              callback();  
+            });
+    
+          }catch(error){
+            process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
+            callback();
+          }
+        }catch(error){
+          process.stdout.write("BUCKET CREATION FAILED...\n"+error);
+          callback();
+        } 
+    });
+
+  }else{
+      console.log('Connection to MongoDb in Local');
+
+      mongodb.MongoClient.connect(
+          wrapper.getMongoUri(),
+          {
+            auth: {
+              user: process.env.DATABASE_USERNAME,
+              password: process.env.DATABASE_PASSWORD
+            },
+          useNewUrlParser: true,
+          },
+      ).catch(err => console.log(err));
+
+  }
+/*
   mongodb.MongoClient.connect(wrapper.getMongoUri(), function(error, client) {
     assert.ifError(error);    
     const db = client.db("flex");
@@ -105,10 +174,40 @@ function putFile(bytes, name, callback){
       callback();
     }    
   });
-
+*/
 }
 function getUserPhoto(user_id, callback){
-  var url = 'mongodb://localhost:27017/flex';
+  var url = wrapper.getMongoUri();
+
+  //
+  if (process.env.NODE_ENV === "production"){
+    console.log('Connection to CosmosDB in Production');
+    mongodb.MongoClient.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
+        auth: {
+            user: process.env.DATABASE_USERNAME,
+            password: process.env.DATABASE_PASSWORD
+          },
+        useNewUrlParser: true,
+      })
+      .then(() => {
+        console.log('Connection to CosmosDB successful');
+
+      })
+      .catch((err) => console.error(err));
+  }else{
+    mongodb.MongoClient.connect(
+      wrapper.getMongoUri(),
+      {
+        auth: {
+          user: process.env.DATABASE_USERNAME,
+          password: process.env.DATABASE_PASSWORD
+        },
+      useNewUrlParser: true,
+      },
+  ).catch(err => console.log(err));
+
+  }
+  //
   mongodb.MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     const db = client.db("flex");
  

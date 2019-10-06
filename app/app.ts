@@ -2,7 +2,7 @@ import express, { Router, Request, Response } from 'express'; //  call express
 import bodyParser from 'body-parser';
 
 import enforce from 'express-sslify';
-import cors from "cors";
+//import cors from "cors";
 import Post from "./routes/post";
 import Get from "./routes/get";
 import Auth from "./routes/auth";
