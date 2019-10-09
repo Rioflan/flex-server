@@ -328,7 +328,7 @@ const post = (router: Router) => {
 
       var image;
 
-      if (process.env.NODE_ENV === 'development') {
+      //if (process.env.NODE_ENV === 'development') {
         var response = await dbconfig.getUserPhotoWrapper(user.id)
                         .catch((error) => {
                               process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
@@ -336,7 +336,7 @@ const post = (router: Router) => {
         if (response !== "Photo not found"){
           image = response;
         }
-      }
+      //}
 
       res.status(resultCodes.success).json({
         id: user_id,
