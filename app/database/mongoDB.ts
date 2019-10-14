@@ -13,6 +13,8 @@ const wrapper = {
     user = process.env.DATABASE_USERNAME,
     pass = process.env.DATABASE_PASSWORD,
   ) {
+
+    /*
     if (mode === 'local') {
       // local mongo database URI
       return `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
@@ -29,8 +31,16 @@ const wrapper = {
       const mongoURI = process.env.DATABASE_URL === "" ? // temporary before a fix is done
       `mongodb://${mongodbUser}:${mongodbPass}@${mongodbHost}:${mongodbPort}/${process.env.DATABASE_DB}`
       : process.env.DATABASE_URL; // temporary before a fix is done
+      process.stdout.write('mongoURI : '+mongoURI+'\n');
+
       return mongoURI;
     }
+    */
+   const mongoURI = `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
+   process.stdout.write('mongoURI : '+mongoURI+'\n');
+
+   return mongoURI;
+
   },
   getUserPhotoWrapper(user_id) {
     return new Promise((resolve, reject) => {
@@ -56,6 +66,75 @@ const wrapper = {
 export default wrapper;
 
 function putFile(bytes, name, callback){
+
+  if (process.env.NODE_ENV === "production"){
+    console.log('PutFile : Connection to CosmosDB in Production');
+    mongodb.MongoClient.connect(
+      wrapper.getMongoUri(),
+      {
+        auth: {
+          user: process.env.DATABASE_USERNAME,
+          password: process.env.DATABASE_PASSWORD
+        },
+      useNewUrlParser: true,
+      },
+       function(error, client) {
+        assert.ifError(error);    
+        const db = client.db("flex");
+        process.stdout.write("GOT A CONNECTION...\n");
+        console.log('Connection to CosmosDB successful');
+
+        let opts = {
+          chunkSizeBytes: 1024,
+          bucketName: 'Avatars'
+        };
+        try{
+          var bucket = new mongodb.GridFSBucket(db, opts);
+          process.stdout.write("BUCKET CREATED...\n");
+          try{
+            const readablePhotoStream = new stream.Readable();
+            readablePhotoStream.push(bytes);
+            readablePhotoStream.push(null);
+    
+            let uploadStream = bucket.openUploadStream(name);
+            let id = uploadStream.id;
+            readablePhotoStream.pipe(uploadStream);
+    
+            uploadStream.on('error', () => {
+              throw new Error("FlexOffice Internal Exception : Error uploading file");
+            });
+        
+            uploadStream.on('finish', () => {
+              process.stdout.write('\nFinished uploading file\n');
+              callback();  
+            });
+    
+          }catch(error){
+            process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
+            callback();
+          }
+        }catch(error){
+          process.stdout.write("BUCKET CREATION FAILED...\n"+error);
+          callback();
+        } 
+    });
+
+  }else{
+      console.log('Connection to MongoDb in Local');
+
+      mongodb.MongoClient.connect(
+          wrapper.getMongoUri(),
+          {
+            auth: {
+              user: process.env.DATABASE_USERNAME,
+              password: process.env.DATABASE_PASSWORD
+            },
+          useNewUrlParser: true,
+          },
+      ).catch(err => console.log(err));
+
+  }
+/*
   mongodb.MongoClient.connect(wrapper.getMongoUri(), function(error, client) {
     assert.ifError(error);    
     const db = client.db("flex");
@@ -95,54 +174,67 @@ function putFile(bytes, name, callback){
       callback();
     }    
   });
-
+*/
 }
 function getUserPhoto(user_id, callback){
-  var url = 'mongodb://localhost:27017/flex';
-  mongodb.MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
-    const db = client.db("flex");
- 
-    if (err) {
-      process.stdout.write('getUserPhoto -> Sorry unable to connect to MongoDB Error:', err+'\n');
-    } else {
-      process.stdout.write('getUserPhoto -> CONNECTION OK \n');
+  
 
-        var bucket = new mongodb.GridFSBucket(db, {
-            chunkSizeBytes: 1024,
-            bucketName: 'Avatars'
-        });
-        process.stdout.write('getUserPhoto -> BUCKET CREATED \n');
-        var str = '';
-        var gotData = 0;
-        try{
-          bucket.openDownloadStreamByName(user_id)
-          .on('error', function(error) {
+  mongodb.MongoClient.connect(
+    wrapper.getMongoUri(),
+    {
+      auth: {
+        user: process.env.DATABASE_USERNAME,
+        password: process.env.DATABASE_PASSWORD
+      },
+    useNewUrlParser: true,
+    },
+     function(err, client) {
+      assert.ifError(err);    
+      const db = client.db("flex");
+        if (err) {
+          process.stdout.write('getUserPhoto -> Sorry unable to connect to MongoDB Error:', err+'\n');
+        } else {
+          process.stdout.write('getUserPhoto -> CONNECTION OK \n');
+    
+            var bucket = new mongodb.GridFSBucket(db, {
+                chunkSizeBytes: 1024,
+                bucketName: 'Avatars'
+            });
+            process.stdout.write('getUserPhoto -> BUCKET CREATED \n');
+            var str = '';
+            var gotData = 0;
             try{
-              throw new Error("FlexOffice Internal Exception : File not Found");
+              bucket.openDownloadStreamByName(user_id)
+              .on('error', function(error) {
+                try{
+                  throw new Error("FlexOffice Internal Exception : File not Found");
+                }catch(e){
+                  process.stdout.write("HERE : getUserPhoto -> System Error : "  + e.message + " -> USER : "+user_id);
+                  callback("Photo not found");
+                }
+              })
+              .on('data', function(data) {
+                //process.stdout.write('Got DATA !\n');
+                ++gotData;
+                str += data.toString('utf8');
+              })
+              .on('end', function() {
+                process.stdout.write('THE END !\n');
+                process.stdout.write('done!');
+                callback(str);
+              });
             }catch(e){
-              process.stdout.write("HERE : getUserPhoto -> System Error : "  + e.message);
-              callback("Photo not found");
-            }
-          })
-          .on('data', function(data) {
-            process.stdout.write('Got DATA !\n');
-            ++gotData;
-            str += data.toString('utf8');
-          })
-          .on('end', function() {
-            process.stdout.write('THE END !\n');
-            process.stdout.write('done!');
-            callback(str);
-          });
-        }catch(e){
-          if(e instanceof Error) {
-            process.stdout.write("getUserPhoto -> System Error : "  + e.message);
-            callback("Photo not found");
-          }else {
-            throw e;
-          }
-        }       
-    }
-});
+              if(e instanceof Error) {
+                process.stdout.write("getUserPhoto -> System Error : "  + e.message);
+                callback("Photo not found");
+              }else {
+                throw e;
+              }
+            }       
+        }
+      }
+    );
+
+  
 
 }
