@@ -1,6 +1,6 @@
 {
   "name": "FlexOffice",
-  "version": "0.2.0",
+  "version": "0.3.2",
   "private": true,
   "main": "server.js",
   "engines": {
@@ -26,8 +26,10 @@
   "author": "rioflan",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "@types/jest": "^23.3.5",
     "@types/node": "^10.14.16",
+    "@types/node-mailjet": "^3.3.0",
     "assert": "^2.0.0",
     "azure-storage": "^2.10.3",
     "bcryptjs": "latest",
@@ -55,6 +57,7 @@
     "mongoose": "^5.6.12",
     "node-fetch": "^2.6.0",
     "node-gyp": "^3.8.0",
+    "node-mailjet": "^3.3.1",
     "nodemon": "^1.18.3",
     "ramda": "^0.25.0",
     "randombytes": "^2.0.6",

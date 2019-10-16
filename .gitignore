@@ -97,3 +97,4 @@ app/**/*.js
 # Specific scripts
 install.sh
 app/initDB_AZURE*
+sendgrid.env
