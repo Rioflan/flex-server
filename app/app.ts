@@ -19,9 +19,7 @@ process.stdout.write("\n          >>>>> process.env.DATABASE_PORT is "+process.e
 process.stdout.write("\n          >>>>> process.env.DATABASE_DB   is "+process.env.DATABASE_DB+"\n");
 process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.env.DATABASE_MODE+"\n");
 process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
-process.stdout.write("\n          >>>>> process.env.API_SECRET    is "+process.env.API_SECRET+"\n");
-process.stdout.write("\n          >>>>> process.env.ZAPIER_URL    is "+process.env.ZAPIER_URL+"\n");
-process.stdout.write("\n >>>>>>>>>  VERSION 0.3.1  <<<<<<<<<<<<<\n");
+process.stdout.write("\n >>>>>>>>>  VERSION 0.3.2  <<<<<<<<<<<<<\n");
 
 /*
 if (process.env.NODE_ENV === 'production') {

@@ -4,11 +4,16 @@ import crypto from "crypto";
 import azure from "azure-storage";
 import User from "../models/user";
 import Place from "../models/place";
-
+//import sgMail from "@sendgrid/mail";
+import mailjet from "node-mailjet";
+    
 /**
  * This function adds a new user.
  * @param {string} email email of the new user
  */
+
+
+
 export function addUser(
   email: string,
   id?: string,
@@ -317,8 +322,11 @@ export const updateRemoteDays = async (
  * @param {string} body body
  */
 export const sendEmail = (to: string, subject: string, body: string) => {
-  if (!process.env.ZAPIER_URL) return;
-  console.log(process.env.ZAPIER_URL);
+  if (!process.env.MJ_APIKEY_PUBLIC && !process.env.MJ_APIKEY_PRIVATE) return;
+  
+  //console.log(process.env.ZAPIER_URL);
+  
+/*
   fetch(process.env.ZAPIER_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -330,8 +338,9 @@ export const sendEmail = (to: string, subject: string, body: string) => {
       "Content-Type": "application/json"
     }
   }).catch(err => console.log(err));
-};
 
+*/
+};
 export const sendConfirmationEmail = user => {
   const message = `
     <div>
@@ -348,7 +357,40 @@ export const sendConfirmationEmail = user => {
         </p>
     </div>
     `;
-  sendEmail(user.email, "FlexOffice : Code d’inscription", message);
+  //sendEmail(user.email, "FlexOffice : Code d’inscription", message);
+  if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
+    const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+
+    const request = mailService
+    .post("send", {'version': 'v3.1'})
+    .request({
+        "Messages":[{
+            "From": {
+                "Email": "flexoffice.beta@gmail.com",
+                "Name": "FlexOffice"
+            },
+            "To": [{
+                "Email": user.email,
+                "Name": user.email
+            }],
+            "Subject": "FlexOffice : Code d’inscription",
+            "HTMLPart": message
+        }]
+    })
+    
+request
+    .then((result) => {
+        console.log("HEY : " + result)
+    })
+    .catch((err) => {
+        console.log("HOPLA : " + err.statusCode)
+    })
+  }
+  else{
+    console.log('>>>>>>>>> ERROR <<<<<<<<<<<<<<<');
+  }
+  
+
 };
 
 export const generateConfirmationCode = () =>
