@@ -347,7 +347,8 @@ const post = (router: Router) => {
         photo: image ? image : user.photo,
         start_date: user.start_date,
         end_date: user.end_date,
-        historical: user.historical
+        historical: user.historical,
+        place: user.id_place
       });
     });
 

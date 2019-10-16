@@ -104,7 +104,9 @@ const Get = (router: Router, websocket, pool) => {
     .route("/users/:user_id/place")
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
-      const place = await Place.findOne({ id_owner: id_user })
+      console.log(">>>>>> id_user : " + id_user);
+      const place = await Place.findOne({ id_user: id_user });
+      console.log(">>>>>> place : " + place);
       res.status(200).json(place);
       });
     
@@ -115,6 +117,7 @@ const Get = (router: Router, websocket, pool) => {
     .route("/places")
     .get(VerifyToken, async (req: Request, res: Response) => {
       const places = await model.getPlaces();
+      console.log(places);
       res.status(200).json(places);
   });
 
