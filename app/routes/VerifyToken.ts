@@ -11,10 +11,12 @@ import apiUser, {ApiSchema} from '../models/apikey';
 
 const verifyToken = (req: Request, res: Response, next) => {
     const token = req.headers['authorization'];
+    const tokenArray = token.split(" ");
+
     console.log("Verify token : "+token);
-    if (!token) return res.status(403).send({auth: false, message: 'No token provided.'});
+    if (!tokenArray[1]) return res.status(403).send({auth: false, message: 'No token provided.'});
     console.log(process.env.API_SECRET);
-    jwt.verify(token, process.env.API_SECRET, (err: Error, decoded) => {
+    jwt.verify(tokenArray[1], process.env.API_SECRET, (err: Error, decoded) => {
         if (err) {
             return res
                 .status(500)

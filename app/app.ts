@@ -1,8 +1,6 @@
 import express, { Router, Request, Response } from 'express'; //  call express
 import bodyParser from 'body-parser';
 
-import enforce from 'express-sslify';
-//import cors from "cors";
 import Post from "./routes/post";
 import Get from "./routes/get";
 import Auth from "./routes/auth";
@@ -19,13 +17,8 @@ process.stdout.write("\n          >>>>> process.env.DATABASE_PORT is "+process.e
 process.stdout.write("\n          >>>>> process.env.DATABASE_DB   is "+process.env.DATABASE_DB+"\n");
 process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.env.DATABASE_MODE+"\n");
 process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
-process.stdout.write("\n >>>>>>>>>  VERSION 0.3.2  <<<<<<<<<<<<<\n");
+process.stdout.write("\n >>>>>>>>>  VERSION 0.3.3  <<<<<<<<<<<<<\n");
 
-/*
-if (process.env.NODE_ENV === 'production') {
-  app.use(enforce.HTTPS({ trustProtoHeader: true }));
-} // Redirect http => https
-*/
 export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);
   Get(router, websocket, pool);
