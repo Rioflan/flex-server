@@ -6,7 +6,8 @@ import User from "../models/user";
 import Place from "../models/place";
 //import sgMail from "@sendgrid/mail";
 import mailjet from "node-mailjet";
-    
+const fs=require('fs');
+
 /**
  * This function adds a new user.
  * @param {string} email email of the new user
@@ -342,26 +343,18 @@ export const sendEmail = (to: string, subject: string, body: string) => {
 */
 };
 export const sendConfirmationEmail = user => {
-  const message = `
-    <div>
-        <p style="margin:30px; text-align:center; color:#1B3F7B; font-size:18px; font-weight:bold">Vous souhaitez vous connecter à Flex-Office ?</p>
-        <p style="margin:30px;text-align:center; color:#1B3F7B; font-size:13px">Veuillez récupérer le code de vérification suivant pour finaliser votre connexion :</p>
-        <p style="margin:30px; text-align:center; font-size: 20px; font-weight:bold; color:#E64417">${user.confirmation_code}</p
-        <div style="margin:30px; width: 386px; text-align:center; margin:auto">
-            <p style="margin:30px; font-size:12px; color:#8FA1BE; text-align:center">Veuillez ne pas répondre à cet e-mail.</p>
-            <p style="margin:30px; font-size:12px; color:#8FA1BE; text-align:center">Cet e-mail a été envoyé automatiquement par l’application FlexOffice de la BRED Banque Populaire.</p
-        </div>
-        <p style="text-align: center; color:#1B3F7B; font-weight: bold; font-size:14px">Nous contacter ? </p>
-        <p style="text-align: center; font-weight:bold; font-size:12px; color:#8FA1BE">
-            Envoyer un mail à <a style="font-weight:bold; font-size:12px; color:#8FA1BE" href="mailto:it-factory@bred.fr">it-factory@bred.fr</a>
-        </p>
-    </div>
-    `;
+  const path = require('path');
+  //search the fil html to copy it in STRING into the var message
+  var message=fs.readFileSync(path.join(__dirname+'../../../asset/templateMail/mail.html')).toString();
+  //search $user to replace it by the user confirmation code
+  message=message.replace('${user}', user.confirmation_code.toString());
+  
   //sendEmail(user.email, "FlexOffice : Code d’inscription", message);
   if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
     const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
     const request = mailService
+
     .post("send", {'version': 'v3.1'})
     .request({
         "Messages":[{
@@ -374,8 +367,9 @@ export const sendConfirmationEmail = user => {
                 "Name": user.email
             }],
             "Subject": "FlexOffice : Code d’inscription",
-            "HTMLPart": message
-        }]
+            "HTMLPart": message,
+      
+      }]
     })
     
 request
@@ -397,3 +391,10 @@ export const generateConfirmationCode = () =>
   parseInt(crypto.randomBytes(3).toString("hex"), 16)
     .toString()
     .substr(0, 6);
+
+function base64_encode(file) {
+      // read binary data
+      var bitmap = fs.readFileSync(file);
+      // convert binary data to base64 encoded string
+      return new Buffer(bitmap).toString('base64');
+  }
