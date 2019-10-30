@@ -53,7 +53,6 @@ const isValidPassword = (req, user: ApiSchema) => bcrypt.compareSync(
 
 const Auth = (router: Router) => {
     /** POST /register */
-    process.stdout.write("\n..........HERE........\n");
 
     router.post('/register', (req: Request, res: Response) => {
         process.stdout.write("\n..........REGISTER........\n");

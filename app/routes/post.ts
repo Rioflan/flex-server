@@ -133,7 +133,6 @@ const post = (router: Router) => {
         }*/
       }
       var image;
-      //if (process.env.NODE_ENV === 'development') {
         console.log("try to get the photo with id :"+id);
         var response = await dbconfig.getUserPhotoWrapper(id)
                         .catch((error) => {
@@ -144,7 +143,6 @@ const post = (router: Router) => {
           image = response;
           console.log("WAY IN");
         }
-      //}
 
       const user = await model.getUserById(id);
       res.status(resultCodes.success).json({
@@ -163,7 +161,7 @@ const post = (router: Router) => {
    * This route is used to add a friend.
    */
   router
-    .route("/users/add")
+    .route("/friend/add")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
