@@ -3,7 +3,6 @@ import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
-//var mongodb = require('mongodb');
 import dbconfig from '../database/mongoDB';
 
 const resultCodes = {
@@ -73,7 +72,6 @@ const Get = (router: Router, websocket, pool) => {
       }
       var image;
 
-      //if (process.env.NODE_ENV === 'development') {
         var response = await dbconfig.getUserPhotoWrapper(id_user)
                         .catch((error) => {
                               process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
@@ -81,7 +79,6 @@ const Get = (router: Router, websocket, pool) => {
         if (response !== "Photo not found"){
           image = response;
         }
-      //}
 
       process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
   

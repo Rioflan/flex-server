@@ -53,7 +53,7 @@ async function init() {
         console.log('App now running on port : ', port);
     });
 
-    const websocket = socketio(server);
+   const websocket = socketio(server);
     let pool = await getPooledUsers();
 
     websocket.on('connect', (socket) => {

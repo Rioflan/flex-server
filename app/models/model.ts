@@ -325,22 +325,6 @@ export const updateRemoteDays = async (
 export const sendEmail = (to: string, subject: string, body: string) => {
   if (!process.env.MJ_APIKEY_PUBLIC && !process.env.MJ_APIKEY_PRIVATE) return;
   
-  //console.log(process.env.ZAPIER_URL);
-  
-/*
-  fetch(process.env.ZAPIER_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      EmailTo: to,
-      Subject: subject,
-      Body: body
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }).catch(err => console.log(err));
-
-*/
 };
 export const sendConfirmationEmail = user => {
   const path = require('path');
@@ -349,7 +333,6 @@ export const sendConfirmationEmail = user => {
   //search $user to replace it by the user confirmation code
   message=message.replace('${user}', user.confirmation_code.toString());
   
-  //sendEmail(user.email, "FlexOffice : Code d’inscription", message);
   if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
     const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
