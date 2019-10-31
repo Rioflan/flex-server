@@ -202,7 +202,7 @@ const post = (router: Router) => {
    * This route is used to remove a friend.
    */
   router
-    .route("/users/remove")
+    .route("/friend/remove")
 
     .post(VerifyToken, (req: Request, res: Response) => {
       const body = req.body;
