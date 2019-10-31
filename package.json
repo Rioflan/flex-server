@@ -1,6 +1,6 @@
 {
   "name": "FlexOffice",
-  "version": "0.3.6",
+  "version": "0.3.8",
   "private": true,
   "main": "server.js",
   "engines": {

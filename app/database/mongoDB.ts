@@ -26,7 +26,6 @@ const wrapper = {
             if (successResponse === "Photo not found"){
               reject(successResponse);
             }else{
-              process.stdout.write('RESOLVED!!!!!!!!!!!!\n');
               resolve(successResponse);
             }
       });
