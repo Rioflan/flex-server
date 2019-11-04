@@ -5,6 +5,7 @@ import {
 } from 'express';
 import apiUser, {ApiSchema} from '../models/apikey';
 import VerifyToken from './VerifyToken';
+import logger from '../app';
 
 interface QueryUser {
     name?: string,
@@ -23,7 +24,7 @@ const findUser = (req: Request, res: Response) => {
 };
 
 const createUser = (req: Request, res: Response, hashedPassword: any) => {
-    console.log("create api user");
+    logger.log('debug',"create api user");
     apiUser.create(
         {
             name: req.body.name,
@@ -55,7 +56,7 @@ const Auth = (router: Router) => {
     /** POST /register */
 
     router.post('/register', (req: Request, res: Response) => {
-        process.stdout.write("\n..........REGISTER........\n");
+        logger.log('debug',"..........REGISTER........");
 
         if (
             req.body.name === null
@@ -63,7 +64,7 @@ const Auth = (router: Router) => {
             || req.body.password === null
         ) res.status(400).send('invalid mail or name');
 
-        console.log(req.body);
+        logger.log('debug',req.body);
 
         findUser(req, res);
 
@@ -86,17 +87,17 @@ const Auth = (router: Router) => {
     /** POST /login */
 
     router.post('/login', (req: Request, res: Response) => {
-        process.stdout.write("/login CALLED\n");
+        logger.log('debug',"/login CALLED");
         apiUser.findOne({email: req.body.email}, (err: Error, user: ApiSchema) => {
             if (err) return res.status(500).send('Error on the server.');
             if (!user) return res.status(404).send('No user found.');
 
             const passwordIsValid = isValidPassword(req, user);
-            console.log("USER : "+req.body.email);
+            logger.log('debug',"USER : "+req.body.email);
             if (!passwordIsValid) return res.status(401).send({auth: false, token: null});
 
             const token = jwt.sign({id: user._id}, process.env.API_SECRET);
-            console.log("token : "+token);
+            logger.log('debug',"token : "+token);
             res.status(200).send({auth: true, token});
         });
     });

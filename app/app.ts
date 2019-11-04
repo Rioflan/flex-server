@@ -8,16 +8,35 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+import * as winston from 'winston';
+
+export var LOG_LEVEL = process.env.REACT_APP_LOG_LEVEL || "info";
+
 const app: express.Application = express(); // use express on our app
 
-//app.use(cors());
-process.stdout.write("\nON LAUNCH >>>>> process.env.NODE_ENV      is "+process.env.NODE_ENV+"\n");
-process.stdout.write("\n          >>>>> process.env.DATABASE_HOST is "+process.env.DATABASE_HOST+"\n");
-process.stdout.write("\n          >>>>> process.env.DATABASE_PORT is "+process.env.DATABASE_PORT+"\n");
-process.stdout.write("\n          >>>>> process.env.DATABASE_DB   is "+process.env.DATABASE_DB+"\n");
-process.stdout.write("\n          >>>>> process.env.DATABASE_MODE is "+process.env.DATABASE_MODE+"\n");
-process.stdout.write("\n          >>>>> process.env.LOGIN_REGEX   is "+process.env.LOGIN_REGEX+"\n");
-process.stdout.write("\n >>>>>>>>>  VERSION 0.3.8  <<<<<<<<<<<<<\n");
+export const logger = winston.createLogger({
+  level: LOG_LEVEL,
+  format: winston.format.simple(),
+  transports: [
+    new winston.transports.Console(),
+    //
+    // - Write to all logs with level `info` and below to `combined.log` 
+    // - Write all logs error (and below) to `error.log`.
+    //
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
+
+logger.info(" ON LAUNCH >>>>>");
+logger.info(" NODE_ENV      is "+process.env.NODE_ENV);
+logger.info(" DATABASE_HOST is "+process.env.DATABASE_HOST);
+logger.info(" DATABASE_PORT is "+process.env.DATABASE_PORT);
+logger.info(" DATABASE_DB   is "+process.env.DATABASE_DB);
+logger.info(" DATABASE_MODE is "+process.env.DATABASE_MODE);
+logger.info(" LOGIN_REGEX   is "+process.env.LOGIN_REGEX);
+logger.info(" LOG_LEVEL     is "+LOG_LEVEL);
+logger.info("\n >>>>>>>>>  VERSION 0.3.9  <<<<<<<<<<<<<\n");
 
 export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);

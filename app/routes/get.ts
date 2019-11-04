@@ -4,6 +4,7 @@ import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
 import dbconfig from '../database/mongoDB';
+import logger from '../app';
 
 const resultCodes = {
 	success: 200,
@@ -74,13 +75,13 @@ const Get = (router: Router, websocket, pool) => {
 
         var response = await dbconfig.getUserPhotoWrapper(id_user)
                         .catch((error) => {
-                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                              logger.error("PB WITH PICTURE : "+error);
                         });
         if (response !== "Photo not found"){
           image = response;
         }
 
-      process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
+        logger.log('debug',"CHECK THE PHOTO");
   
       res.status(200).json({
           id: user.id,
@@ -101,9 +102,9 @@ const Get = (router: Router, websocket, pool) => {
     .route("/users/:user_id/place")
     .get(VerifyToken, async (req: Request, res: Response) => {
       const id_user = encrypt(req.params.user_id, req.userId);
-      console.log(">>>>>> id_user : " + id_user);
+      logger.log('debug',"id_user : " + id_user);
       const place = await Place.findOne({ id_user: id_user });
-      console.log(">>>>>> place : " + place);
+      logger.log('debug',"place : " + place);
       res.status(200).json(place);
       });
     
@@ -114,7 +115,7 @@ const Get = (router: Router, websocket, pool) => {
     .route("/places")
     .get(VerifyToken, async (req: Request, res: Response) => {
       const places = await model.getPlaces();
-      console.log(places);
+      logger.log('debug',places);
       res.status(200).json(places);
   });
 

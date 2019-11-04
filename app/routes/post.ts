@@ -12,6 +12,7 @@ import { encrypt, decrypt } from "./test";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import dbconfig from '../database/mongoDB';
+import {logger} from '../app';
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -56,7 +57,7 @@ const post = (router: Router) => {
     .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      console.log("process.env.API_SECRET : "+process.env.API_SECRET);
+      logger.debug("API_SECRET : "+process.env.API_SECRET);
       const body = req.body;
       if (body.email === null)
         return res
@@ -90,12 +91,10 @@ const post = (router: Router) => {
 
     .post(VerifyToken, async (req: Request, res: Response) => {
       const body = req.body;
-
-      console.log(process.env.LOGIN_REGEX);
-      console.log(body.email);
-      console.log(body.name);
-      console.log(body.fname);
-      console.log(body.id_user);
+      logger.debug(body.email);
+      logger.debug(body.name);
+      logger.debug(body.fname);
+      logger.debug(body.id_user);
       if (
         body.email === null ||
         body.name === null ||
@@ -125,23 +124,17 @@ const post = (router: Router) => {
         (body.photo !== "" || body.photo !== null)
       ){
         await dbconfig.putFileWrapper(body.photo, id);
-        /*
-        if (process.env.NODE_ENV !== "development"){
-          model.updatePhoto(id, body.photo);
-        }else{
-          await dbconfig.putFileWrapper(body.photo, id);
-        }*/
       }
       var image;
-        console.log("try to get the photo with id :"+id);
-        var response = await dbconfig.getUserPhotoWrapper(id)
+      logger.debug("try to get the photo with id :"+id);
+      var response = await dbconfig.getUserPhotoWrapper(id)
                         .catch((error) => {
-                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                          logger.error("PB WITH PICTURE : "+error);
                               return error;
-                        });
+                       });
         if (response !== "Photo not found"){
           image = response;
-          console.log("WAY IN");
+          logger.debug("WAY IN");
         }
 
       const user = await model.getUserById(id);
@@ -167,7 +160,7 @@ const post = (router: Router) => {
       const body = req.body;
       RES = res;
       const id_user = encrypt(body.id_user, req.userId);
-      console.log(id_user)
+      logger.debug(id_user)
       User.findOne(
         { id: id_user },
         null,
@@ -247,7 +240,7 @@ const post = (router: Router) => {
         await model.removeUserById(user.id);
         res.status(resultCodes.success).send({ success: "success" });
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(resultCodes.serverError).send(err);
       }
     });
@@ -264,17 +257,9 @@ const post = (router: Router) => {
         body.photo.match(HTTPS_REGEX) === null &&
         (body.photo !== "" || body.photo !== null)
       )
-      process.stdout.write("\nprocess.env.NODE_ENV is "+process.env.NODE_ENV+"\n");
-      //
+      logger.debug("NODE_ENV is "+process.env.NODE_ENV);
+
       dbconfig.putFileWrapper(body.photo, body.id_user);
-      //
-      /*
-      if (process.env.NODE_ENV !== "development"){
-        model.updatePhoto(id_user, body.photo);
-      }else{
-        dbconfig.putFileWrapper(body.photo, body.id_user);
-      }
-      */
 
       if (body.remoteDay !== "")
         model.updateUser(
@@ -326,15 +311,13 @@ const post = (router: Router) => {
 
       var image;
 
-      //if (process.env.NODE_ENV === 'development') {
-        var response = await dbconfig.getUserPhotoWrapper(user.id)
+      var response = await dbconfig.getUserPhotoWrapper(user.id)
                         .catch((error) => {
-                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                              logger.error("PB WITH PICTURE : "+error);
                         });
-        if (response !== "Photo not found"){
+      if (response !== "Photo not found"){
           image = response;
-        }
-      //}
+      }
 
       res.status(resultCodes.success).json({
         id: user_id,
@@ -349,9 +332,6 @@ const post = (router: Router) => {
         place: user.id_place
       });
     });
-
-  
-
   /**
    * This route is used to assign a place to a user.
    */
@@ -382,7 +362,7 @@ const post = (router: Router) => {
         !place.using && (!place.semi_flex || (await placeIsAllowed(place)));
 
       if (place && !(await placeIsAvailable(place))) {
-        console.log("Place already used");
+        logger.debug("Place already used");
         const user = await model.getUserById(place.id_user);
         const name = decrypt(user.name || "", req.userId);
         const fname = decrypt(user.fname || "", req.userId);
@@ -397,10 +377,10 @@ const post = (router: Router) => {
         .then(user => user.historical);
       const beginDate = new Date(Date.now()).toLocaleString();
       if (!place) {
-        console.log("Place doesn't exist");
+        logger.debug("Place doesn't exist");
         model.addPlace(id_place, true, id_user);
       } else {
-        console.log("Place exists and is free");
+        logger.debug("Place exists and is free");
         model.updatePlace(id_place, { using: true, id_user: id_user });
       }
       model.updateUser(id_user, {
@@ -435,8 +415,6 @@ const post = (router: Router) => {
 
       res.status(resultCodes.success).send(successMessages.leavePlace);
     });
-
-
 
   router
     .route("/place/assign")
