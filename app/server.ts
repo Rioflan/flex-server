@@ -5,7 +5,7 @@ import { encrypt } from './routes/test';
 import { updateUser, getPooledUsers } from "./models/model";
 import * as dotenv from 'dotenv';
 
-import app, { router, listOfRoutes } from './app';
+import app, { router, listOfRoutes, logger } from './app';
 
 const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
 
@@ -14,10 +14,9 @@ const DEFAULT_PORT: number = 3000;
 dotenv.config();
 
 try {
-    console.log();
 
     if (process.env.NODE_ENV === "production" && process.env.DATABASE_MODE === "remote"){
-        console.log('Connection to DB in Production');
+        logger.info('Connection to DB in Production');
         mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
             auth: {
                 user: process.env.DATABASE_USERNAME,
@@ -25,10 +24,10 @@ try {
               },
             useNewUrlParser: true,
           })
-          .then(() => console.log('Connection to DB successful'))
-          .catch((err) => console.error(err));
+          .then(() => logger.info('Connection to DB successful'))
+          .catch((err) => logger.error(err));
     }else{
-        console.log('Connection to MongoDb in Local');
+        logger.info('Connection to MongoDb in Local');
 
         mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
             auth: {
@@ -37,20 +36,20 @@ try {
               },
             useNewUrlParser: true,
           })
-          .then(() => console.log('Connection to DB successful'))
-          .catch((err) => console.error(err));
+          .then(() => logger.info('Connection to DB successful'))
+          .catch((err) => logger.error(err));
     
     }
     
 
 } catch (err) {
-    console.log(err);
+    logger.log(err);
 }
 
 async function init() {
     const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
         const port = server.address().port;
-        console.log('App now running on port : ', port);
+        logger.info('App now running on port : ', port);
     });
 
    const websocket = socketio(server);
@@ -66,7 +65,7 @@ async function init() {
                 socket.emit('leavePlace');
                 pool.splice(index, 1);
                 updateUser(id_user, { pool: false });
-                console.log(`User ${id_user} removed from pool`);
+                logger.info(`User ${id_user} removed from pool`);
             }
             else
                 socket.join(id_place);
