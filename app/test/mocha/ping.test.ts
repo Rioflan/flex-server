@@ -68,29 +68,6 @@ chai.should();
           });
     });
   });
-
-  /**
-   * Test the /POST /api/user/login  -> FAILED
-   */
-/*
-  describe('/POST /api/user/login', () => {
-    it('You can login with the api token', (done) => {
-
-      chai.request('http://localhost:3000')
-          .post('/api/login')
-          .set('authorization',"")
-          .send({"email": userMail})
-          .end((err, res) => {
-                console.log(res.body);
-                res.should.have.status(200);
-                res.should.be.json;
-                res.body.should.be.a('object');
-                res.body.should.have.property('email');
-            done();
-          });
-    });
-  });
-*/
   /**
    * Test the /POST /api/user/login
    */
