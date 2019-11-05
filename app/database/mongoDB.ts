@@ -109,7 +109,7 @@ function putFile(bytes, name, callback){
             },
           useNewUrlParser: true,
           },
-      ).catch(err => console.log(err));
+      ).catch(err => logger.error(err));
 
   }
 

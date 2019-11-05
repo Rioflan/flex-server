@@ -13,7 +13,6 @@ chai.should();
         chai.request('http://localhost:3000')
             .get('/api')
             .end((err, res) => {
-                  //console.log(res.body);
                   res.should.have.status(200);
                   chai.expect(res.text).to.eql('{"message":"It works !"}');
               done();
@@ -37,7 +36,6 @@ chai.should();
           .post('/api/register')
           .send({"email": userMail, "name": "Mocha", "password":"azerty"})
           .end((err, res) => {
-                //console.log(res.body);
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
@@ -61,7 +59,6 @@ chai.should();
           .set('authorization',api_token)
           .send({"email": userMail, "password":"azerty"})
           .end((err, res) => {
-                //console.log(res.body);
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
@@ -106,7 +103,6 @@ chai.should();
           .set('authorization',user_token)
           .send({"email": userMail})
           .end((err, res) => {
-                //console.log(res.body);
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
@@ -127,7 +123,6 @@ chai.should();
           .get('/api/me')
           .set('authorization',user_token)
           .end((err, res) => {
-                //console.log(res.body);
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
@@ -147,7 +142,6 @@ chai.should();
       chai.request('http://localhost:3000')
           .get('/api/logout')
           .end((err, res) => {
-                //console.log(res.body);
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
