@@ -3,7 +3,7 @@
 
 import { append, filter } from "ramda";
 
-import { Request, Response, Error, Router } from "express";
+import { Request, Response, Router } from "express";
 import User from "../models/user";
 import Place from "../models/place";
 import * as model from "../models/model";
@@ -41,12 +41,6 @@ const resultCodes = {
   serverError: 500
 };
 
-interface Request {
-  userId?: string | Buffer | DataView;
-  body: any;
-  params: any;
-}
-
 let RES;
 
 const post = (router: Router) => {
@@ -63,7 +57,7 @@ const post = (router: Router) => {
         return res
           .status(resultCodes.syntaxError)
           .json(errorMessages.invalidArguments);
-      const email = encrypt(body.email, req.userId);
+      const email = encrypt(body.email, req.params.userId);
 
       if (!(await model.getUser({ email }))) await model.addUser(email);
       const user = await model.getUser({ email });
@@ -110,10 +104,10 @@ const post = (router: Router) => {
         .json(errorMessages.invalidArguments);
       }
         
-      const id = encrypt(body.id_user, req.userId);
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
-      const email = encrypt(body.email, req.userId);
+      const id = encrypt(body.id_user, req.params.userId);
+      const name = encrypt(body.name, req.params.userId);
+      const fname = encrypt(body.fname, req.params.userId);
+      const email = encrypt(body.email, req.params.userId);
       const existingUser = await model.getUserById(id);
       if (existingUser) {
         if (existingUser.email)
@@ -144,10 +138,10 @@ const post = (router: Router) => {
 
       const user = await model.getUserById(id);
       res.status(resultCodes.success).json({
-        id: decrypt(user.id || "", req.userId),
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        email: decrypt(user.email || "", req.userId),
+        id: decrypt(user.id || "", req.params.userId),
+        name: decrypt(user.name || "", req.params.userId),
+        fname: decrypt(user.fname || "", req.params.userId),
+        email: decrypt(user.email || "", req.params.userId),
         remoteDay: user.remoteDay,
         photo: image ? image:user.photo,
         start_date: user.start_date,
@@ -166,7 +160,7 @@ const post = (router: Router) => {
 
       const body = req.body;
       RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       logger.debug(id_user)
       User.findOne(
         { id: id_user },
@@ -181,8 +175,8 @@ const post = (router: Router) => {
             user.friend = append(
               {
                 id: body.id,
-                name: encrypt(body.name, req.userId),
-                fname: encrypt(body.fname, req.userId),
+                name: encrypt(body.name, req.params.userId),
+                fname: encrypt(body.fname, req.params.userId),
                 id_place: body.id_place,
                 photo: body.photo
               },
@@ -213,7 +207,7 @@ const post = (router: Router) => {
 
       const body = req.body;
       RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       User.findOne(
         { id: id_user },
         null,
@@ -251,8 +245,8 @@ const post = (router: Router) => {
       logger.info('app.routes.post.user.remove');
 
       const body = req.body;
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
+      const name = encrypt(body.name, req.params.userId);
+      const fname = encrypt(body.fname, req.params.userId);
 
       try {
         const user = await model.getUser({ name, fname });
@@ -271,7 +265,7 @@ const post = (router: Router) => {
       logger.info('app.routes.post.user.settings');
 
       const body = req.body;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
 
       if (
         body.photo &&
@@ -335,7 +329,7 @@ const post = (router: Router) => {
         { confirmation_token: "", confirmation_code: "" }
       );
 
-      const user_id = decrypt(user.id || "", req.userId);
+      const user_id = decrypt(user.id || "", req.params.userId);
 
       var image;
 
@@ -349,9 +343,9 @@ const post = (router: Router) => {
 
       res.status(resultCodes.success).json({
         id: user_id,
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        email: decrypt(user.email || "", req.userId),
+        name: decrypt(user.name || "", req.params.userId),
+        fname: decrypt(user.fname || "", req.params.userId),
+        email: decrypt(user.email || "", req.params.userId),
         remoteDay: user.remoteDay,
         photo: image ? image : user.photo,
         start_date: user.start_date,
@@ -378,7 +372,7 @@ const post = (router: Router) => {
       }
 
       const id_place = body.id_place;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       const place = await model.getPlaceById(id_place);
 
       const placeIsAllowed = async place => {
@@ -395,8 +389,8 @@ const post = (router: Router) => {
       if (place && !(await placeIsAvailable(place))) {
         logger.debug("Place already used");
         const user = await model.getUserById(place.id_user);
-        const name = decrypt(user.name || "", req.userId);
-        const fname = decrypt(user.fname || "", req.userId);
+        const name = decrypt(user.name || "", req.params.userId);
+        const fname = decrypt(user.fname || "", req.params.userId);
         res.status(resultCodes.serverError).json({
           name: name,
           fname: fname
@@ -437,7 +431,7 @@ const post = (router: Router) => {
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidArguments);
       }
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       const historical = await model
         .getUserById(id_user)
         .then(user => user.historical);
@@ -457,7 +451,7 @@ const post = (router: Router) => {
       logger.info('app.routes.post.place.assign');
 
       const body = req.body;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
 
       model.updatePlace(body.id_place, {
         id_owner: id_user,

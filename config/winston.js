@@ -1,6 +1,8 @@
 var appRoot = require('app-root-path');
 var winston = require('winston');
 const { combine, timestamp, label, prettyPrint } = winston.format;
+var httpContext = require('express-http-context');
+
 
 var options = {
     file: {
@@ -22,7 +24,8 @@ var options = {
 
   var logger = new winston.createLogger({
     format: combine(
-        label({ label: 'FlexOffice_0.3.9' }),
+        httpContext.get('reqId'),
+        label({ label: 'FlexOffice_0.4.0'}),
         timestamp(),
         prettyPrint()
       ),

@@ -1,4 +1,6 @@
 import { Request, Response, Router } from "express";
+import httpContext from 'express-http-context';
+
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
@@ -17,6 +19,14 @@ const errorMessages = {
   notFound: "Not found"
 }
 
+/*
+interface Request {
+  userId?: string | Buffer | DataView;
+  body: any;
+  params: any;
+}
+*/
+
 const Get = (router: Router, websocket, pool) => {
 
   /** GET /users => {name, fname, id_place} */
@@ -31,8 +41,8 @@ const Get = (router: Router, websocket, pool) => {
       const usersDecrypted = users.map(user => {
         return {
           id: user.id,
-          name: decrypt(user.name || "", req.userId),
-          fname: decrypt(user.fname || "", req.userId),
+          name: decrypt(user.name || "", req.params.userId),
+          fname: decrypt(user.fname || "", req.params.userId),
           id_place: user.id_place || null,
           remoteDay: user.remoteDay,
           photo: user.photo,
@@ -47,14 +57,14 @@ const Get = (router: Router, websocket, pool) => {
     .route("/users/:user_id/friends")
     .get(VerifyToken, async (req: Request, res: Response) => {
       logger.info('app.routes.get.users.userId.friends');
-      const user_id = encrypt(req.params.user_id, req.userId);
+      const user_id = encrypt(req.params.user_id, req.params.userId);
       const user = await model.getUserById(user_id);
       const friendsArray = user.friend;
       const usersDecrypted = friendsArray.map(friend => {
         return {
           id: friend.id,
-          name: decrypt(friend.name || "", req.userId),
-          fname: decrypt(friend.fname || "", req.userId),
+          name: decrypt(friend.name || "", req.params.userId),
+          fname: decrypt(friend.fname || "", req.params.userId),
           id_place: friend.id_place || null,
           remoteDay: friend.remoteDay,
           photo: friend.photo
@@ -69,7 +79,7 @@ const Get = (router: Router, websocket, pool) => {
     .route("/users/:user_id")
     .get(VerifyToken, async (req: Request, res: Response) => {
       logger.info('app.routes.get.users.userId');
-      const id_user = encrypt(req.params.user_id, req.userId);
+      const id_user = encrypt(req.params.user_id, req.params.userId);
       const user = await model.getUserById(id_user);
       
       if (!user) {
@@ -91,8 +101,8 @@ const Get = (router: Router, websocket, pool) => {
   
       res.status(200).json({
           id: user.id,
-          name: decrypt(user.name || "", req.userId),
-          fname: decrypt(user.fname || "", req.userId),
+          name: decrypt(user.name || "", req.params.userId),
+          fname: decrypt(user.fname || "", req.params.userId),
           id_place: user.id_place || null,
           remoteDay: user.remoteDay,
           historical: user.historical,
@@ -109,7 +119,7 @@ const Get = (router: Router, websocket, pool) => {
     .get(VerifyToken, async (req: Request, res: Response) => {
         logger.info('app.routes.get.users.userId.place');
 
-        const id_user = encrypt(req.params.user_id, req.userId);
+        const id_user = encrypt(req.params.user_id, req.params.userId);
         logger.debug("id_user : " + id_user);
         const place = await Place.findOne({ id_user: id_user });
         logger.debug("place : " + place);
