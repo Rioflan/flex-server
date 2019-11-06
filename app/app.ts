@@ -8,12 +8,14 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import * as winston from 'winston';
+import * as winston from '../config/winston';
+import logger from '../config/winston';
+import morgan from 'morgan';
 
 export var LOG_LEVEL = process.env.REACT_APP_LOG_LEVEL || "info";
 
 const app: express.Application = express(); // use express on our app
-
+/*
 export const logger = winston.createLogger({
   level: LOG_LEVEL,
   format: winston.format.simple(),
@@ -27,7 +29,7 @@ export const logger = winston.createLogger({
     new winston.transports.File({ filename: 'combined.log' })
   ]
 });
-
+*/
 logger.info(" ON LAUNCH >>>>>");
 logger.info(" NODE_ENV      is "+process.env.NODE_ENV);
 logger.info(" DATABASE_HOST is "+process.env.DATABASE_HOST);
@@ -53,6 +55,12 @@ router.use((req: Request, res: Response, next) => {
 router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'It works !' });
 });
+
+// configure logger
+//log format used by the morgan package to combined, 
+// which is the standard Apache log format and will include useful information in the logs such as remote IP address 
+// and the user-agent HTTP request header.
+app.use(morgan ('combined',{ stream: winston.stream }));
 
 // configure app to use bodyParser() => get data from http request (POST)
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

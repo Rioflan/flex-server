@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {Request, Response, Error} from 'express';
 import apiUser, {ApiSchema} from '../models/apikey';
-import {logger} from '../app';
+import logger from '../../config/winston';
 
 /**
  * This function verify the token used.
@@ -11,6 +11,8 @@ import {logger} from '../app';
  */
 
 const verifyToken = (req: Request, res: Response, next) => {
+    logger.info('app.routes.verifyToken');
+    
     const token = req.headers['authorization'];
     const tokenArray = token.split(" ");
 

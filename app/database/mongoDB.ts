@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 var mongodb = require('mongodb');
 var assert = require('assert');
 var stream = require('stream');
-import {logger} from '../app';
+import logger from '../../config/winston';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ const wrapper = {
   ) {
 
    const mongoURI = `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
-   process.stdout.write('mongoURI : '+mongoURI+'\n');
+   logger.info('mongoURI : '+mongoURI);
 
    return mongoURI;
 

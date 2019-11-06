@@ -12,7 +12,7 @@ import { encrypt, decrypt } from "./test";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import dbconfig from '../database/mongoDB';
-import {logger} from '../app';
+import logger from '../../config/winston';
 
 const HTTPS_REGEX = "^https?://(.*)";
 
@@ -57,7 +57,7 @@ const post = (router: Router) => {
     .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      logger.debug("API_SECRET : "+process.env.API_SECRET);
+      logger.info('app.routes.post.user.login');
       const body = req.body;
       if (body.email === null)
         return res
@@ -90,6 +90,8 @@ const post = (router: Router) => {
     .route("/user/complete")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.post.user.complete');
+
       const body = req.body;
       logger.debug(body.email);
       logger.debug(body.name);
@@ -101,10 +103,13 @@ const post = (router: Router) => {
         body.fname === null ||
         body.id_user === null ||
         body.id_user.match(process.env.LOGIN_REGEX) === null
-      )
+      ){
+        logger.error('app.routes.post.user.complete.invalidArguments');
         return res
-          .status(resultCodes.syntaxError)
-          .json(errorMessages.invalidArguments);
+        .status(resultCodes.syntaxError)
+        .json(errorMessages.invalidArguments);
+      }
+        
       const id = encrypt(body.id_user, req.userId);
       const name = encrypt(body.name, req.userId);
       const fname = encrypt(body.fname, req.userId);
@@ -157,6 +162,8 @@ const post = (router: Router) => {
     .route("/friend/add")
 
     .post(VerifyToken, (req: Request, res: Response) => {
+      logger.info('app.routes.post.friend.add');
+
       const body = req.body;
       RES = res;
       const id_user = encrypt(body.id_user, req.userId);
@@ -166,8 +173,10 @@ const post = (router: Router) => {
         null,
         { sort: { _id: -1 } },
         (err: Error, user) => {
-          if (err)
-            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
+          if (err){
+            logger.error('app.routes.post.friend.add.user.findOne.err : ' + err);
+            RES.status(resultCodes.syntaxError).send(errorMessages.userFind);            
+          }
           else if (user) {
             user.friend = append(
               {
@@ -180,10 +189,12 @@ const post = (router: Router) => {
               user.friend
             );
             user.save((err: Error) => {
-              if (err)
+              if (err){
+                logger.error('app.routes.post.friend.add.user.save.err : ' + err);
                 RES.status(resultCodes.serverError).send(
                   errorMessages.userUpdate
                 );
+              }
               RES.status(resultCodes.success).send({ user });
             });
           }
@@ -198,6 +209,8 @@ const post = (router: Router) => {
     .route("/friend/remove")
 
     .post(VerifyToken, (req: Request, res: Response) => {
+      logger.info('app.routes.post.friend.remove');
+
       const body = req.body;
       RES = res;
       const id_user = encrypt(body.id_user, req.userId);
@@ -206,16 +219,20 @@ const post = (router: Router) => {
         null,
         { sort: { _id: -1 } },
         (err: Error, user) => {
-          if (err)
+          if (err){
+            logger.error('app.routes.post.friend.remove.user.findOne.err : ' + err);
             RES.status(resultCodes.syntaxError).send(errorMessages.userFind);
+          }
           else if (user) {
             const isRemovedUser = userFriend => userFriend.id !== body.id;
             user.friend = filter(isRemovedUser, user.friend);
             user.save((err: Error) => {
-              if (err)
+              if (err){
+                logger.error('app.routes.post.friend.remove.err : ' + err);
                 RES.status(resultCodes.serverError).send(
                   errorMessages.userUpdate
                 );
+              }
               RES.status(resultCodes.success).send({ user });
             });
           }
@@ -231,6 +248,8 @@ const post = (router: Router) => {
     .route("/user/remove")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.post.user.remove');
+
       const body = req.body;
       const name = encrypt(body.name, req.userId);
       const fname = encrypt(body.fname, req.userId);
@@ -240,7 +259,7 @@ const post = (router: Router) => {
         await model.removeUserById(user.id);
         res.status(resultCodes.success).send({ success: "success" });
       } catch (err) {
-        logger.error(err);
+        logger.error('app.routes.post.user.remove.err : ' + err);
         res.status(resultCodes.serverError).send(err);
       }
     });
@@ -249,6 +268,8 @@ const post = (router: Router) => {
     .route("/user/settings")
 
     .post(VerifyToken, (req: Request, res: Response) => {
+      logger.info('app.routes.post.user.settings');
+
       const body = req.body;
       const id_user = encrypt(body.id_user, req.userId);
 
@@ -279,6 +300,8 @@ const post = (router: Router) => {
   router
     .route("/verify")
     .post(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.post.verify');
+
       const body = req.body;
       const code = body.code;
       const user = await model.getUser({ confirmation_code: code });
@@ -289,6 +312,8 @@ const post = (router: Router) => {
           process.env.API_SECRET
         );
       } catch (_) {
+        logger.error('app.routes.post.verify.jwt.verify.err');
+
         return res
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidCode);
@@ -297,10 +322,13 @@ const post = (router: Router) => {
         !user ||
         user.confirmation_code !== code ||
         decoded.confirmation_code !== code
-      )
+      ){
+        logger.error('app.routes.post.verify.invalidCode');
         return res
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidCode);
+
+      }
 
       await User.updateOne(
         { email: user.email },
@@ -339,8 +367,11 @@ const post = (router: Router) => {
     .route("/places/take")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.post.places.take');
+
       const body = req.body;
       if (!body.id_place || !body.id_user) {
+        logger.error('app.routes.post.places.take.invalidArguments');
         return res
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidArguments);
@@ -397,8 +428,11 @@ const post = (router: Router) => {
     .route("/places/leave")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.post.places.leave');
+
       const body = req.body;
       if (!body.id_place || !body.id_user) {
+        logger.error('app.routes.post.places.leave.invalidArguments');
         return res
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidArguments);
@@ -420,6 +454,8 @@ const post = (router: Router) => {
     .route("/place/assign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
+      logger.info('app.routes.post.place.assign');
+
       const body = req.body;
       const id_user = encrypt(body.id_user, req.userId);
 
@@ -436,6 +472,8 @@ const post = (router: Router) => {
     .route("/place/unassign")
 
     .post(VerifyToken, (req: Request, res: Response) => {
+      logger.info('app.routes.post.place.assign');
+
       const body = req.body;
 
       model.updatePlace(body.id_place, {

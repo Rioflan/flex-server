@@ -5,7 +5,7 @@ import User from "../models/user";
 import Place from "../models/place";
 import mailjet from "node-mailjet";
 const fs=require('fs');
-import {logger} from '../app';
+import logger from '../../config/winston';
 
 /**
  * This function adds a new user.
