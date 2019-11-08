@@ -282,11 +282,10 @@ const post = (router: Router) => {
           );
 
       if (body.start_date && body.end_date) {
-        
         model.updateAvailabilityPeriod(
           id_user,
-          moment(body.start_date, "DD/MM/YYYY").toDate(),
-          moment(body.end_date, "DD/MM/YYYY").toDate()
+          moment.utc(body.start_date, "DD/MM/YYYY").toDate(),
+          moment.utc(body.end_date, "DD/MM/YYYY").toDate()
         );
       }
       res.status(resultCodes.success).send({ success: "success" });
