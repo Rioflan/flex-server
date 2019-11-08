@@ -275,17 +275,18 @@ const post = (router: Router) => {
         dbconfig.putFileWrapper(body.photo, body.id_user);
       }
       */
-
+      
       if (body.remoteDay !== "")
         model.updateUser(
           id_user, { remoteDay: body.remoteDay }
           );
 
-      if (body.startDate && body.endDate) {
+      if (body.start_date && body.end_date) {
+        
         model.updateAvailabilityPeriod(
           id_user,
-          moment(body.startDate, "DD/MM/YYYY").toDate(),
-          moment(body.endDate, "DD/MM/YYYY").toDate()
+          moment(body.start_date, "DD/MM/YYYY").toDate(),
+          moment(body.end_date, "DD/MM/YYYY").toDate()
         );
       }
       res.status(resultCodes.success).send({ success: "success" });
