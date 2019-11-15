@@ -159,11 +159,7 @@ export async function uploadPhoto(id_user, photo) {
  * @param photo base64 image
  */
 export async function updatePhoto(id_user: string, photo: string) {
-  try {
-    uploadPhoto(id_user, photo);
-  } catch (err) {
-    logger.error(err);
-  }
+  updateUser(id_user, { photo: photo });
 }
 
 /**
