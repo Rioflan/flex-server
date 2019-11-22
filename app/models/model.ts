@@ -1,12 +1,11 @@
-import cloudinary from "cloudinary";
 import fetch from "node-fetch";
 import crypto from "crypto";
 import azure from "azure-storage";
 import User from "../models/user";
 import Place from "../models/place";
-//import sgMail from "@sendgrid/mail";
 import mailjet from "node-mailjet";
 const fs=require('fs');
+import logger from '../../config/winston';
 
 /**
  * This function adds a new user.
@@ -28,8 +27,8 @@ export function addUser(
   if (fname) user.fname = fname
 
   return user.save().then((user, err) => {
-    if (err) console.log(err);
-    else console.log("User created");
+    if (err) logger.error(err);
+    else logger.info("User created");
   });
 }
 
@@ -56,8 +55,8 @@ export function removeUserById(id_user: string) {
  */
 export function updateUser(id_user: string, params) {
   User.updateOne({ id: id_user }, params, (err: Error) => {
-    if (err) console.log(err);
-    console.log("User updated");
+    if (err) logger.error(err);
+    logger.info("User updated");
   });
 }
 
@@ -68,8 +67,8 @@ export function updateUser(id_user: string, params) {
  */
 export function updateManyUsers(conditions, params) {
   User.updateMany(conditions, params, (err: Error) => {
-    if (err) console.log(err);
-    console.log(
+    if (err) logger.error(err);
+    logger.info(
       `Updated users matching condition ${JSON.stringify(conditions, null, 2)}`
     );
   });
@@ -145,10 +144,10 @@ export async function uploadPhoto(id_user, photo) {
       (error, result, response) => {
         if (!error) {
           const sasUrl = blobService.getUrl(blob_name, hash);
-          console.log(sasUrl);
+          logger.info(sasUrl);
           updateUser(id_user, { photo: sasUrl });
         }
-        console.log(error);
+        logger.error(error);
       }
     );
   }
@@ -163,7 +162,7 @@ export async function updatePhoto(id_user: string, photo: string) {
   try {
     uploadPhoto(id_user, photo);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 }
 
@@ -194,8 +193,8 @@ export function addPlace(
   place.id_user = id_user;
 
   return place.save().then((place, err: Error) => {
-    if (err) console.log(err);
-    console.log("Place created");
+    if (err) logger.error(err);
+    logger.info("Place created");
   });
 }
 
@@ -209,8 +208,8 @@ export function updatePlace(
   params
 ) {
   Place.updateOne({ id: id_place }, params, (err: Error) => {
-    if (err) console.log(err);
-    console.log("Place updated");
+    if (err) logger.error(err);
+    logger.info("Place updated");
   });
 }
 
@@ -262,7 +261,7 @@ export async function resetPlaces(websocket, pool: Array<string>) {
       else {
         pool.push(place.id_user);
         updateUser(place.id_user, { pool: true });
-        console.log(`User ${place.id_user} added to pool`);
+        logger.info(`User ${place.id_user} added to pool`);
       }
       updatePlace(place.id, { using: false, id_user: "" }); // set the place free
     }
@@ -334,37 +333,37 @@ export const sendConfirmationEmail = user => {
   message=message.replace('${user}', user.confirmation_code.toString());
   
   if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
-    const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+      const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
-    const request = mailService
+      const request = mailService
 
-    .post("send", {'version': 'v3.1'})
-    .request({
-        "Messages":[{
-            "From": {
-                "Email": "flexoffice.beta@gmail.com",
-                "Name": "FlexOffice"
-            },
-            "To": [{
-                "Email": user.email,
-                "Name": user.email
-            }],
-            "Subject": "FlexOffice : Code d’inscription",
-            "HTMLPart": message,
+      .post("send", {'version': 'v3.1'})
+      .request({
+          "Messages":[{
+              "From": {
+                  "Email": "flexoffice.beta@gmail.com",
+                  "Name": "FlexOffice"
+              },
+              "To": [{
+                  "Email": user.email,
+                  "Name": user.email
+              }],
+              "Subject": "FlexOffice : Code d’inscription",
+              "HTMLPart": message,
+        
+        }]
+      })
       
-      }]
-    })
-    
-request
-    .then((result) => {
-        console.log("HEY : " + result)
-    })
-    .catch((err) => {
-        console.log("HOPLA : " + err.statusCode)
-    })
+      request
+      .then((result) => {
+          logger.debug(result)
+      })
+      .catch((err) => {
+        logger.error(err.statusCode)
+      })
   }
   else{
-    console.log('>>>>>>>>> ERROR <<<<<<<<<<<<<<<');
+    logger.error('>>>>>>>>> ERROR : API KEY MISSING <<<<<<<<<<<<<<<');
   }
   
 

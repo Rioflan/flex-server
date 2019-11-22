@@ -4,6 +4,7 @@ import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
 import Place from "../models/place";
 import dbconfig from '../database/mongoDB';
+import logger from '../../config/winston';
 
 const resultCodes = {
 	success: 200,
@@ -23,25 +24,29 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users")
     .get(VerifyToken, async (req: Request, res: Response) => {
-    const users = await model.getUsers();
-    const usersDecrypted = users.map(user => {
-      return {
-        id: user.id,
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        id_place: user.id_place || null,
-        remoteDay: user.remoteDay,
-        photo: user.photo,
-        start_date: user.start_date,
-        end_date: user.end_date,
-      };
-    });
-    res.status(200).json(usersDecrypted);
+    
+      logger.info('app.routes.get.users');
+
+      const users = await model.getUsers();
+      const usersDecrypted = users.map(user => {
+        return {
+          id: user.id,
+          name: decrypt(user.name || "", req.userId),
+          fname: decrypt(user.fname || "", req.userId),
+          id_place: user.id_place || null,
+          remoteDay: user.remoteDay,
+          photo: user.photo,
+          start_date: user.start_date,
+          end_date: user.end_date,
+        };
+      });
+      res.status(200).json(usersDecrypted);
   });
 
   router
     .route("/users/:user_id/friends")
     .get(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.get.users.userId.friends');
       const user_id = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(user_id);
       const friendsArray = user.friend;
@@ -63,24 +68,26 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users/:user_id")
     .get(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.get.users.userId');
       const id_user = encrypt(req.params.user_id, req.userId);
       const user = await model.getUserById(id_user);
       
       if (!user) {
+        logger.error('app.routes.get.users.userId.notFound');
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
       var image;
 
-        var response = await dbconfig.getUserPhotoWrapper(id_user)
+      var response = await dbconfig.getUserPhotoWrapper(id_user)
                         .catch((error) => {
-                              process.stdout.write("\nPB WITH PICTURE : "+error+"\n");
+                              logger.error("PB WITH PICTURE : "+error);
                         });
-        if (response !== "Photo not found"){
+      if (response !== "Photo not found"){
           image = response;
-        }
+      }
 
-      process.stdout.write(">>>>>>>>>>>>>>>>>>>>>>>>< CHECK THE PHOTO\n");
+      logger.info('app.routes.get.users.userId.photoFound');
   
       res.status(200).json({
           id: user.id,
@@ -100,11 +107,13 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users/:user_id/place")
     .get(VerifyToken, async (req: Request, res: Response) => {
-      const id_user = encrypt(req.params.user_id, req.userId);
-      console.log(">>>>>> id_user : " + id_user);
-      const place = await Place.findOne({ id_user: id_user });
-      console.log(">>>>>> place : " + place);
-      res.status(200).json(place);
+        logger.info('app.routes.get.users.userId.place');
+
+        const id_user = encrypt(req.params.user_id, req.userId);
+        logger.debug("id_user : " + id_user);
+        const place = await Place.findOne({ id_user: id_user });
+        logger.debug("place : " + place);
+        res.status(200).json(place);
       });
     
 
@@ -113,14 +122,16 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/places")
     .get(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.get.places');
       const places = await model.getPlaces();
-      console.log(places);
+      logger.log('debug',places);
       res.status(200).json(places);
   });
 
   router
     .route("/places/reset")
     .get(VerifyToken, async (req: Request, res: Response) => {
+      logger.info('app.routes.get.places.reset');
       await model.resetPlaces(websocket, pool);
       res.status(200).send("Places successfully reset");
     })

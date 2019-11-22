@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 var mongodb = require('mongodb');
 var assert = require('assert');
 var stream = require('stream');
+import logger from '../../config/winston';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const wrapper = {
   ) {
 
    const mongoURI = `mongodb://${host}:${port}/${process.env.DATABASE_DB}`;
-   process.stdout.write('mongoURI : '+mongoURI+'\n');
+   logger.info('mongoURI : '+mongoURI);
 
    return mongoURI;
 
@@ -45,7 +46,7 @@ export default wrapper;
 function putFile(bytes, name, callback){
 
   if (process.env.NODE_ENV === "production"){
-    console.log('PutFile : Connection to CosmosDB in Production');
+    logger.debug('PutFile : Connection to CosmosDB in Production');
     mongodb.MongoClient.connect(
       wrapper.getMongoUri(),
       {
@@ -58,8 +59,8 @@ function putFile(bytes, name, callback){
        function(error, client) {
         assert.ifError(error);    
         const db = client.db("flex");
-        process.stdout.write("GOT A CONNECTION...\n");
-        console.log('Connection to CosmosDB successful');
+        logger.debug("GOT A CONNECTION...");
+        logger.debug('Connection to CosmosDB successful');
 
         let opts = {
           chunkSizeBytes: 1024,
@@ -67,7 +68,7 @@ function putFile(bytes, name, callback){
         };
         try{
           var bucket = new mongodb.GridFSBucket(db, opts);
-          process.stdout.write("BUCKET CREATED...\n");
+          logger.debug("BUCKET CREATED...");
           try{
             const readablePhotoStream = new stream.Readable();
             readablePhotoStream.push(bytes);
@@ -82,22 +83,22 @@ function putFile(bytes, name, callback){
             });
         
             uploadStream.on('finish', () => {
-              process.stdout.write('\nFinished uploading file\n');
+              logger.debug('Finished uploading file');
               callback();  
             });
     
           }catch(error){
-            process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
+            logger.debug("COULDN'T WRITE FILE IN DB : "+error);
             callback();
           }
         }catch(error){
-          process.stdout.write("BUCKET CREATION FAILED...\n"+error);
+          logger.debug("BUCKET CREATION FAILED : "+error);
           callback();
         } 
     });
 
   }else{
-      console.log('Connection to MongoDb in Local');
+      logger.debug('Connection to MongoDb in Local');
 
       mongodb.MongoClient.connect(
           wrapper.getMongoUri(),
@@ -108,50 +109,10 @@ function putFile(bytes, name, callback){
             },
           useNewUrlParser: true,
           },
-      ).catch(err => console.log(err));
+      ).catch(err => logger.error(err));
 
   }
-/*
-  mongodb.MongoClient.connect(wrapper.getMongoUri(), function(error, client) {
-    assert.ifError(error);    
-    const db = client.db("flex");
-    process.stdout.write("GOT A CONNECTION...\n");
 
-    let opts = {
-      chunkSizeBytes: 1024,
-      bucketName: 'Avatars'
-    };
-    try{
-      var bucket = new mongodb.GridFSBucket(db, opts);
-      process.stdout.write("BUCKET CREATED...\n");
-      try{
-        const readablePhotoStream = new stream.Readable();
-        readablePhotoStream.push(bytes);
-        readablePhotoStream.push(null);
-
-        let uploadStream = bucket.openUploadStream(name);
-        let id = uploadStream.id;
-        readablePhotoStream.pipe(uploadStream);
-
-        uploadStream.on('error', () => {
-          throw new Error("FlexOffice Internal Exception : Error uploading file");
-        });
-    
-        uploadStream.on('finish', () => {
-          process.stdout.write('\nFinished uploading file\n');
-          callback();  
-        });
-
-      }catch(error){
-        process.stdout.write("COULDN'T WRITE FILE IN DB...\n"+error+"\n");
-        callback();
-      }
-    }catch(error){
-      process.stdout.write("BUCKET CREATION FAILED...\n"+error);
-      callback();
-    }    
-  });
-*/
 }
 function getUserPhoto(user_id, callback){
   
@@ -169,15 +130,15 @@ function getUserPhoto(user_id, callback){
       assert.ifError(err);    
       const db = client.db("flex");
         if (err) {
-          process.stdout.write('getUserPhoto -> Sorry unable to connect to MongoDB Error:', err+'\n');
+          logger.error('getUserPhoto -> Sorry unable to connect to MongoDB Error: ', err);
         } else {
-          process.stdout.write('getUserPhoto -> CONNECTION OK \n');
+          logger.debug('getUserPhoto -> CONNECTION OK');
     
             var bucket = new mongodb.GridFSBucket(db, {
                 chunkSizeBytes: 1024,
                 bucketName: 'Avatars'
             });
-            process.stdout.write('getUserPhoto -> BUCKET CREATED \n');
+            logger.debug('getUserPhoto -> BUCKET CREATED \n');
             var str = '';
             var gotData = 0;
             try{
@@ -186,23 +147,22 @@ function getUserPhoto(user_id, callback){
                 try{
                   throw new Error("FlexOffice Internal Exception : File not Found");
                 }catch(e){
-                  process.stdout.write("HERE : getUserPhoto -> System Error : "  + e.message + " -> USER : "+user_id);
+                  logger.error("HERE : getUserPhoto -> System Error : "  + e.message + " -> USER : "+user_id);
                   callback("Photo not found");
                 }
               })
               .on('data', function(data) {
-                //process.stdout.write('Got DATA !\n');
                 ++gotData;
                 str += data.toString('utf8');
               })
               .on('end', function() {
-                process.stdout.write('THE END !\n');
-                process.stdout.write('done!');
+                logger.debug('THE END !');
+                logger.debug('done!');
                 callback(str);
               });
             }catch(e){
               if(e instanceof Error) {
-                process.stdout.write("getUserPhoto -> System Error : "  + e.message);
+                logger.error("getUserPhoto -> System Error : "  + e.message);
                 callback("Photo not found");
               }else {
                 throw e;
@@ -211,7 +171,4 @@ function getUserPhoto(user_id, callback){
         }
       }
     );
-
-  
-
 }
