@@ -43,7 +43,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // configure logger
-//log format used by the morgan package to combined, 
+// log format used by the morgan package to combined, 
 // which is the standard Apache log format and will include useful information in the logs such as remote IP address 
 // and the user-agent HTTP request header.
 app.use(morgan ('combined',{ stream: winston.stream }));

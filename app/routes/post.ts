@@ -51,12 +51,17 @@ const post = (router: Router) => {
     .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.post.user.login');
+
+      logger.info('app.routes.post.user.login, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
       const body = req.body;
-      if (body.email === null)
+      if (body.email === null){
+        logger.error('app.routes.post.user.login.email.null, X-Correlation-ID : '+req.header('X-Correlation-ID'));
         return res
-          .status(resultCodes.syntaxError)
-          .json(errorMessages.invalidArguments);
+        .status(resultCodes.syntaxError)
+        .json(errorMessages.invalidArguments);
+      }
+        
       const email = encrypt(body.email, req.params.userId);
 
       if (!(await model.getUser({ email }))) await model.addUser(email);
@@ -84,13 +89,10 @@ const post = (router: Router) => {
     .route("/user/complete")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.post.user.complete');
+      logger.info('app.routes.post.user.complete, X-Correlation-ID : '+req.header('X-Correlation-ID'));
 
       const body = req.body;
-      logger.debug(body.email);
-      logger.debug(body.name);
-      logger.debug(body.fname);
-      logger.debug(body.id_user);
+
       if (
         body.email === null ||
         body.name === null ||
@@ -98,7 +100,12 @@ const post = (router: Router) => {
         body.id_user === null ||
         body.id_user.match(process.env.LOGIN_REGEX) === null
       ){
-        logger.error('app.routes.post.user.complete.invalidArguments');
+        logger.error('app.routes.post.user.complete.invalidArguments, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+        logger.error('EMAIL     : ' + body.email);
+        logger.error('NAME      : ' + body.name);
+        logger.error('FULL NAME : ' + body.fname);
+        logger.error('ID_USER   : ' + body.id_user);
+
         return res
         .status(resultCodes.syntaxError)
         .json(errorMessages.invalidArguments);
@@ -109,14 +116,20 @@ const post = (router: Router) => {
       const fname = encrypt(body.fname, req.params.userId);
       const email = encrypt(body.email, req.params.userId);
       const existingUser = await model.getUserById(id);
+
       if (existingUser) {
-        if (existingUser.email)
+        if (existingUser.email) {
+          logger.error('app.routes.post.user.complete.userIdTaken, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+          logger.error('EMAIL     : ' + existingUser.email);
           return res
-            .status(resultCodes.syntaxError)
-            .json(errorMessages.userIdTaken);
+          .status(resultCodes.syntaxError)
+          .json(errorMessages.userIdTaken);
+        }
         await model.removeUser({ email });
         await User.updateOne({ id }, { email, name, fname });
-      } else await User.updateOne({ email }, { id, name, fname });
+      } 
+      else await User.updateOne({ email }, { id, name, fname });
+
       if (
         body.photo &&
         body.photo.match(HTTPS_REGEX) === null &&
@@ -128,12 +141,12 @@ const post = (router: Router) => {
       logger.debug("try to get the photo with id :"+id);
       var response = await dbconfig.getUserPhotoWrapper(id)
                         .catch((error) => {
-                          logger.error("PB WITH PICTURE : "+error);
-                              return error;
+                          logger.error('app.routes.post.user.complete.getUserPhotoWrapper.error : '+error+', X-Correlation-ID : '+req.header('X-Correlation-ID'));
+                          return error;
                        });
         if (response !== "Photo not found"){
           image = response;
-          logger.debug("WAY IN");
+          logger.debug('app.routes.post.user.complete.getUserPhotoWrapper.photoFound, X-Correlation-ID : '+req.header('X-Correlation-ID'));
         }
 
       const user = await model.getUserById(id);

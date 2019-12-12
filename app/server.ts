@@ -50,8 +50,8 @@ try {
 
 async function init() {
     const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
-        const port = server.address() as AddressInfo;
-        logger.info('App now running on port : %s',port);
+        const address = server.address() as AddressInfo;
+        logger.info('App now running on port : ' + address.port);
     });
 
    const websocket = socketio(server);

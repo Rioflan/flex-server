@@ -112,7 +112,7 @@ const Auth = (router: Router) => {
     /** POST /login */
 
     router.post('/login', (req: Request, res: Response) => {
-        logger.info('app.routes.auth.post.login');
+        logger.info('app.routes.auth.post.login, X-Correlation-ID : '+req.header('X-Correlation-ID'));
 
         apiUser.findOne({email: req.body.email}, (err: Error, user: ApiSchema) => {
             if (err) {
