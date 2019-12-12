@@ -24,7 +24,7 @@ logger.info(" DATABASE_DB   is "+process.env.DATABASE_DB);
 logger.info(" DATABASE_MODE is "+process.env.DATABASE_MODE);
 logger.info(" LOGIN_REGEX   is "+process.env.LOGIN_REGEX);
 logger.info(" LOG_LEVEL     is "+LOG_LEVEL);
-logger.info(" >>>>>>>>>  VERSION 0.4.0  <<<<<<<<<<<<<");
+logger.info(" >>>>>>>>>  VERSION 0.4.8  <<<<<<<<<<<<<");
 
 export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);
