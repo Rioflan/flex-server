@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+
 import VerifyToken from "./VerifyToken";
 import { encrypt, decrypt } from "./test";
 import * as model from "../models/model";
@@ -25,14 +26,14 @@ const Get = (router: Router, websocket, pool) => {
     .route("/users")
     .get(VerifyToken, async (req: Request, res: Response) => {
     
-      logger.info('app.routes.get.users');
+      logger.info('app.routes.get.users, X-Correlation-ID : '+req.header('X-Correlation-ID'));
 
       const users = await model.getUsers();
       const usersDecrypted = users.map(user => {
         return {
           id: user.id,
-          name: decrypt(user.name || "", req.userId),
-          fname: decrypt(user.fname || "", req.userId),
+          name: decrypt(user.name || "", req.params.userId),
+          fname: decrypt(user.fname || "", req.params.userId),
           id_place: user.id_place || null,
           remoteDay: user.remoteDay,
           photo: user.photo,
@@ -46,15 +47,17 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users/:user_id/friends")
     .get(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.get.users.userId.friends');
-      const user_id = encrypt(req.params.user_id, req.userId);
+
+      logger.info('app.routes.get.users.userId.friends, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
+      const user_id = encrypt(req.params.user_id, req.params.userId);
       const user = await model.getUserById(user_id);
       const friendsArray = user.friend;
       const usersDecrypted = friendsArray.map(friend => {
         return {
           id: friend.id,
-          name: decrypt(friend.name || "", req.userId),
-          fname: decrypt(friend.fname || "", req.userId),
+          name: decrypt(friend.name || "", req.params.userId),
+          fname: decrypt(friend.fname || "", req.params.userId),
           id_place: friend.id_place || null,
           remoteDay: friend.remoteDay,
           photo: friend.photo
@@ -68,12 +71,14 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users/:user_id")
     .get(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.get.users.userId');
-      const id_user = encrypt(req.params.user_id, req.userId);
+
+      logger.info('app.routes.get.users.userId, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
+      const id_user = encrypt(req.params.user_id, req.params.userId);
       const user = await model.getUserById(id_user);
       
       if (!user) {
-        logger.error('app.routes.get.users.userId.notFound');
+        logger.error('app.routes.get.users.userId.notFound : '+ id_user + ', X-Correlation-ID : '+req.header('X-Correlation-ID'));
         res.status(resultCodes.notFound).send(errorMessages.notFound);
         return
       }
@@ -81,18 +86,19 @@ const Get = (router: Router, websocket, pool) => {
 
       var response = await dbconfig.getUserPhotoWrapper(id_user)
                         .catch((error) => {
-                              logger.error("PB WITH PICTURE : "+error);
+                              logger.error('app.routes.get.users.userId.getUserPhotoWrapper.error : '+ id_user + ' error : '+ error +', X-Correlation-ID : '+req.header('X-Correlation-ID'));
                         });
       if (response !== "Photo not found"){
-          image = response;
+        logger.info('app.routes.get.users.userId.photoFound : '+ id_user + ', X-Correlation-ID : '+req.header('X-Correlation-ID'));
+        image = response;
+      }else{
+        logger.info('app.routes.get.users.userId.photoNotFound : '+ id_user + ', X-Correlation-ID : '+req.header('X-Correlation-ID'));
       }
 
-      logger.info('app.routes.get.users.userId.photoFound');
-  
       res.status(200).json({
           id: user.id,
-          name: decrypt(user.name || "", req.userId),
-          fname: decrypt(user.fname || "", req.userId),
+          name: decrypt(user.name || "", req.params.userId),
+          fname: decrypt(user.fname || "", req.params.userId),
           id_place: user.id_place || null,
           remoteDay: user.remoteDay,
           historical: user.historical,
@@ -107,12 +113,15 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/users/:user_id/place")
     .get(VerifyToken, async (req: Request, res: Response) => {
-        logger.info('app.routes.get.users.userId.place');
 
-        const id_user = encrypt(req.params.user_id, req.userId);
-        logger.debug("id_user : " + id_user);
+        logger.info('app.routes.get.places.reset, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
+        const id_user = encrypt(req.params.user_id, req.params.userId);
+        logger.debug("id_user : " + id_user + ', X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
         const place = await Place.findOne({ id_user: id_user });
-        logger.debug("place : " + place);
+        logger.debug("place : " + place + ', X-Correlation-ID : '+req.header('X-Correlation-ID'));
+        
         res.status(200).json(place);
       });
     
@@ -122,16 +131,18 @@ const Get = (router: Router, websocket, pool) => {
   router
     .route("/places")
     .get(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.get.places');
+      logger.info('app.routes.get.places, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
       const places = await model.getPlaces();
-      logger.log('debug',places);
+      logger.debug(places);
       res.status(200).json(places);
   });
 
   router
     .route("/places/reset")
     .get(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.get.places.reset');
+      logger.info('app.routes.get.places.reset, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
       await model.resetPlaces(websocket, pool);
       res.status(200).send("Places successfully reset");
     })

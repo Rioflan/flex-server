@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import {
-    Router, Request, Response, Error,
+    Router, Request, Response
 } from 'express';
 import apiUser, {ApiSchema} from '../models/apikey';
 import VerifyToken from './VerifyToken';
@@ -13,6 +13,7 @@ interface QueryUser {
     id_place?: string
     email?: string
 }
+
 
 const findUser = (req: Request, res: Response) => {
     logger.info('app.routes.auth.findUser');
@@ -94,7 +95,7 @@ const Auth = (router: Router) => {
     router.get('/me', VerifyToken, (req: Request, res: Response, next) => {
         logger.info('app.routes.auth.get.me');
 
-        apiUser.findById(req.userId, {api_key: 0}, (err: Error, user: ApiSchema) => {
+        apiUser.findById(req.params.userId, {api_key: 0}, (err: Error, user: ApiSchema) => {
             if (err) {
                 logger.error('app.routes.auth.get.me.findById.error.500');
                 return res.status(500).send('There was a problem finding the user.')
@@ -111,7 +112,7 @@ const Auth = (router: Router) => {
     /** POST /login */
 
     router.post('/login', (req: Request, res: Response) => {
-        logger.info('app.routes.auth.post.login');
+        logger.info('app.routes.auth.post.login, X-Correlation-ID : '+req.header('X-Correlation-ID'));
 
         apiUser.findOne({email: req.body.email}, (err: Error, user: ApiSchema) => {
             if (err) {

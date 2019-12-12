@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {Request, Response, Error} from 'express';
+import {Request, Response} from 'express';
 import apiUser, {ApiSchema} from '../models/apikey';
 import logger from '../../config/winston';
+
 
 /**
  * This function verify the token used.
@@ -14,6 +15,8 @@ const verifyToken = (req: Request, res: Response, next) => {
     logger.info('app.routes.verifyToken');
     
     const token = req.headers['authorization'];
+    if (!token) return res.status(403).send({auth: false, message: 'No token provided.'});
+    
     const tokenArray = token.split(" ");
 
     logger.debug("Verify token : "+token);
@@ -26,9 +29,9 @@ const verifyToken = (req: Request, res: Response, next) => {
                 .send({auth: false, message: 'Failed to authenticate token.'});
         }
 
-        req.userId = decoded.id;
+        req.params.userId = decoded.id;
 
-        apiUser.findById(req.userId, {api_key: 0}, (err: Error, user: ApiSchema) => {
+        apiUser.findById(req.params.userId, {api_key: 0}, (err: Error, user: ApiSchema) => {
             if (err) return res.status(500).send('There was a problem finding the user.');
             if (!user) return res.status(404).send('No user found.');
 

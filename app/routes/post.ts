@@ -3,7 +3,7 @@
 
 import { append, filter } from "ramda";
 
-import { Request, Response, Error, Router } from "express";
+import { Request, Response, Router } from "express";
 import User from "../models/user";
 import Place from "../models/place";
 import * as model from "../models/model";
@@ -41,12 +41,6 @@ const resultCodes = {
   serverError: 500
 };
 
-interface Request {
-  userId?: string | Buffer | DataView;
-  body: any;
-  params: any;
-}
-
 let RES;
 
 const post = (router: Router) => {
@@ -57,13 +51,18 @@ const post = (router: Router) => {
     .route("/user/login")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.post.user.login');
+
+      logger.info('app.routes.post.user.login, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+
       const body = req.body;
-      if (body.email === null)
+      if (body.email === null){
+        logger.error('app.routes.post.user.login.email.null, X-Correlation-ID : '+req.header('X-Correlation-ID'));
         return res
-          .status(resultCodes.syntaxError)
-          .json(errorMessages.invalidArguments);
-      const email = encrypt(body.email, req.userId);
+        .status(resultCodes.syntaxError)
+        .json(errorMessages.invalidArguments);
+      }
+        
+      const email = encrypt(body.email, req.params.userId);
 
       if (!(await model.getUser({ email }))) await model.addUser(email);
       const user = await model.getUser({ email });
@@ -90,13 +89,10 @@ const post = (router: Router) => {
     .route("/user/complete")
 
     .post(VerifyToken, async (req: Request, res: Response) => {
-      logger.info('app.routes.post.user.complete');
+      logger.info('app.routes.post.user.complete, X-Correlation-ID : '+req.header('X-Correlation-ID'));
 
       const body = req.body;
-      logger.debug(body.email);
-      logger.debug(body.name);
-      logger.debug(body.fname);
-      logger.debug(body.id_user);
+
       if (
         body.email === null ||
         body.name === null ||
@@ -104,25 +100,36 @@ const post = (router: Router) => {
         body.id_user === null ||
         body.id_user.match(process.env.LOGIN_REGEX) === null
       ){
-        logger.error('app.routes.post.user.complete.invalidArguments');
+        logger.error('app.routes.post.user.complete.invalidArguments, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+        logger.error('EMAIL     : ' + body.email);
+        logger.error('NAME      : ' + body.name);
+        logger.error('FULL NAME : ' + body.fname);
+        logger.error('ID_USER   : ' + body.id_user);
+
         return res
         .status(resultCodes.syntaxError)
         .json(errorMessages.invalidArguments);
       }
         
-      const id = encrypt(body.id_user, req.userId);
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
-      const email = encrypt(body.email, req.userId);
+      const id = encrypt(body.id_user, req.params.userId);
+      const name = encrypt(body.name, req.params.userId);
+      const fname = encrypt(body.fname, req.params.userId);
+      const email = encrypt(body.email, req.params.userId);
       const existingUser = await model.getUserById(id);
+
       if (existingUser) {
-        if (existingUser.email)
+        if (existingUser.email) {
+          logger.error('app.routes.post.user.complete.userIdTaken, X-Correlation-ID : '+req.header('X-Correlation-ID'));
+          logger.error('EMAIL     : ' + existingUser.email);
           return res
-            .status(resultCodes.syntaxError)
-            .json(errorMessages.userIdTaken);
+          .status(resultCodes.syntaxError)
+          .json(errorMessages.userIdTaken);
+        }
         await model.removeUser({ email });
         await User.updateOne({ id }, { email, name, fname });
-      } else await User.updateOne({ email }, { id, name, fname });
+      } 
+      else await User.updateOne({ email }, { id, name, fname });
+
       if (
         body.photo &&
         body.photo.match(HTTPS_REGEX) === null &&
@@ -134,20 +141,20 @@ const post = (router: Router) => {
       logger.debug("try to get the photo with id :"+id);
       var response = await dbconfig.getUserPhotoWrapper(id)
                         .catch((error) => {
-                          logger.error("PB WITH PICTURE : "+error);
-                              return error;
+                          logger.error('app.routes.post.user.complete.getUserPhotoWrapper.error : '+error+', X-Correlation-ID : '+req.header('X-Correlation-ID'));
+                          return error;
                        });
         if (response !== "Photo not found"){
           image = response;
-          logger.debug("WAY IN");
+          logger.debug('app.routes.post.user.complete.getUserPhotoWrapper.photoFound, X-Correlation-ID : '+req.header('X-Correlation-ID'));
         }
 
       const user = await model.getUserById(id);
       res.status(resultCodes.success).json({
-        id: decrypt(user.id || "", req.userId),
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        email: decrypt(user.email || "", req.userId),
+        id: decrypt(user.id || "", req.params.userId),
+        name: decrypt(user.name || "", req.params.userId),
+        fname: decrypt(user.fname || "", req.params.userId),
+        email: decrypt(user.email || "", req.params.userId),
         remoteDay: user.remoteDay,
         photo: image ? image:user.photo,
         start_date: user.start_date,
@@ -166,7 +173,7 @@ const post = (router: Router) => {
 
       const body = req.body;
       RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       logger.debug(id_user)
       User.findOne(
         { id: id_user },
@@ -181,8 +188,8 @@ const post = (router: Router) => {
             user.friend = append(
               {
                 id: body.id,
-                name: encrypt(body.name, req.userId),
-                fname: encrypt(body.fname, req.userId),
+                name: encrypt(body.name, req.params.userId),
+                fname: encrypt(body.fname, req.params.userId),
                 id_place: body.id_place,
                 photo: body.photo
               },
@@ -213,7 +220,7 @@ const post = (router: Router) => {
 
       const body = req.body;
       RES = res;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       User.findOne(
         { id: id_user },
         null,
@@ -251,8 +258,8 @@ const post = (router: Router) => {
       logger.info('app.routes.post.user.remove');
 
       const body = req.body;
-      const name = encrypt(body.name, req.userId);
-      const fname = encrypt(body.fname, req.userId);
+      const name = encrypt(body.name, req.params.userId);
+      const fname = encrypt(body.fname, req.params.userId);
 
       try {
         const user = await model.getUser({ name, fname });
@@ -271,7 +278,7 @@ const post = (router: Router) => {
       logger.info('app.routes.post.user.settings');
 
       const body = req.body;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
 
       if (
         body.photo &&
@@ -344,7 +351,7 @@ const post = (router: Router) => {
         { confirmation_token: "", confirmation_code: "" }
       );
 
-      const user_id = decrypt(user.id || "", req.userId);
+      const user_id = decrypt(user.id || "", req.params.userId);
 
       var image;
 
@@ -358,9 +365,9 @@ const post = (router: Router) => {
 
       res.status(resultCodes.success).json({
         id: user_id,
-        name: decrypt(user.name || "", req.userId),
-        fname: decrypt(user.fname || "", req.userId),
-        email: decrypt(user.email || "", req.userId),
+        name: decrypt(user.name || "", req.params.userId),
+        fname: decrypt(user.fname || "", req.params.userId),
+        email: decrypt(user.email || "", req.params.userId),
         remoteDay: user.remoteDay,
         photo: image ? image : user.photo,
         start_date: user.start_date,
@@ -387,7 +394,7 @@ const post = (router: Router) => {
       }
 
       const id_place = body.id_place;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       const place = await model.getPlaceById(id_place);
 
       const placeIsAllowed = async place => {
@@ -404,8 +411,8 @@ const post = (router: Router) => {
       if (place && !(await placeIsAvailable(place))) {
         logger.debug("Place already used");
         const user = await model.getUserById(place.id_user);
-        const name = decrypt(user.name || "", req.userId);
-        const fname = decrypt(user.fname || "", req.userId);
+        const name = decrypt(user.name || "", req.params.userId);
+        const fname = decrypt(user.fname || "", req.params.userId);
         res.status(resultCodes.serverError).json({
           name: name,
           fname: fname
@@ -446,7 +453,7 @@ const post = (router: Router) => {
           .status(resultCodes.syntaxError)
           .send(errorMessages.invalidArguments);
       }
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
       const historical = await model
         .getUserById(id_user)
         .then(user => user.historical);
@@ -466,7 +473,7 @@ const post = (router: Router) => {
       logger.info('app.routes.post.place.assign');
 
       const body = req.body;
-      const id_user = encrypt(body.id_user, req.userId);
+      const id_user = encrypt(body.id_user, req.params.userId);
 
       model.updatePlace(body.id_place, {
         id_owner: id_user,

@@ -349,8 +349,7 @@ export const sendConfirmationEmail = user => {
                   "Name": user.email
               }],
               "Subject": "FlexOffice : Code d’inscription",
-              "HTMLPart": message,
-        
+              "HTMLPart": message,       
         }]
       })
       
