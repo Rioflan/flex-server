@@ -6,6 +6,7 @@ import { updateUser, getPooledUsers } from "./models/model";
 import * as dotenv from 'dotenv';
 
 import app, { router, listOfRoutes } from './app';
+import { AddressInfo } from 'net';
 import logger from '../config/winston';
 
 const DEFAULT_URI: string | undefined = dbconfig.getMongoUri(); //  get the URI from config file
@@ -49,8 +50,8 @@ try {
 
 async function init() {
     const server = app.listen(process.env.PORT || DEFAULT_PORT, () => {
-        const port = server.address().port;
-        logger.info('App now running on port : '+ port);
+        const address = server.address() as AddressInfo;
+        logger.info('App now running on port : ' + address.port);
     });
 
    const websocket = socketio(server);

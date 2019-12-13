@@ -22,7 +22,6 @@ var options = {
 
   var logger = new winston.createLogger({
     format: combine(
-        label({ label: 'FlexOffice_0.3.9' }),
         timestamp(),
         prettyPrint()
       ),
