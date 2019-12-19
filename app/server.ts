@@ -17,8 +17,7 @@ dotenv.config();
 
 try {
 
-    if (process.env.NODE_ENV === "production" && process.env.DATABASE_MODE === "remote"){
-        logger.info('Connection to DB in Production');
+        logger.info('Connection to DB');
         mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
             auth: {
                 user: process.env.DATABASE_USERNAME,
@@ -28,20 +27,6 @@ try {
           })
           .then(() => logger.info('Connection to DB successful'))
           .catch((err) => logger.error(err));
-    }else{
-        logger.info('Connection to MongoDb in Local');
-
-        mongoose.connect("mongodb://"+process.env.DATABASE_HOST+":"+process.env.DATABASE_PORT+"/"+process.env.DATABASE_DB, {
-            auth: {
-                user: process.env.DATABASE_USERNAME,
-                password: process.env.DATABASE_PASSWORD
-              },
-            useNewUrlParser: true,
-          })
-          .then(() => logger.info('Connection to DB successful'))
-          .catch((err) => logger.error(err));
-    
-    }
     
 
 } catch (err) {

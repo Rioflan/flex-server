@@ -97,4 +97,15 @@ app/**/*.js
 # Specific scripts
 install.sh
 app/initDB_AZURE*
+app/resetUsers*
 sendgrid.env
+
+# Cert, keys
+*.crt
+*.key
+*.pem
+*.srl
+*.csr
+
+# Python virtual env 'venv'
+app/venv/

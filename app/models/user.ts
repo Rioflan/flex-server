@@ -1,8 +1,6 @@
-import mongoose, { Types } from "mongoose";
+import * as mongoose from 'mongoose';
 
-const { Schema } = mongoose;
-
-const UserSchema = new Schema({
+export const UserSchema = new mongoose.Schema({
   id: String,
   name: String,
   fname: String,
@@ -20,7 +18,7 @@ const UserSchema = new Schema({
 });
 
 export interface UserSchema {
-  _id?: Types.ObjectId,
+  _id?: mongoose.Types.ObjectId,
   id: string,
   name: string,
   fname: string,
