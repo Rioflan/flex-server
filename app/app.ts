@@ -13,17 +13,10 @@ import logger from '../config/winston';
 import morgan from 'morgan';
 
 export var LOG_LEVEL = process.env.REACT_APP_LOG_LEVEL || "info";
-const cron = require("node-cron");
-const fs = require("fs");
-
 
 const app: express.Application = express(); // use express on our app
 
 //reset places
-cron.schedule("59 23 * * *", () => {
-  logger.info("---------------------");
-  logger.info("Running Cron Job");
-});
 logger.info(" ON LAUNCH >>>>>");
 logger.info(" NODE_ENV      is "+process.env.NODE_ENV);
 logger.info(" DATABASE_HOST is "+process.env.DATABASE_HOST);
