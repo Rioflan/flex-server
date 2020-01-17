@@ -16,6 +16,7 @@ export var LOG_LEVEL = process.env.REACT_APP_LOG_LEVEL || "info";
 
 const app: express.Application = express(); // use express on our app
 
+//reset places
 logger.info(" ON LAUNCH >>>>>");
 logger.info(" NODE_ENV      is "+process.env.NODE_ENV);
 logger.info(" DATABASE_HOST is "+process.env.DATABASE_HOST);
@@ -24,7 +25,7 @@ logger.info(" DATABASE_DB   is "+process.env.DATABASE_DB);
 logger.info(" DATABASE_MODE is "+process.env.DATABASE_MODE);
 logger.info(" LOGIN_REGEX   is "+process.env.LOGIN_REGEX);
 logger.info(" LOG_LEVEL     is "+LOG_LEVEL);
-logger.info(" >>>>>>>>>  VERSION 0.4.8  <<<<<<<<<<<<<");
+logger.info(" >>>>>>>>>  VERSION 0.4.9  <<<<<<<<<<<<<");
 
 export const listOfRoutes = (router: Router, websocket, pool) => {
   Post(router);
@@ -41,6 +42,8 @@ router.use((req: Request, res: Response, next) => {
 router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'It works !' });
 });
+
+
 
 // configure logger
 // log format used by the morgan package to combined, 

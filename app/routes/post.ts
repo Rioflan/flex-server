@@ -281,23 +281,18 @@ const post = (router: Router) => {
       const id_user = encrypt(body.id_user, req.params.userId);
 
       if (
-        body.photo &&
-        body.photo.match(HTTPS_REGEX) === null &&
         (body.photo !== "" || body.photo !== null)
       )
-      logger.debug("NODE_ENV is "+process.env.NODE_ENV);
+      model.updatePhoto(id_user, body.photo);
 
       dbconfig.putFileWrapper(body.photo, body.id_user);
 
-      /*
       if (process.env.NODE_ENV !== "development"){
         model.updatePhoto(id_user, body.photo);
       }else{
         dbconfig.putFileWrapper(body.photo, body.id_user);
       }
-      */
       
-
       if (body.remoteDay !== "")
         model.updateUser(
           id_user, { remoteDay: body.remoteDay }
