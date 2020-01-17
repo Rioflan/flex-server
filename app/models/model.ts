@@ -321,45 +321,75 @@ export const sendEmail = (to: string, subject: string, body: string) => {
   if (!process.env.MJ_APIKEY_PUBLIC && !process.env.MJ_APIKEY_PRIVATE) return;
   
 };
+
+
 export const sendConfirmationEmail = user => {
   const path = require('path');
-  //search the fil html to copy it in STRING into the var message
   var message=fs.readFileSync(path.join(__dirname+'../../../asset/templateMail/mail.html')).toString();
-  //search $user to replace it by the user confirmation code
   message=message.replace('${user}', user.confirmation_code.toString());
+
+  var nodemailer = require("nodemailer");
+
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "test.flexoffice@gmail.com",
+      pass: "FlexOffice365"
+    }
+  });
   
-  if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
-      const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+  var mailOptions = {
+    name:"FlexOffice",
+    from: "it-factory-flex@outlook.com",
+    to: user.email,
+    subject: "FlexOffice: Code d'inscription",
+    html: message
+  }
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+    console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 
-      const request = mailService
 
-      .post("send", {'version': 'v3.1'})
-      .request({
-          "Messages":[{
-              "From": {
-                  "Email": "flexoffice.beta@gmail.com",
-                  "Name": "FlexOffice"
-              },
-              "To": [{
-                  "Email": user.email,
-                  "Name": user.email
-              }],
-              "Subject": "FlexOffice : Code d’inscription",
-              "HTMLPart": message,       
-        }]
-      })
+
+  // //search the fil html to copy it in STRING into the var message
+  // //search $user to replace it by the user confirmation code
+  
+  // if (process.env.MJ_APIKEY_PUBLIC && process.env.MJ_APIKEY_PRIVATE){
+  //     const mailService = mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+
+  //     const request = mailService
+
+  //     .post("send", {'version': 'v3.1'})
+  //     .request({
+  //         "Messages":[{
+  //             "From": {
+  //                 "Email": "flexoffice.beta@gmail.com",
+  //                 "Name": "FlexOffice"
+  //             },
+  //             "To": [{
+  //                 "Email": user.email,
+  //                 "Name": user.email
+  //             }],
+  //             "Subject": "FlexOffice : Code d’inscription",
+  //             "HTMLPart": message,       
+  //       }]
+  //     })
       
-      request
-      .then((result) => {
-          logger.debug(result)
-      })
-      .catch((err) => {
-        logger.error(err.statusCode)
-      })
-  }
-  else{
-    logger.error('>>>>>>>>> ERROR : API KEY MISSING <<<<<<<<<<<<<<<');
-  }
+  //     request
+  //     .then((result) => {
+  //         logger.debug(result)
+  //     })
+  //     .catch((err) => {
+  //       logger.error(err.statusCode)
+  //     })
+  // }
+  // else{
+  //   logger.error('>>>>>>>>> ERROR : API KEY MISSING <<<<<<<<<<<<<<<');
+  // }
   
 
 };
