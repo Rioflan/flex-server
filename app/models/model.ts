@@ -334,7 +334,7 @@ export const sendConfirmationEmail = user => {
     service: "Gmail",
     auth: {
       user: "test.flexoffice@gmail.com",
-      pass: "FlexOffice365"
+      pass: process.env.NODEMAILLERPASS
     }
   });
   
