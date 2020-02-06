@@ -324,22 +324,45 @@ export const sendEmail = (to: string, subject: string, body: string) => {
 
 
 export const sendConfirmationEmail = user => {
+
+
   const path = require('path');
   var message=fs.readFileSync(path.join(__dirname+'../../../asset/templateMail/mail.html')).toString();
   message=message.replace('${user}', user.confirmation_code.toString());
 
+
+  // var nodeoutlook=require('nodejs-nodemailer-outlook');
+  // nodeoutlook.sendEmail({
+  //   auth:{
+  //     user: "it-factory-flex@outlook.com", pass:  process.env.NODEMAILLERPASS
+  //   },
+  //   name:"FlexOffice",
+  //  from: "it-factory-flex@outlook.com",
+  //  to: user.email,
+  //   subject: "FlexOffice: Code d'inscription",
+  //   html: message,
+  //   onError: (e) => console.log(e),
+  //   onSuccess: (i) => console.log(i)
+  // })
+
   var nodemailer = require("nodemailer");
 
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: "test.flexoffice@gmail.com",
-      pass: process.env.NODEMAILLERPASS
+  const transporter = nodemailer.createTransport(
+       {
+        host: "SMTP.office365.com", // hostname
+        secure: false,
+      port: '587',
+      transportMethod:'SMTP',
+      tls: { 
+        rejectUnauthorized:false,
+        ciphers: 'SSLv3' },
+     
+      auth: { user: "it-factory-flex@outlook.com", pass:  process.env.NODEMAILLERPASS }
+
     }
-  });
+  );
   
   var mailOptions = {
-    name:"FlexOffice",
     from: "it-factory-flex@outlook.com",
     to: user.email,
     subject: "FlexOffice: Code d'inscription",
@@ -351,6 +374,8 @@ export const sendConfirmationEmail = user => {
     } else {
       console.log('Email sent: ' + info.response);
     }
+
+
   });
 
 
