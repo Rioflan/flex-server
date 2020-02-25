@@ -1,0 +1,651 @@
+openapi: 3.0.1
+info:
+  title: FlexOffice Rest API
+  description: FlexOffice Demo API
+  version: '0.1'
+servers:
+  - url: 'https://whispering-lowlands-83497.herokuapp.com'
+paths:
+  /api:
+    get:
+      description: Verify that the API is working
+      responses:
+        '200':
+          description: Message confirming that the API is working
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/users/add:
+    post:
+      description: Add a friend to a user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_place:
+                  type: string
+                  nullable: true
+                fname:
+                  type: string
+                name:
+                  type: string
+                photo:
+                  type: string
+                id_user:
+                  type: string
+                id:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id_user": "AB12345",
+                      "id": "c19f60bc2df02a",
+                      "name": " TZ#ýý",
+                      "fname": "4V@-",
+                      "id_place": null,
+                      "photo": ""
+                  }
+      responses:
+        '200':
+          description: Returns the user
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/places/leave:
+    post:
+      description: Leave a place for a user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_place:
+                  type: string
+                id_user:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id_place": "3-V-RER01",
+                      "id_user": "AB12345"
+                  }
+      responses:
+        '200':
+          description: Confirms that the user has left the place
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/login:
+    post:
+      description: Log in
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "email": "abc@abc.abc",
+                      "password": "abcabc"
+                  }
+      responses:
+        '200':
+          description: Confirms that the user is connected and returns the token
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/authModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/user/login:
+    post:
+      description: Log in user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "email": "a@a.com"
+                  }
+      responses:
+        '200':
+          description: Returns the user's email
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/logout:
+    get:
+      description: Log out
+      responses:
+        '200':
+          description: "Confirms that the user is no longer connected"
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/authModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/me:
+    get:
+      description: Get user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Returns the user
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/places:
+    get:
+      description: Get places
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Returns the places
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/placeModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/register:
+    post:
+      description: Register new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "name": "abc",
+                      "email": "abc@abc.abc",
+                      "password": "abcabc"
+                  }
+      responses:
+        '200':
+          description: Confirms that the user is connected and returns the token
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/authModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/users/remove:
+    post:
+      description: Remove a friend from a user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_user:
+                  type: string
+                id:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id_user": "AB12345",
+                      "id": "c19f60bc2df02a"
+                  }
+      responses:
+        '200':
+          description: Returns the user
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/user/remove:
+    post:
+      description: Delete a user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                fname:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "name": "Doe",
+                      "fname": "John"
+                  }
+      responses:
+        '200':
+          description: Delete the user
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  
+    /api/user/complete:
+    post:
+      description: Register a new user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                fname:
+                  type: string
+                id_user:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "email": "a@a.a",
+                      "name": "Doe",
+                      "fname": "John",
+                      "id_user": "AB12345"
+                  }
+      responses:
+        '200':
+          description: Complete informations
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  
+  
+  /api/places/reset:
+    get:
+      description: Reset places
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Confirms the reset
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/user/settings:
+    post:
+      description: Modify the user's settings
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remoteDay:
+                  type: string
+                photo:
+                  type: string
+                id_user:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id_user": "AB12345",
+                      "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Mallard2.jpg/1200px-Mallard2.jpg",
+                      "remoteDay": "Jeudi"
+                  }
+      responses:
+        '200':
+          description: Confirms the modification
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/places/take:
+    post:
+      description: Take a place for a user
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_place:
+                  type: string
+                id_user:
+                  type: string
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id_place": "3-V-RER01",
+                      "id_user": "AB12345"
+                  }
+      responses:
+        '200':
+          description: Confirms that the place has been taken by the user
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/users:
+    get:
+      description: Get users
+      parameters:
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Returns the users
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/users/{user_id}:
+    get:
+      description: Get specified user
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: String ID of the user to get
+          example: AB12345
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Returns the user
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+  /api/users/{user_id}/friends:
+    get:
+      description: Get the friends of a user
+      parameters:
+        - name: user_id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: String ID of the user whose friends to get
+          example: AB12345
+        - name: authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjYzA1NjU1NTYwYjI0MDAxN2RjNjk5NSIsImlhdCI6MTU1NjEwODg4NX0.SW-2IQeH74mCsE93S27CnRM2B0btjGSJc-PgQICxn34
+          required: true
+      responses:
+        '200':
+          description: Returns the friends
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userModel'
+              examples: {}
+      servers:
+        - url: 'https://whispering-lowlands-83497.herokuapp.com'
+    servers:
+      - url: 'https://whispering-lowlands-83497.herokuapp.com'
+components:
+  schemas:
+    userModel:
+      type: object
+      properties:
+        id:
+          type: string
+        id_place:
+          type: string
+          nullable: true
+        name:
+          type: string
+        fname:
+          type: string
+        remoteDay:
+          type: string
+          nullable: true
+        photo:
+          type: string
+          nullable: true
+    placeModel:
+      type: object
+      properties:
+        id:
+          type: string
+        id_user:
+          type: string
+        using:
+          type: boolean
+    authModel:
+      type: object
+      properties:
+        auth:
+          type: boolean
+        token:
+          type: string
+          nullable: true
