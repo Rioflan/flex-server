@@ -1,0 +1,43 @@
+version: "3"
+services:
+  prod: &prod
+    container_name: app
+    restart: unless-stopped
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    volumes:
+      - .:/app
+    environment: &prod-env
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 27017
+      DATABASE_DB: flex
+      DATABASE_MODE: remote
+      DATABASE_URL: "${DATABASE_URL}"
+      CLOUDINARY_URL: "${CLOUDINARY_URL}"
+      LOGIN_REGEX: ^[A-Z]{2}[0-9]{5}$$
+      NODE_ENV: remote
+      API_SECRET: supersecret
+      DOCKER_ENV: production
+      ZAPIER_URL: "https://hooks.zapier.com/hooks/catch/5495873/o323o5d/"
+    #depends_on:
+    #  - mongo
+
+  dev:
+    <<: *prod
+    container_name: app-dev
+    restart: "no"
+    environment:
+      <<: *prod-env
+      DATABASE_MODE: local
+      DOCKER_ENV: development
+#
+#  mongo:
+#    container_name: mongo
+#    image: mongo
+#    ports:
+#      - "27017:27017"
+#    environment:
+#      MONGO_INITDB_DATABASE: flex
